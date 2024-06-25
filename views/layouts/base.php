@@ -77,6 +77,7 @@
 
     <!-- Page level custom scripts -->
     <script src="./assets/js/demo/datatables-demo.js"></script>
+    <script src="https://kit.fontawesome.com/1b233c9fdd.js" crossorigin="anonymous"></script>
 
 </body>
 

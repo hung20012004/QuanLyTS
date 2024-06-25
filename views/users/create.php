@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
     <div class="row mt-3">
         <div class="col">
             <nav aria-label="breadcrumb">
@@ -10,6 +10,7 @@
         </div>
     </div>
 </div>
+
 <div class="container">
     <div class="row justify-content-center mt-4">
         <div class="col-md-12">
@@ -31,23 +32,26 @@
                     <?php endif; ?>
                     <form action="index.php?model=user&action=create" method="POST">
                         <div class="mb-3">
-                            <label for="ten" class="form-label">Tên:</label>
-                            <input type="text" name="ten" id="ten" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email:</label>
-                            <input type="email" name="email" id="email" class="form-control" required>
+                            <label for="tenEmail" class="form-label">Tên và Email:</label>
+                            <div class="input-group">
+                                <input type="text" name="ten" id="ten" class="form-control" placeholder="Tên" required>
+                                <input type="email" name="email" id="email" class="form-control" placeholder="Email" required>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Mật khẩu:</label>
-                            <input type="password" name="password" id="password" class="form-control" required>
+                            <div class="input-group">
+                                <input type="password" name="password" id="password" class="form-control" value="Utt@1234" disabled required>
+                                <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                                <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="role" class="form-label">Vai trò:</label>
                             <select name="role" id="role" class="form-control" required>
-                                <option >>--Chọn vai trò--<</option>
+                                <option>--Chọn vai trò--</option>
                                 <option value="NhanVien">Nhân viên quản lý tài sản</option>
-                                <option value="Admin">Quản trị</option>
                                 <option value="KyThuat">Kỹ thuật viên</option>
                                 <option value="KeToan">Kế toán</option>
                             </select>
@@ -62,3 +66,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePassword = document.querySelector('#togglePassword');
+        const passwordInput = document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+    });
+</script>

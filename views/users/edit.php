@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
     <div class="row mt-3">
         <div class="col">
             <nav aria-label="breadcrumb">

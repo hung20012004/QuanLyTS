@@ -37,9 +37,6 @@
                 case 'KyThuat':
                     include 'views/components/kythuat-side.php';
                     break;
-                case 'KeToan':
-                    include 'views/components/ketoan-side.php';
-                    break;
                 default:
                     echo "<li class='nav-item'>Không có quyền truy cập</li>";
                     break;
