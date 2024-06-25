@@ -3,14 +3,18 @@
 
 include_once 'config/database.php';
 require 'models/Auth.php';
+include_once 'models/User.php';
+
 
 class AuthController extends Controller {
     private $db;
     private $authModel;
+    private $user;
 
     public function __construct() {
         $database = new Database();
         $this->db = $database->getConnection();
+        $this->user = new User($this->db);
         $this->authModel = new Auth($this->db);
     }
 
@@ -31,6 +35,8 @@ class AuthController extends Controller {
     }
 
     public function login() {
+        $error_msg = '';
+    
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = $_POST['email'];
             $password = $_POST['password'];
@@ -38,22 +44,24 @@ class AuthController extends Controller {
             $user = $authModel->getUserByEmail($email);
     
             if ($user && password_verify($password, $user['password'])) {
-                // Đăng nhập thành công, lưu session và chuyển hướng đến trang chính
+                // Đăng nhập thành công
                 session_start();
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['email'] = $user['email'];
                 $_SESSION['role'] = $user['role'];
                 $_SESSION['ten'] = $user['ten'];
+                $_SESSION['password'] = $user['password'];
                 header('Location: dashboard.php');
                 exit();
             } else {
-                // Đăng nhập thất bại, xử lý thông báo lỗi hoặc tái hiện form đăng nhập
-                echo "Email hoặc mật khẩu không chính xác.";
+                // Đăng nhập thất bại
+                $error_msg = "Email hoặc mật khẩu không chính xác.";
             }
-        } else {
-            include('views/auth/login.php');
         }
+    
+        include('views/auth/login.php');
     }
+    
 
     public function logout() {
         // session_start();
@@ -80,6 +88,26 @@ class AuthController extends Controller {
         // Include view để hiển thị thông tin người dùng
         $content = 'views/auth/profile.php';
         include('views/layouts/base.php');
+    }
+    public function edit($id) {
+        if ($_POST) {
+            $this->user->user_id = $id;
+            $this->user->email = $_POST['email'];
+            $this->user->ten = $_POST['ten'];
+            if($_POST['new_password']!=''){
+                $this->user->password = password_hash($_POST['new_password'], PASSWORD_BCRYPT);
+            }
+            else{
+                $this->user->password = $_SESSION['password'];
+            }
+            $this->user->role = $_POST['role'];
+            if ($this->user->update()) {
+                $_SESSION['email'] = $this->user->email;
+                $_SESSION['ten'] = $this->user->ten;
+                $_SESSION['role'] = $this->user->role;
+                header("Location: index.php?model=auth&action=profile");
+            }
+        }
     }
 }
 ?>

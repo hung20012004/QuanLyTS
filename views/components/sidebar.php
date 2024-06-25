@@ -57,7 +57,7 @@
                 Thông tin người dùng
             </div>
             <li class="nav-item">
-                <a class="nav-link" href="charts.html">
+                <a class="nav-link" href="index.php?model=auth&action=profile">
                     <i class="fa-solid fa-user"></i>
                     <span>Hồ sơ</span></a>
             </li>

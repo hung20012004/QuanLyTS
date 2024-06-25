@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "datatables.net-dt": "^2.0.8",
+    "jquery": "^3.7.1",
+    "popper.js": "^1.16.1"
+  }
+}

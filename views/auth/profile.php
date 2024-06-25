@@ -32,8 +32,8 @@
                         </div>
                     <?php endif; ?>
 
-                    <form id="editForm" action="index.php?model=user&action=edit&id=<?= $user['user_id']; ?>" method="POST">
-                        <div class="row mb-3">
+                    <form id="editForm" action="index.php?model=auth&action=edit&id=<?= $user['user_id']; ?>" method="POST">
+                        <div class="mb-3 row">
                             <div class="col">
                                 <label for="ten" class="form-label">Tên:</label>
                                 <input type="text" name="ten" id="ten" class="form-control" value="<?= htmlspecialchars($user['ten']); ?>" required disabled>
@@ -64,8 +64,8 @@
                 </div>
                 <div class="card-footer d-flex justify-content-between">
                     <a href="index.php?model=user&action=index" class="btn btn-secondary">Quay Lại</a>
-                    <button type="submit" class="btn btn-primary" disabled>Lưu Thay Đổi</button>
-                    <button id="cancelBtn" class="btn btn-secondary d-none">Hủy</button>
+                    <button type="submit" class="btn btn-primary d-none" id="saveBtn">Lưu Thay Đổi</button>
+                    <button type="button" style="display: none;" class="btn btn-secondary d-none" id="cancelBtn">Hủy</button>
                 </div>
                 </form>
             </div>
@@ -77,6 +77,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         const editBtn = document.getElementById('editBtn');
         const cancelBtn = document.getElementById('cancelBtn');
+        const saveBtn = document.getElementById('saveBtn');
         const editForm = document.getElementById('editForm');
         const inputs = editForm.querySelectorAll('input, select');
 
@@ -85,15 +86,13 @@
                 input.disabled = !input.disabled;
             });
 
-            const saveBtn = editForm.querySelector('button[type="submit"]');
-            saveBtn.disabled = !saveBtn.disabled;
+            saveBtn.classList.toggle('d-none');
+            cancelBtn.classList.toggle('d-none');
 
             if (editBtn.textContent === 'Sửa Thông Tin') {
                 editBtn.textContent = 'Hủy';
-                cancelBtn.classList.remove('d-none');
             } else {
                 editBtn.textContent = 'Sửa Thông Tin';
-                cancelBtn.classList.add('d-none');
             }
         });
 
@@ -102,10 +101,20 @@
                 input.disabled = true;
             });
 
-            saveBtn.disabled = true;
-
-            editBtn.textContent = 'Sửa Thông Tin';
+            saveBtn.classList.add('d-none');
             cancelBtn.classList.add('d-none');
+            editBtn.textContent = 'Sửa Thông Tin';
+        });
+
+        editForm.addEventListener('submit', function () {
+            // Validate password if new password is entered
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (newPassword !== confirmPassword) {
+                alert('Mật khẩu xác nhận không khớp!');
+                return false;
+            }
         });
     });
 </script>
