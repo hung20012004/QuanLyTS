@@ -15,7 +15,7 @@
                 
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="tables.html">
+                <a class="nav-link" href="route.php?model=nhacungcap&action=index">
                 <i class="fa-solid fa-cart-shopping"></i>
                     <span>Nhà cung cấp</span></a>
             </li>

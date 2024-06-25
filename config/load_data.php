@@ -1,7 +1,7 @@
 <?php
 require_once 'database.php';
 
-class Setup {
+class LoadData {
     private $db;
 
     public function __construct() {
@@ -16,7 +16,7 @@ class Setup {
                 throw new Exception("Không thể đọc file SQL: $filePath");
             }
             $this->db->exec($sql);
-            echo "Các câu lệnh SQL đã được thực thi thành công!";
+            echo "Dữ liệu đã được nhập thành công!";
         } catch(PDOException $e) {
             echo "Lỗi thực thi SQL: " . $e->getMessage();
         } catch(Exception $e) {
@@ -25,6 +25,6 @@ class Setup {
     }
 }
 
-$setup = new Setup();
-$setup->runSQLFromFile('G:\XAMPP\htdocs\QuanLyTS\database\schema.sql'); // Đường dẫn tới file schema.sql
+$loader = new LoadData();
+$loader->runSQLFromFile('G:/XAMPP/htdocs/QuanLyTS/database/data.sql'); // Đường dẫn tới file data.sql
 ?>
