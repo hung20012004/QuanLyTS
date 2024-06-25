@@ -27,7 +27,7 @@
                 alert.classList.add('fade');
                 setTimeout(function() {
                     alert.style.display = 'none';
-                }, 150); // Optional: wait for the fade-out transition to complete
+                }, 150); 
             }
         }, 2000); // 2000 milliseconds = 2 seconds
     </script>
@@ -44,6 +44,20 @@
             </div>
         </div>
         <div class="card-body">
+            <form class="form-inline mb-3 justify-content-end">
+                <div class="form-group mb-2 ">
+                    <label for="emailSearch" class="sr-only">Email:</label>
+                    <input type="text" id="emailSearch" class="form-control" placeholder="Tìm theo email">
+                </div>
+                <div class="form-group mx-1 mb-2">
+                    <label for="tenSearch" class="sr-only">Tên:</label>
+                    <input type="text" id="tenSearch" class="form-control" placeholder="Tìm theo tên">
+                </div>
+                <div class="form-group accordion mb-2">
+                    <label for="vaitroSearch" class="sr-only">Vai trò:</label>
+                    <input type="text" id="vaitroSearch" class="form-control" placeholder="Tìm theo vai trò">
+                </div>
+            </form>
             <div class="table-responsive">
                 <table id="dataTable" class="table table-bordered" width="100%" cellspacing="0">
                     <thead class="bg-light text-black text-center">
@@ -83,10 +97,37 @@
         </div>
     </div>
 </div>
+
 <script>
-     $(document).ready(function () {
-        function confirmDelete() {
-            return confirm('Bạn có chắc muốn xóa người dùng này?');
+    document.addEventListener('DOMContentLoaded', function() {
+        function filterTable() {
+            var nameFilter = document.getElementById('tenSearch').value.toLowerCase();
+            var emailFilter = document.getElementById('emailSearch').value.toLowerCase();
+            var roleFilter = document.getElementById('vaitroSearch').value.toLowerCase();
+
+            var table = document.getElementById('dataTable');
+            var rows = table.getElementsByTagName('tr');
+            
+            for (var i = 1; i < rows.length; i++) {
+                var cells = rows[i].getElementsByTagName('td');
+                var email = cells[1].textContent.toLowerCase();
+                var name = cells[2].textContent.toLowerCase();
+                var role = cells[3].textContent.toLowerCase();
+                
+                if (name.includes(nameFilter) && email.includes(emailFilter) && role.includes(roleFilter)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
         }
+
+        document.getElementById('tenSearch').addEventListener('keyup', filterTable);
+        document.getElementById('emailSearch').addEventListener('keyup', filterTable);
+        document.getElementById('vaitroSearch').addEventListener('keyup', filterTable);
     });
+    
+    function confirmDelete() {
+        return confirm('Bạn có chắc muốn xóa người dùng này?');
+    }
 </script>
