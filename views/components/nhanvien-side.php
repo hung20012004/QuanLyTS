@@ -6,16 +6,16 @@
                 </a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="buttons.html">Quản lý</a>
+                        <a class="collapse-item" href="route.php?model=taisan&action=index">Quản lý</a>
                         <a class="collapse-item" href="cards.html">Khấu hao</a>
-                        <a class="collapse-item" href="cards.html">Phân loại</a>
+                        <a class="collapse-item" href="route.php?model=loaitaisan&action=index">Phân loại</a>
                         <a class="collapse-item" href="cards.html">Thống kê</a>
                     </div>
                 </div>
                 
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="tables.html">
+                <a class="nav-link" href="route.php?model=nhacungcap&action=index">
                 <i class="fa-solid fa-cart-shopping"></i>
                     <span>Nhà cung cấp</span></a>
             </li>
