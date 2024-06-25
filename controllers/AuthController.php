@@ -50,6 +50,7 @@ class AuthController extends Controller {
                 $_SESSION['email'] = $user['email'];
                 $_SESSION['role'] = $user['role'];
                 $_SESSION['ten'] = $user['ten'];
+                $_SESSION['avatar'] = $user['avatar'];
                 $_SESSION['password'] = $user['password'];
                 header('Location: dashboard.php');
                 exit();

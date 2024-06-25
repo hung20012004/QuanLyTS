@@ -1,5 +1,5 @@
 <?php
-session_start(); 
+session_start();
 
 require 'controllers/Controller.php';
 require 'controllers/BaoTriController.php';
@@ -14,7 +14,7 @@ require 'controllers/TaiSanController.php';
 
 $controller = new Controller();
 
-$model = isset($_GET['model'])? $_GET['model'] : 'index';
+$model = isset($_GET['model']) ? $_GET['model'] : 'index';
 $action = isset($_GET['action']) ? $_GET['action'] : 'index';
 $id = isset($_GET['id']) ? $_GET['id'] : null;
 
@@ -23,7 +23,7 @@ if (!isset($_SESSION['user_id']) && !in_array($action, ['login', 'register'])) {
     exit();
 }
 
-switch ($model){
+switch ($model) {
     case 'baotri':
         $controller = new BaoTriController();
         break;
@@ -76,7 +76,13 @@ switch ($action) {
         $controller->logout();
         break;
     case 'profile':
-        $controller->profile(); 
+        $controller->profile();
+        break;
+    case 'export':
+        $controller->export();
+        break;
+    case 'statistic':
+        $controller->statistics();
         break;
     default:
         $controller->index();
