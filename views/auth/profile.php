@@ -33,7 +33,7 @@
                     <?php endif; ?>
 
                     <form id="editForm" action="index.php?model=auth&action=edit&id=<?= $user['user_id']; ?>"
-                        method="POST">
+                        method="POST" enctype="multipart/form-data">
                         <div class="mb-3 row">
                             <div class="col-md-3 text-center">
                                 <div class="mb-3">
