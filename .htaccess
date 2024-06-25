@@ -1,0 +1,14 @@
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
+
+<FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico)$">
+    Header set Cache-Control "max-age=2592000, public"
+</FilesMatch>
+
+<Files ".htaccess">
+    Order allow,deny
+    Deny from all
+</Files>
