@@ -35,15 +35,20 @@ class UserController extends Controller {
 
     public function edit($id) {
         if ($_POST) {
+            
+            $user = $this->user->readById($id);
             $this->user->user_id = $id;
             $this->user->email = $_POST['email'];
             $this->user->ten = $_POST['ten'];
-            $this->user->password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+            if($_POST['password']!=''){
+                $this->user->password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+            }
             $this->user->role = $_POST['role'];
             if ($this->user->update()) {
+                // var_dump($_POST['ten']);
                 header("Location: index.php?model=user");
             }
-        } else {
+        }else {
             $user = $this->user->readById($id);
             $content = 'views/users/edit.php';
             include('views/layouts/base.php');
