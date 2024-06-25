@@ -1,7 +1,7 @@
 <?php
 include_once 'config/database.php';
 
-class ViTriController {
+class ViTriController extends Controller {
 
     public function __construct() {
     }

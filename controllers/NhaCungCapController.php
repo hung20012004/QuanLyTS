@@ -2,7 +2,7 @@
 include_once 'config/database.php';
 include_once 'models/NhaCungCap.php';
 
-class NhaCungCapController {
+class NhaCungCapController extends Controller {
     private $db;
     private $nhaCungCap;
 

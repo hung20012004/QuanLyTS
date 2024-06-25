@@ -17,7 +17,8 @@ CREATE TABLE tai_san (
     ten_tai_san VARCHAR(100) NOT NULL,
     mo_ta TEXT,
     so_luong INT NOT NULL,
-    loai_tai_san_id INT,
+    loai_tai_san_id INT NOT NULL,
+    state BOOLEAN NOT NULL,
     FOREIGN KEY (loai_tai_san_id) REFERENCES loai_tai_san(loai_tai_san_id)
 );
 

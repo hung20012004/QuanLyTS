@@ -7,9 +7,13 @@ USE quanlytaisan;
 
 -- Thêm dữ liệu vào bảng loai_tai_san
 INSERT INTO loai_tai_san (ten_loai_tai_san) VALUES
-('Máy tính'),
-('Bàn ghế'),
-('Thiết bị điện tử');
+('Máy tính và thiết bị viễn thông'),
+('Xây dựng, công cụ dụng cụ'),
+('Đất đai, nhà xưởng'),
+('Phương tiện vận tải'),
+('Máy móc, thiết bị sản xuất'),
+('Trang thiết bị văn phòng'),
+('Thiết bị giảng dạy, nghiên cứu');
 
 -- Thêm dữ liệu vào bảng tai_san
 INSERT INTO tai_san (ten_tai_san, mo_ta, so_luong, loai_tai_san_id) VALUES
