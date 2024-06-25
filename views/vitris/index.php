@@ -1,10 +1,9 @@
-<!-- views/vitris/index.php -->
 <div class="container-fluid">
     <div class="row mt-3">
         <div class="col">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=vitri&action=index">Vị Trí</a></li>
+                    <li class="breadcrumb-item"><a href="index.php?model=vitri&action=index">Vị trí</a></li>
                 </ol>
             </nav>
         </div>
@@ -48,29 +47,25 @@
                     <thead class="bg-light text-black text-center">
                         <tr>
                             <th>ID</th>
-                            <th>Vị Trí</th>
+                            <th>Tên Vị Trí</th>
                             <th>Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($viTris as $viTri): ?>
-                            <?php if ($viTri['vi_tri_id'] != 0): ?>
-                                <tr>
-                                    <td class="text-center"><?= $viTri['vi_tri_id'] ?></td>
-                                    <td><?= htmlspecialchars($viTri['ten_vi_tri']) ?></td>
-                                    <td class="d-flex justify-content-center">
-                                        <a href="index.php?model=vitri&action=show&id=<?= $viTri['vi_tri_id'] ?>"
-                                            class="btn btn-info btn-sm mx-2">Xem</a>
-                                        <a href="index.php?model=vitri&action=edit&id=<?= $viTri['vi_tri_id'] ?>"
-                                            class="btn btn-warning btn-sm mx-2">Sửa</a>
-                                        <form action="index.php?model=vitri&action=delete&id=<?= $viTri['vi_tri_id'] ?>"
-                                            method="POST" style="display: inline-block;"
-                                            onsubmit="return confirmDelete();">
-                                            <button type="submit" class="btn btn-danger btn-sm mx-2">Xóa</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
+                            <tr>
+                                <td class="text-center"><?= $viTri['vi_tri_id'] ?></td>
+                                <td><?= htmlspecialchars($viTri['ten_vi_tri']) ?></td>
+                                <td class="d-flex justify-content-center">
+                                    <a href="index.php?model=vitri&action=show&id=<?= $viTri['vi_tri_id'] ?>"
+                                        class="btn btn-info btn-sm mx-2">Xem</a>
+                                    <a href="index.php?model=vitri&action=edit&id=<?= $viTri['vi_tri_id'] ?>"
+                                        class="btn btn-warning btn-sm mx-2">Sửa</a>
+                                    <form action="index.php?model=vitri&action=delete&id=<?= $viTri['vi_tri_id'] ?>" method="POST" style="display: inline-block;">
+                                        <button type="submit" class="btn btn-danger btn-sm mx-2" onclick="return confirm('Bạn có chắc muốn xóa vị trí này?');">Xóa</button>
+                                    </form>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -80,8 +75,8 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        window.confirmDelete = function() {
+        function confirmDelete() {
             return confirm('Bạn có chắc muốn xóa vị trí này?');
-        };
+        }
     });
 </script>

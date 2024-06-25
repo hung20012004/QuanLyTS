@@ -15,7 +15,9 @@ class HoaDonMua {
     }
 
     public function readAll() {
-        $query = "SELECT * FROM " . $this->table_name;
+        $query = "SELECT hoa_don_mua.*, nha_cung_cap.ten_nha_cung_cap 
+                 FROM " . $this->table_name . "
+                 JOIN nha_cung_cap ON hoa_don_mua.nha_cung_cap_id = nha_cung_cap.nha_cung_cap_id";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

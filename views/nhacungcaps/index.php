@@ -62,10 +62,8 @@
                                         class="btn btn-info btn-sm mx-2">Xem</a>
                                     <a href="index.php?model=nhacungcap&action=edit&id=<?= $nhaCungCap['nha_cung_cap_id'] ?>"
                                         class="btn btn-warning btn-sm mx-2">Sửa</a>
-                                    <form action="index.php?model=nhacungcap&action=delete&id=<?= $nhaCungCap['nha_cung_cap_id'] ?>"
-                                        method="POST" style="display: inline-block;"
-                                        onsubmit="return confirmDelete();">
-                                        <button type="submit" class="btn btn-danger btn-sm mx-2">Xóa</button>
+                                    <form action="index.php?model=nhacungcap&action=delete&id=<?= $nhaCungCap['nha_cung_cap_id'] ?>" method="POST" style="display: inline-block;">
+                                        <button type="submit" class="btn btn-danger btn-sm mx-2" onclick="return confirm('Bạn có chắc muốn xóa nhà cung cấp này?');">Xóa</button>
                                     </form>
                                 </td>
                             </tr>
@@ -84,3 +82,4 @@
         }
     });
 </script>
+

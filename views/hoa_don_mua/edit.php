@@ -16,6 +16,7 @@
         <div class="card-header py-2">
             <h5 class="card-title mb-0">Sửa Thông Tin Hóa Đơn</h5>
         </div>
+    </div>
         <div class="card-body">
             <form method="POST">
                 <input type="hidden" name="hoa_don_id" value="<?= $invoice['hoa_don_id'] ?>">
