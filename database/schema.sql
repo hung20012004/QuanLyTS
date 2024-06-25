@@ -4,7 +4,8 @@ CREATE TABLE users (
     email VARCHAR(50) NOT NULL UNIQUE,
     ten VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role ENUM('NhanVien','Admin','KyThuat') NOT NULL
+    role ENUM('NhanVien','Admin','KyThuat') NOT NULL,
+    avatar VARCHAR(255)
 );
 -- Bảng để lưu thông tin về loại tài sản
 CREATE TABLE loai_tai_san (

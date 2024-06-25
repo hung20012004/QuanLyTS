@@ -10,6 +10,7 @@ class User {
     public $ten;
     public $password;
     public $role;
+    public $avatar;
 
     public function __construct($db) {
         $this->conn = $db;
@@ -58,7 +59,7 @@ class User {
 
     // Cập nhật thông tin người dùng
     public function update() {
-        $query = "UPDATE " . $this->table_name . " SET email = :email, ten = :ten, password = :password, role = :role WHERE user_id = :user_id";
+        $query = "UPDATE " . $this->table_name . " SET email = :email, ten = :ten, password = :password, role = :role,avatar=:avatar WHERE user_id = :user_id";
 
         $stmt = $this->conn->prepare($query);
 
@@ -68,8 +69,10 @@ class User {
         $this->password = htmlspecialchars(strip_tags($this->password));
         $this->role = htmlspecialchars(strip_tags($this->role));
         $this->user_id = htmlspecialchars(strip_tags($this->user_id));
+        $this->avatar = htmlspecialchars(strip_tags($this->avatar));
 
         // bind values
+        $stmt->bindParam(':avatar', $this->avatar);
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':ten', $this->ten);
         $stmt->bindParam(':password', $this->password);
