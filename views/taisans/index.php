@@ -58,7 +58,7 @@
                                 <td><?= htmlspecialchars($taiSan['ten_tai_san']) ?></td>
                                 <td><?= htmlspecialchars($taiSan['mo_ta']) ?></td>
                                 <td><?= $taiSan['so_luong'] ?></td>
-                                <td><?= $taiSan['loai_tai_san_id'] ?></td>
+                                <td><?= htmlspecialchars($taiSan['ten_loai_tai_san']) ?></td>
                                 <td class="d-flex justify-content-center">
                                     <a href="index.php?model=taisan&action=show&id=<?= $taiSan['tai_san_id'] ?>"
                                         class="btn btn-info btn-sm mx-2">Xem</a>

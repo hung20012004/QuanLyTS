@@ -5,11 +5,13 @@ include_once 'models/LoaiTaiSan.php';
 class LoaiTaiSanController extends Controller {
     private $db;
     private $loaiTaiSan;
+    private $taiSan;
 
     public function __construct() {
         $database = new Database();
         $this->db = $database->getConnection();
         $this->loaiTaiSan = new LoaiTaiSan($this->db);
+        $this->taiSan = new TaiSan($this->db); // Thêm dòng này để sử dụng model TaiSan
     }
 
     public function index() {
@@ -57,12 +59,17 @@ class LoaiTaiSanController extends Controller {
     }
 
     public function delete($id) {
-        if ($this->loaiTaiSan->delete($id)) {
-            $_SESSION['message'] = 'Xóa loại tài sản thành công!';
-            $_SESSION['message_type'] = 'success';
-            header("Location: index.php?model=loaitaisan");
+        if ($this->taiSan->updateLoaiTaiSanIdToZero($id)) {
+            if ($this->loaiTaiSan->delete($id)) {
+                $_SESSION['message'] = 'Xóa loại tài sản thành công!';
+                $_SESSION['message_type'] = 'success';
+                header("Location: index.php?model=loaitaisan");
+            } else {
+                $_SESSION['message'] = 'Xóa thất bại!';
+                $_SESSION['message_type'] = 'danger';
+            }
         } else {
-            $_SESSION['message'] = 'Xóa thất bại!';
+            $_SESSION['message'] = 'Cập nhật tài sản thất bại!';
             $_SESSION['message_type'] = 'danger';
         }
     }

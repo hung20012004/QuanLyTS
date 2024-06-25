@@ -15,7 +15,9 @@ class TaiSan {
 
     // Đọc tất cả tài sản
     public function read() {
-        $query = "SELECT * FROM " . $this->table_name;
+        $query = "SELECT tai_san.*, loai_tai_san.ten_loai_tai_san 
+                  FROM " . $this->table_name . " 
+                  JOIN loai_tai_san ON tai_san.loai_tai_san_id = loai_tai_san.loai_tai_san_id";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -74,6 +76,18 @@ class TaiSan {
         $stmt->bindParam(':loai_tai_san_id', $this->loai_tai_san_id, PDO::PARAM_INT);
         $stmt->bindParam(':tai_san_id', $this->tai_san_id, PDO::PARAM_INT);
 
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+    
+    // Cập nhật loai_tai_san_id về 0 khi loại tài sản bị xóa
+    public function updateLoaiTaiSanIdToZero($loaiTaiSanId) {
+        $query = "UPDATE " . $this->table_name . " SET loai_tai_san_id = 0 WHERE loai_tai_san_id = :loai_tai_san_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':loai_tai_san_id', $loaiTaiSanId, PDO::PARAM_INT);
+            
         if ($stmt->execute()) {
             return true;
         }

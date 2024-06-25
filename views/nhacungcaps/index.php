@@ -52,7 +52,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($nhaCungCaps as $nhaCungCap): ?>
+                        <?php foreach ($nhaCungCaps as $nhaCungCap): 
+                                if($nhaCungCap['trang_thai'] !=0): ?>
                             <tr>
                                 <td class="text-center"><?= $nhaCungCap['nha_cung_cap_id'] ?></td>
                                 <td><?= htmlspecialchars($nhaCungCap['ten_nha_cung_cap']) ?></td>
@@ -68,6 +69,7 @@
                                     </form>
                                 </td>
                             </tr>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </tbody>
                 </table>

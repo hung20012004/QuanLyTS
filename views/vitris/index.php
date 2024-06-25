@@ -1,9 +1,10 @@
+<!-- views/vitris/index.php -->
 <div class="container-fluid">
     <div class="row mt-3">
         <div class="col">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=nhacungcap&action=index">Nhà Cung Cấp</a></li>
+                    <li class="breadcrumb-item"><a href="index.php?model=vitri&action=index">Vị Trí</a></li>
                 </ol>
             </nav>
         </div>
@@ -35,9 +36,9 @@
     <div class="card shadow mb-4">
         <div class="card-header py-2">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Quản Lý Nhà Cung Cấp</h5>
+                <h5 class="card-title mb-0">Quản Lý Vị Trí</h5>
                 <div>
-                    <a href="index.php?model=nhacungcap&action=create" class="btn btn-primary">Thêm Mới</a>
+                    <a href="index.php?model=vitri&action=create" class="btn btn-primary">Thêm Mới</a>
                 </div>
             </div>
         </div>
@@ -47,27 +48,29 @@
                     <thead class="bg-light text-black text-center">
                         <tr>
                             <th>ID</th>
-                            <th>Tên Nhà Cung Cấp</th>
+                            <th>Vị Trí</th>
                             <th>Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($nhaCungCaps as $nhaCungCap): ?>
-                            <tr>
-                                <td class="text-center"><?= $nhaCungCap['nha_cung_cap_id'] ?></td>
-                                <td><?= htmlspecialchars($nhaCungCap['ten_nha_cung_cap']) ?></td>
-                                <td class="d-flex justify-content-center">
-                                    <a href="index.php?model=nhacungcap&action=show&id=<?= $nhaCungCap['nha_cung_cap_id'] ?>"
-                                        class="btn btn-info btn-sm mx-2">Xem</a>
-                                    <a href="index.php?model=nhacungcap&action=edit&id=<?= $nhaCungCap['nha_cung_cap_id'] ?>"
-                                        class="btn btn-warning btn-sm mx-2">Sửa</a>
-                                    <form action="index.php?model=nhacungcap&action=delete&id=<?= $nhaCungCap['nha_cung_cap_id'] ?>"
-                                        method="POST" style="display: inline-block;"
-                                        onsubmit="return confirmDelete();">
-                                        <button type="submit" class="btn btn-danger btn-sm mx-2">Xóa</button>
-                                    </form>
-                                </td>
-                            </tr>
+                        <?php foreach ($viTris as $viTri): ?>
+                            <?php if ($viTri['vi_tri_id'] != 0): ?>
+                                <tr>
+                                    <td class="text-center"><?= $viTri['vi_tri_id'] ?></td>
+                                    <td><?= htmlspecialchars($viTri['ten_vi_tri']) ?></td>
+                                    <td class="d-flex justify-content-center">
+                                        <a href="index.php?model=vitri&action=show&id=<?= $viTri['vi_tri_id'] ?>"
+                                            class="btn btn-info btn-sm mx-2">Xem</a>
+                                        <a href="index.php?model=vitri&action=edit&id=<?= $viTri['vi_tri_id'] ?>"
+                                            class="btn btn-warning btn-sm mx-2">Sửa</a>
+                                        <form action="index.php?model=vitri&action=delete&id=<?= $viTri['vi_tri_id'] ?>"
+                                            method="POST" style="display: inline-block;"
+                                            onsubmit="return confirmDelete();">
+                                            <button type="submit" class="btn btn-danger btn-sm mx-2">Xóa</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -77,8 +80,8 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        function confirmDelete() {
-            return confirm('Bạn có chắc muốn xóa nhà cung cấp này?');
-        }
+        window.confirmDelete = function() {
+            return confirm('Bạn có chắc muốn xóa vị trí này?');
+        };
     });
 </script>

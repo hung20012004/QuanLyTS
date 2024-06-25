@@ -53,21 +53,23 @@
                     </thead>
                     <tbody>
                         <?php foreach ($loaiTaiSans as $loaiTaiSan): ?>
-                            <tr>
-                                <td class="text-center"><?= $loaiTaiSan['loai_tai_san_id'] ?></td>
-                                <td><?= htmlspecialchars($loaiTaiSan['ten_loai_tai_san']) ?></td>
-                                <td class="d-flex justify-content-center">
-                                    <a href="index.php?model=loaitaisan&action=show&id=<?= $loaiTaiSan['loai_tai_san_id'] ?>"
-                                        class="btn btn-info btn-sm mx-2">Xem</a>
-                                    <a href="index.php?model=loaitaisan&action=edit&id=<?= $loaiTaiSan['loai_tai_san_id'] ?>"
-                                        class="btn btn-warning btn-sm mx-2">Sửa</a>
-                                    <form action="index.php?model=loaitaisan&action=delete&id=<?= $loaiTaiSan['loai_tai_san_id'] ?>"
-                                        method="POST" style="display: inline-block;"
-                                        onsubmit="return confirmDelete();">
-                                        <button type="submit" class="btn btn-danger btn-sm mx-2">Xóa</button>
-                                    </form>
-                                </td>
-                            </tr>
+                            <?php if ($loaiTaiSan['loai_tai_san_id'] != 0): ?>
+                                <tr>
+                                    <td class="text-center"><?= $loaiTaiSan['loai_tai_san_id'] ?></td>
+                                    <td><?= htmlspecialchars($loaiTaiSan['ten_loai_tai_san']) ?></td>
+                                    <td class="d-flex justify-content-center">
+                                        <a href="index.php?model=loaitaisan&action=show&id=<?= $loaiTaiSan['loai_tai_san_id'] ?>"
+                                            class="btn btn-info btn-sm mx-2">Xem</a>
+                                        <a href="index.php?model=loaitaisan&action=edit&id=<?= $loaiTaiSan['loai_tai_san_id'] ?>"
+                                            class="btn btn-warning btn-sm mx-2">Sửa</a>
+                                        <form action="index.php?model=loaitaisan&action=delete&id=<?= $loaiTaiSan['loai_tai_san_id'] ?>"
+                                            method="POST" style="display: inline-block;"
+                                            onsubmit="return confirmDelete();">
+                                            <button type="submit" class="btn btn-danger btn-sm mx-2">Xóa</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -77,8 +79,8 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        function confirmDelete() {
-            return confirm('Bạn có chắc muốn xóa loại tài sản này?');
-        }
+        window.confirmDelete = function() {
+            return confirm('Bạn có chắc muốn xóa loại tài sản này? Hành động này không thể hoàn tác và tất cả các tài sản thuộc loại này sẽ được cập nhật loại tài sản về mặc định.');
+        };
     });
 </script>
