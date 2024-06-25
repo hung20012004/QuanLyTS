@@ -11,6 +11,28 @@
 </div>
 
 <div class="container-fluid">
+<?php if (isset($_SESSION['message'])): ?>
+    <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
+        <?= $_SESSION['message']; ?>
+    </div>
+    <?php
+    unset($_SESSION['message']);
+    unset($_SESSION['message_type']);
+    ?>
+    <script>
+        setTimeout(function() {
+            var alert = document.getElementById('alert-message');
+            if (alert) {
+                alert.classList.remove('show');
+                alert.classList.add('fade');
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 150); // Optional: wait for the fade-out transition to complete
+            }
+        }, 2000); // 2000 milliseconds = 2 seconds
+    </script>
+<?php endif; ?>
+
     <div class="card shadow mb-4">
         <div class="card-header py-2">
             <div class="d-flex justify-content-between align-items-center">
