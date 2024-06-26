@@ -26,5 +26,7 @@ class Controller {
     public function login() {}
     public function logout() {}
     public function profile() {}
+    public function export(){}
+    public function statistics(){}
 }
 ?>

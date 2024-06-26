@@ -16,6 +16,12 @@
     <!-- Custom styles for this page -->
     <link href="./vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link rel="stylesheet" href=".\assets\css\mystyle.css">
+    <style>
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -79,6 +85,7 @@
     <script src="./assets/js/demo/datatables-demo.js"></script>
     <script src="https://kit.fontawesome.com/1b233c9fdd.js" crossorigin="anonymous"></script>
 
+    <!-- <script src="./vendor/chart.js/Chart.min.js"></script> -->
 </body>
 
 </html>

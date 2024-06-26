@@ -31,26 +31,30 @@
                         </div>
                     <?php endif; ?>
 
-                    <form action="index.php?model=user&action=update&id=<?echo $user['id'] ?>" method="POST">
-                        <div class="mb-3">
-                            <label for="ten" class="form-label">Tên:</label>
-                            <input type="text" name="ten" id="ten" class="form-control" value="<?= htmlspecialchars($user['ten']) ?>" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email:</label>
-                            <input type="email" name="email" id="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
+                    <form action="index.php?model=user&action=edit&id=<?php echo $user['user_id']; ?>" method="POST">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="ten" class="form-label">Tên:</label>
+                                <input type="text" name="ten" id="ten" class="form-control" value="<?= htmlspecialchars($user['ten']) ?>" required>
+                            </div>
+                            <div class="col">
+                                <label for="email" class="form-label">Email:</label>
+                                <input type="email" name="email" id="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" readonly>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Mật Khẩu:</label>
-                            <input type="password" name="password" id="password" class="form-control">
-                            <small class="text-muted">Để trống nếu bạn không muốn thay đổi mật khẩu.</small>
+                            <div class="input-group">
+                                <input type="password" id="password" class="form-control" value="********" readonly>
+                                <button type="button" class="btn btn-warning" onclick="resetPassword()"><i class="fa-solid fa-arrows-rotate px-1"></i>Reset</button>
+                                <input type="hidden" name="password" id="password_hidden">
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="role" class="form-label">Vai Trò:</label>
                             <select name="role" id="role" class="form-control" required>
-                                <option value="Asset Manager" <?= ($user['role'] === 'Asset Manager') ? 'selected' : '' ?>>Quản Lý Tài Sản</option>
-                                <option value="Admin" <?= ($user['role'] === 'Admin') ? 'selected' : '' ?>>Quản Trị</option>
-                                <option value="Technician" <?= ($user['role'] === 'Technician') ? 'selected' : '' ?>>Kỹ Thuật Viên</option>
+                                <option value="NhanVien" <?= ($user['role'] === 'NhanVien') ? 'selected' : '' ?>>Nhân Viên Quản Lý Tài Sản</option>
+                                <option value="KyThuat" <?= ($user['role'] === 'KyThuat') ? 'selected' : '' ?>>Kỹ Thuật Viên</option>
                             </select>
                         </div>
                 </div>
@@ -63,3 +67,10 @@
         </div>
     </div>
 </div>
+
+<script>
+function resetPassword() {
+    document.getElementById('password_hidden').value = 'Utt@1234';
+    alert('Mật khẩu đã được reset thành Utt@1234');
+}
+</script>

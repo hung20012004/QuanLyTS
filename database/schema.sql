@@ -4,7 +4,8 @@ CREATE TABLE users (
     email VARCHAR(50) NOT NULL UNIQUE,
     ten VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role ENUM('NhanVien','Admin','KyThuat') NOT NULL
+    role ENUM('NhanVien','Admin','KyThuat') NOT NULL,
+    avatar VARCHAR(255)
 );
 -- Bảng để lưu thông tin về loại tài sản
 CREATE TABLE loai_tai_san (
@@ -17,7 +18,7 @@ CREATE TABLE tai_san (
     ten_tai_san VARCHAR(100) NOT NULL,
     mo_ta TEXT,
     so_luong INT NOT NULL,
-    loai_tai_san_id INT,
+    loai_tai_san_id INT NOT NULL,
     FOREIGN KEY (loai_tai_san_id) REFERENCES loai_tai_san(loai_tai_san_id)
 );
 
@@ -48,7 +49,8 @@ CREATE TABLE vi_tri_chi_tiet (
 -- Bảng để lưu thông tin nhà cung cấp tài sản
 CREATE TABLE nha_cung_cap (
     nha_cung_cap_id INT AUTO_INCREMENT PRIMARY KEY,
-    ten_nha_cung_cap VARCHAR(255) NOT NULL UNIQUE
+    ten_nha_cung_cap VARCHAR(255) NOT NULL UNIQUE,
+    trang_thai BOOLEAN NOT NULL
 );
 -- Bảng để lưu thông tin hóa đơn mua hàng
 CREATE TABLE hoa_don_mua (
