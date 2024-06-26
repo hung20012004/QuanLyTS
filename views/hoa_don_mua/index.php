@@ -70,8 +70,10 @@
                             <select id="nhaCungCapSearch" class="form-control">
                                 <option value="">Chọn nhà cung cấp</option>
                                 <?php foreach ($suppliers as $supplier): ?>
+                                    <?php if ($supplier['trang_thai'] != 0): ?>
                                     <option value="<?= htmlspecialchars($supplier['ten_nha_cung_cap']); ?>">
                                         <?= htmlspecialchars($supplier['ten_nha_cung_cap']); ?></option>
+                                    <?php endif;?>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -106,7 +108,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($invoices as $invoice): ?>
+                        <?php foreach ($invoices as $invoice): ?> 
                             <tr>
                                 <td class="text-center"><?php echo $invoice['hoa_don_id']; ?></td>
                                 <td class="text-center"><?= date('d-m-Y', strtotime($invoice['ngay_mua'])) ?></td>

@@ -63,25 +63,29 @@ class TaiSan {
     }
 
     public function update() {
-        $query = "UPDATE " . $this->table_name . " 
-                  SET ten_tai_san=:ten_tai_san, mo_ta=:mo_ta, so_luong=:so_luong, loai_tai_san_id=:loai_tai_san_id 
-                  WHERE tai_san_id=:tai_san_id";
+        try{
+            $query = "UPDATE " . $this->table_name . " 
+                    SET ten_tai_san=:ten_tai_san, mo_ta=:mo_ta, so_luong=:so_luong, loai_tai_san_id=:loai_tai_san_id 
+                    WHERE tai_san_id=:tai_san_id";
 
-        $stmt = $this->conn->prepare($query);
+            $stmt = $this->conn->prepare($query);
 
-        $this->ten_tai_san = htmlspecialchars(strip_tags($this->ten_tai_san));
-        $this->mo_ta = htmlspecialchars(strip_tags($this->mo_ta));
-        $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
-        $this->loai_tai_san_id = htmlspecialchars(strip_tags($this->loai_tai_san_id));
-        $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
+            $this->ten_tai_san = htmlspecialchars(strip_tags($this->ten_tai_san));
+            $this->mo_ta = htmlspecialchars(strip_tags($this->mo_ta));
+            $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
+            $this->loai_tai_san_id = htmlspecialchars(strip_tags($this->loai_tai_san_id));
+            $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
 
-        $stmt->bindParam(':ten_tai_san', $this->ten_tai_san);
-        $stmt->bindParam(':mo_ta', $this->mo_ta);
-        $stmt->bindParam(':so_luong', $this->so_luong);
-        $stmt->bindParam(':loai_tai_san_id', $this->loai_tai_san_id);
-        $stmt->bindParam(':tai_san_id', $this->tai_san_id);
+            $stmt->bindParam(':ten_tai_san', $this->ten_tai_san);
+            $stmt->bindParam(':mo_ta', $this->mo_ta);
+            $stmt->bindParam(':so_luong', $this->so_luong);
+            $stmt->bindParam(':loai_tai_san_id', $this->loai_tai_san_id);
+            $stmt->bindParam(':tai_san_id', $this->tai_san_id);
 
-        return $stmt->execute();
+            return $stmt->execute();
+        }catch(Exception $e){
+            $this->create();
+        }
     }
 
     public function delete($id) {
@@ -92,23 +96,12 @@ class TaiSan {
     }
 
     public function createOrUpdate($data) {
+        $this->ten_tai_san = $data['ten_tai_san'];
+        $this->mo_ta = $data['mo_ta'] ?? '';
+        $this->so_luong = $data['so_luong'];
+        $this->loai_tai_san_id = $data['loai_tai_san_id'];
+        return $this->create();
         // Kiểm tra xem tài sản đã tồn tại chưa
-        $existingAsset = $this->readByNameAndType($data['ten_tai_san'], $data['loai_tai_san_id']);
-
-        if ($existingAsset) {
-            // Nếu tài sản đã tồn tại, cập nhật số lượng
-            $this->tai_san_id = $existingAsset['tai_san_id'];
-            $this->so_luong = $existingAsset['so_luong'] + $data['so_luong'];
-            $this->update();
-            return $this->tai_san_id;
-        } else {
-            // Nếu tài sản chưa tồn tại, tạo mới
-            $this->ten_tai_san = $data['ten_tai_san'];
-            $this->mo_ta = $data['mo_ta'] ?? '';
-            $this->so_luong = $data['so_luong'];
-            $this->loai_tai_san_id = $data['loai_tai_san_id'];
-            return $this->create();
-        }
     }
 
     private function readByNameAndType($ten_tai_san, $loai_tai_san_id) {

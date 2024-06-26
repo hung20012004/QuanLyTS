@@ -15,7 +15,7 @@ class NhaCungCap {
 
     // Đọc tất cả nhà cung cấp
     public function read() {
-        $query = "SELECT * FROM " . $this->table_name;
+        $query = "SELECT * FROM " . $this->table_name . " WHERE trang_thai != 0";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
