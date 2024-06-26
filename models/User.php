@@ -95,5 +95,6 @@ class User {
         }
         return false;
     }
+    
 }
 ?>

@@ -3,8 +3,7 @@
         <div class="col">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=user&action=index">Người Dùng</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Sửa Người Dùng</li>
+                    <li class="breadcrumb-item active" aria-current="page">Thông tin người dùng</li>
                 </ol>
             </nav>
         </div>
@@ -17,19 +16,32 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Sửa Người Dùng</h5>
-                        <button id="editBtn" class="btn btn-info">Sửa Thông Tin</button>
+                        <h5 class="card-title mb-0">Thông tin người dùng</h5>
+                        <button id="editBtn" class="btn btn-info">Sửa</button>
                     </div>
                 </div>
                 <div class="card-body">
-                    <?php if (!empty($errors)): ?>
-                        <div class="alert alert-danger">
-                            <ul>
-                                <?php foreach ($errors as $error): ?>
-                                    <li><?= htmlspecialchars($error); ?></li>
-                                <?php endforeach; ?>
-                            </ul>
+                    <?php if (isset($_SESSION['message'])): ?>
+                        <div id="alert-message"
+                            class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
+                            <?= $_SESSION['message']; ?>
                         </div>
+                        <?php
+                        unset($_SESSION['message']);
+                        unset($_SESSION['message_type']);
+                        ?>
+                        <script>
+                            setTimeout(function () {
+                                var alert = document.getElementById('alert-message');
+                                if (alert) {
+                                    alert.classList.remove('show');
+                                    alert.classList.add('fade');
+                                    setTimeout(function () {
+                                        alert.style.display = 'none';
+                                    }, 150);
+                                }
+                            }, 2000); // 2000 milliseconds = 2 seconds
+                        </script>
                     <?php endif; ?>
 
                     <form id="editForm" action="index.php?model=auth&action=edit&id=<?= $user['user_id']; ?>"
@@ -41,7 +53,7 @@
                                         alt="Avatar" style="width: 120px; height: 120px; object-fit: cover;">
                                 </div>
                                 <label for="avatar" class="form-label mt-2">Hình ảnh đại diện:</label>
-                                <input type="file" class="form-control" id="avatar" name="avatar" disabled>
+                                <input type="file" class="form-control" id="avatar" name="avatar" value="" disabled>
                             </div>
                             <div class="col-md-9">
                                 <div class="mb-3">
@@ -55,27 +67,32 @@
                                         value="<?= htmlspecialchars($user['email']); ?>" required disabled>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="new_password" class="form-label">Mật Khẩu Mới:</label>
+                                    <label for="current_password" class="form-label">Mật khẩu hiện tại:</label>
+                                    <input type="password" name="current_password" id="current_password"
+                                        class="form-control" disabled>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="new_password" class="form-label">Mật khẩu mới:</label>
                                     <input type="password" name="new_password" id="new_password" class="form-control"
                                         disabled>
                                     <small class="text-muted">Nhập lại mật khẩu nếu bạn muốn thay đổi.</small>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="confirm_password" class="form-label">Xác Nhận Mật Khẩu:</label>
+                                    <label for="confirm_password" class="form-label">Xác nhận mật khẩu:</label>
                                     <input type="password" name="confirm_password" id="confirm_password"
                                         class="form-control" disabled>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="role" class="form-label">Vai Trò:</label>
-                                    <select name="role" id="role" class="form-control" required disabled>
+                                    <select name="role" style="display: none;" id="role" class="form-control" required
+                                        disabled>
                                         <option value="NhanVien" <?= ($user['role'] === 'NhanVien') ? 'selected' : ''; ?>>
                                             Nhân viên quản lý tài sản</option>
-                                        <option value="Admin" <?= ($user['role'] === 'Admin') ? 'selected' : ''; ?>>Quản
-                                            trị</option>
-                                        <option value="KyThuat" <?= ($user['role'] === 'KyThuat') ? 'selected' : ''; ?>>Kỹ
-                                            thuật viên</option>
-                                        <option value="KeToan" <?= ($user['role'] === 'KeToan') ? 'selected' : ''; ?>>Kế
-                                            toán</option>
+                                        <option value="Admin" <?= ($user['role'] === 'Admin') ? 'selected' : ''; ?>>
+                                            Quản trị</option>
+                                        <option value="KyThuat" <?= ($user['role'] === 'KyThuat') ? 'selected' : ''; ?>>
+                                            Kỹ thuật viên</option>
+                                        <option value="KeToan" <?= ($user['role'] === 'KeToan') ? 'selected' : ''; ?>>
+                                            Kế toán</option>
                                     </select>
                                 </div>
                             </div>
