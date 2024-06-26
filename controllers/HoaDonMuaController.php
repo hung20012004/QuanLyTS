@@ -7,7 +7,6 @@ include_once 'models/LoaiTaiSan.php';
 include_once 'models/ChiTietHoaDonMua.php';
 include_once 'models/TaiSan.php';
 
-class ValidationException extends Exception {}
 
 class HoaDonMuaController extends Controller {
     private $db;
@@ -93,64 +92,59 @@ class HoaDonMuaController extends Controller {
             header("Location: index.php?model=hoadonmua");
             return;
         }
-
+    
         if ($_POST) {
             $this->db->beginTransaction();
-
             try {
-                $this->validateInput($_POST);
-
-                $stmt = $this->db->prepare("UPDATE hoa_don_mua SET ngay_mua = ?, tong_gia_tri = ?, nha_cung_cap_id = ? WHERE hoa_don_id = ?");
-                $stmt->execute([$_POST['ngay_mua'], $_POST['tong_gia_tri'], $_POST['nha_cung_cap_id'], $id]);
-
-                // Xóa chi tiết hóa đơn cũ
-                $this->chiTietHoaDonMuaModel->delete($id);
-
-                // Thêm chi tiết hóa đơn mới
+                // echo '<pre>' , var_dump($_POST) , '</pre>';
+                // exit();
+                $this->hoaDonMuaModel->hoa_don_id = $id;
+                $this->hoaDonMuaModel->ngay_mua = $_POST['ngay_mua'];
+                $this->hoaDonMuaModel->tong_gia_tri = $_POST['tong_gia_tri'];
+                $this->hoaDonMuaModel->nha_cung_cap_id = $_POST['nha_cung_cap_id'];
+                $this->hoaDonMuaModel->update();
+                $this->chiTietHoaDonMuaModel->hoa_don_id=$id;
                 for ($i = 0; $i < count($_POST['ten_tai_san']); $i++) {
-                    $taiSanData = array(
-                        'ten_tai_san' => $_POST['ten_tai_san'][$i],
-                        'mo_ta' => $_POST['mo_ta'][$i],
-                        'so_luong' => $_POST['so_luong'][$i],
-                        'loai_tai_san_id' => $_POST['loai_tai_san'][$i]
-                    );
+                    $this->taiSanModel->ten_tai_san = $_POST['ten_tai_san'][$i];
+                    $this->taiSanModel->loai_tai_san_id = $_POST['loai_tai_san'][$i];
+                    $this->taiSanModel->so_luong =  $_POST['so_luong'][$i];
 
-                    $taiSanId = $this->taiSanModel->createOrUpdate($taiSanData);
-
-                    $stmt = $this->db->prepare("INSERT INTO chi_tiet_hoa_don_mua (hoa_don_id, tai_san_id, so_luong, don_gia) VALUES (?, ?, ?, ?)");
-                    $stmt->execute([$id, $taiSanId, $_POST['so_luong'][$i], $_POST['don_gia'][$i]]);
+                    $this->chiTietHoaDonMuaModel->chi_tiet_id = $_POST['chi_tiet_id'][$i];
+                    $this->chiTietHoaDonMuaModel->don_gia = $_POST['don_gia'][$i];
+                    $this->chiTietHoaDonMuaModel->so_luong =  $_POST['so_luong'][$i];
+                    if($_POST['tai_san_id'][$i]!=''){
+                        $this->taiSanModel->tai_san_id = $_POST['tai_san_id'][$i]; 
+                        $this->taiSanModel->update();
+                        $this->chiTietHoaDonMuaModel->update();
+                    }
+                    else{
+                        $this->taiSanModel->create();
+                        $this->chiTietHoaDonMuaModel->tai_san_id=$this->db->lastInsertId();
+                        $this->chiTietHoaDonMuaModel->create();
+                    }
                 }
-
+    
                 $this->db->commit();
-
+    
                 $_SESSION['message'] = 'Sửa hóa đơn thành công!';
                 $_SESSION['message_type'] = 'success';
                 header("Location: index.php?model=hoadonmua");
                 exit();
-            } catch (ValidationException $e) {
+            } catch (Exception $e) {
                 $this->db->rollBack();
                 $_SESSION['message'] = $e->getMessage();
                 $_SESSION['message_type'] = 'danger';
-            } catch (Exception $e) {
-                $this->db->rollBack();
-                $_SESSION['message'] = 'Có lỗi xảy ra: ' . $e->getMessage();
-                $_SESSION['message_type'] = 'danger';
             }
         }
-
+    
         $suppliers = $this->nhaCungCapModel->read();
         $invoice_details = $this->chiTietHoaDonMuaModel->readByHoaDonId($id);
-        
-        // Fetch loai_tai_san_id for each tai_san
-        foreach ($invoice_details as &$detail) {
-            $taiSan = $this->taiSanModel->readById($detail['tai_san_id']);
-            $detail['loai_tai_san_id'] = $taiSan['loai_tai_san_id'];
-        }
-        
         $loai_tai_san_list = $this->loaiTaiSanModel->readAll();
+        
         $content = 'views/hoa_don_mua/edit.php';
         include('views/layouts/base.php');
     }
+    
 
     public function delete($id) {
         if ($this->hoaDonMuaModel->delete($id)) {
@@ -161,19 +155,6 @@ class HoaDonMuaController extends Controller {
             $_SESSION['message_type'] = 'danger';
         }
         header("Location: index.php?model=hoadonmua");
-    }
-
-    private function validateInput($data) {
-        if (empty($data['ngay_mua'])) {
-            throw new ValidationException('Ngày mua không được để trống');
-        }
-        if (empty($data['nha_cung_cap_id'])) {
-            throw new ValidationException('Vui lòng chọn nhà cung cấp');
-        }
-        if (empty($data['ten_tai_san']) || !is_array($data['ten_tai_san'])) {
-            throw new ValidationException('Danh sách tài sản không hợp lệ');
-        }
-        // Add more validation as needed
     }
 
     public function export() {

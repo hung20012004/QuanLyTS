@@ -96,6 +96,13 @@ class AuthController extends Controller {
             $ten = $_POST['ten'];
             $avatarPath = null;
             $password = null;
+            $current_password = $_POST['current_password'];
+            if (!$this->authModel->checkCurrentPassword($id, $current_password)) {
+                $_SESSION['message'] = 'Mật khẩu không chính xác.';
+                $_SESSION['message_type'] = 'danger';
+                header("Location: index.php?model=auth&action=profile");
+                exit();
+            }
             
             if (!empty($_POST['new_password'])) {
                 $password = password_hash($_POST['new_password'], PASSWORD_BCRYPT);
@@ -123,10 +130,14 @@ class AuthController extends Controller {
                 if ($password) {
                     $_SESSION['password'] = $password;
                 }
+                $_SESSION['message'] = 'Cập nhật thông tin thành công.';
+                $_SESSION['message_type'] = 'success';
                 header("Location: index.php?model=auth&action=profile");
                 exit();
             } else {
-                echo "Cập nhật thông tin không thành công.";
+                $_SESSION['message'] = 'Cập nhật thông tin không thành công.';
+                $_SESSION['message_type'] = 'danger';
+                header("Location: index.php?model=auth&action=profile");
             }
         } else {
             $user = $this->authModel->getUserByID($id);

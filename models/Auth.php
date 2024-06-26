@@ -60,4 +60,22 @@ class Auth {
         $stmt->bindParam(':ten', $ten);
         return $stmt->execute();
     }
+    public function checkCurrentPassword($user_id, $current_password) {
+        $query = "SELECT password FROM users WHERE user_id = :user_id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            return false; // Người dùng không tồn tại
+        }
+
+        $hashed_password = $row['password'];
+        if (password_verify($current_password, $hashed_password)) {
+            return true; // Mật khẩu hiện tại chính xác
+        } else {
+            return false; // Mật khẩu hiện tại không chính xác
+        }
+    }
 }

@@ -36,39 +36,55 @@ class ChiTietHoaDonMua {
         }
         return false;
     }
-
+    public function readByHoaDonIdAndTaiSanId($hoa_don_id, $tai_san_id) {
+        $query = "SELECT *
+                  FROM " . $this->table_name . "
+                  WHERE hoa_don_id = :hoa_don_id AND tai_san_id = :tai_san_id
+                  LIMIT 1";
+    
+        $stmt = $this->conn->prepare($query);
+    
+        $stmt->bindParam(':hoa_don_id', $hoa_don_id);
+        $stmt->bindParam(':tai_san_id', $tai_san_id);
+    
+        $stmt->execute();
+    
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
     public function readByHoaDonId($hoa_don_id) {
-        $query = "SELECT ct.*, ts.ten_tai_san, lts.ten_loai_tai_san
+        $query = "SELECT *
                   FROM " . $this->table_name . " ct
-                  LEFT JOIN tai_san ts ON ct.tai_san_id = ts.tai_san_id
-                  LEFT JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id
-                  WHERE ct.hoa_don_id = ?";
+                  INNER JOIN tai_san ts ON ct.tai_san_id = ts.tai_san_id
+                  INNER JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id
+                  WHERE ct.hoa_don_id = :hoa_don_id";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $hoa_don_id);
+        $stmt->bindParam(':hoa_don_id', $hoa_don_id);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function update() {
+        try{
         $query = "UPDATE " . $this->table_name . " 
-                  SET tai_san_id=:tai_san_id, so_luong=:so_luong, don_gia=:don_gia 
+                  SET so_luong=:so_luong, don_gia=:don_gia 
                   WHERE chi_tiet_id=:chi_tiet_id";
 
         $stmt = $this->conn->prepare($query);
 
-        $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
         $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
         $this->don_gia = htmlspecialchars(strip_tags($this->don_gia));
         $this->chi_tiet_id = htmlspecialchars(strip_tags($this->chi_tiet_id));
-
-        $stmt->bindParam(':tai_san_id', $this->tai_san_id);
         $stmt->bindParam(':so_luong', $this->so_luong);
         $stmt->bindParam(':don_gia', $this->don_gia);
         $stmt->bindParam(':chi_tiet_id', $this->chi_tiet_id);
 
         return $stmt->execute();
+        }catch(Exception $e){
+            $this->create();
+        }
     }
 
     public function delete($chi_tiet_id) {

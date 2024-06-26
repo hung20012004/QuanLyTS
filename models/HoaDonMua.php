@@ -90,11 +90,45 @@ class HoaDonMua {
     }
 
     public function delete($id) {
-        $query = "DELETE FROM " . $this->table_name . " WHERE hoa_don_id = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $id);
-        return $stmt->execute();
+        // $this->conn->beginTransaction();
+
+        try {
+            // Xóa chi tiết hóa đơn
+            $chiTietQuery = "SELECT tai_san_id FROM chi_tiet_hoa_don_mua WHERE hoa_don_id = ?";
+            $stmt = $this->conn->prepare($chiTietQuery);
+            $stmt->bindParam(1, $id);
+            $stmt->execute();
+            $chiTietHoaDon = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Xóa chi tiết hóa đơn
+            $deleteChiTietQuery = "DELETE FROM chi_tiet_hoa_don_mua WHERE hoa_don_id = ?";
+            $stmtDeleteChiTiet = $this->conn->prepare($deleteChiTietQuery);
+            $stmtDeleteChiTiet->bindParam(1, $id);
+            $stmtDeleteChiTiet->execute();
+
+            foreach ($chiTietHoaDon as $chiTiet) {
+                // Xóa tài sản liên quan
+                $taiSanQuery = "DELETE FROM tai_san WHERE tai_san_id = ?";
+                $stmtTaiSan = $this->conn->prepare($taiSanQuery);
+                $stmtTaiSan->bindParam(1, $chiTiet['tai_san_id']);
+                $stmtTaiSan->execute();
+            }
+
+            
+
+            // Xóa hóa đơn
+            $deleteHoaDonQuery = "DELETE FROM " . $this->table_name . " WHERE hoa_don_id = ?";
+            $stmtDeleteHoaDon = $this->conn->prepare($deleteHoaDonQuery);
+            $stmtDeleteHoaDon->bindParam(1, $id);
+            $stmtDeleteHoaDon->execute();
+
+            // $this->conn->commit();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
     }
+
 
     public function getTotalRecords() {
         $query = "SELECT COUNT(*) as total FROM " . $this->table_name;
