@@ -1,11 +1,11 @@
 <?php
-// models/HoaDon.php
+// models/HoaDonMua.php
 
 class HoaDonMua {
     private $conn;
     private $table_name = "hoa_don_mua";
 
-    public $hoa_don_mua_id;
+    public $hoa_don_id;
     public $ngay_mua;
     public $tong_gia_tri;
     public $nha_cung_cap_id;
@@ -15,16 +15,34 @@ class HoaDonMua {
     }
 
     public function readAll() {
-        $query = "SELECT hoa_don_mua.*, nha_cung_cap.ten_nha_cung_cap 
-                 FROM " . $this->table_name . "
-                 JOIN nha_cung_cap ON hoa_don_mua.nha_cung_cap_id = nha_cung_cap.nha_cung_cap_id";
+        $query = "SELECT hm.*, ncc.ten_nha_cung_cap 
+                  FROM " . $this->table_name . " hm
+                  LEFT JOIN nha_cung_cap ncc ON hm.nha_cung_cap_id = ncc.nha_cung_cap_id
+                  ORDER BY hm.ngay_mua DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function readAllPaginated($page = 1, $recordsPerPage = 10) {
+        $start = ($page - 1) * $recordsPerPage;
+        $query = "SELECT hm.*, ncc.ten_nha_cung_cap 
+                  FROM " . $this->table_name . " hm
+                  LEFT JOIN nha_cung_cap ncc ON hm.nha_cung_cap_id = ncc.nha_cung_cap_id
+                  ORDER BY hm.ngay_mua DESC
+                  LIMIT :start, :records";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":start", $start, PDO::PARAM_INT);
+        $stmt->bindParam(":records", $recordsPerPage, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function readById($id) {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE hoa_don_mua_id = ?";
+        $query = "SELECT hm.*, ncc.ten_nha_cung_cap 
+                  FROM " . $this->table_name . " hm
+                  LEFT JOIN nha_cung_cap ncc ON hm.nha_cung_cap_id = ncc.nha_cung_cap_id
+                  WHERE hm.hoa_don_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $id);
         $stmt->execute();
@@ -32,7 +50,8 @@ class HoaDonMua {
     }
 
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " SET ngay_mua=:ngay_mua, tong_gia_tri=:tong_gia_tri, nha_cung_cap_id=:nha_cung_cap_id";
+        $query = "INSERT INTO " . $this->table_name . " 
+                  SET ngay_mua=:ngay_mua, tong_gia_tri=:tong_gia_tri, nha_cung_cap_id=:nha_cung_cap_id";
 
         $stmt = $this->conn->prepare($query);
 
@@ -45,40 +64,79 @@ class HoaDonMua {
         $stmt->bindParam(':nha_cung_cap_id', $this->nha_cung_cap_id);
 
         if ($stmt->execute()) {
-            return true;
+            return $this->conn->lastInsertId();
         }
         return false;
     }
 
     public function update() {
-        $query = "UPDATE " . $this->table_name . " SET ngay_mua=:ngay_mua, tong_gia_tri=:tong_gia_tri, nha_cung_cap_id=:nha_cung_cap_id WHERE hoa_don_mua_id=:hoa_don_mua_id";
+        $query = "UPDATE " . $this->table_name . " 
+                  SET ngay_mua=:ngay_mua, tong_gia_tri=:tong_gia_tri, nha_cung_cap_id=:nha_cung_cap_id 
+                  WHERE hoa_don_id=:hoa_don_id";
 
         $stmt = $this->conn->prepare($query);
 
         $this->ngay_mua = htmlspecialchars(strip_tags($this->ngay_mua));
         $this->tong_gia_tri = htmlspecialchars(strip_tags($this->tong_gia_tri));
         $this->nha_cung_cap_id = htmlspecialchars(strip_tags($this->nha_cung_cap_id));
-        $this->hoa_don_mua_id = htmlspecialchars(strip_tags($this->hoa_don_mua_id));
+        $this->hoa_don_id = htmlspecialchars(strip_tags($this->hoa_don_id));
 
         $stmt->bindParam(':ngay_mua', $this->ngay_mua);
         $stmt->bindParam(':tong_gia_tri', $this->tong_gia_tri);
         $stmt->bindParam(':nha_cung_cap_id', $this->nha_cung_cap_id);
-        $stmt->bindParam(':hoa_don_mua_id', $this->hoa_don_mua_id);
+        $stmt->bindParam(':hoa_don_id', $this->hoa_don_id);
 
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
+        return $stmt->execute();
     }
 
     public function delete($id) {
-        $query = "DELETE FROM " . $this->table_name . " WHERE hoa_don_mua_id = ?";
+        $query = "DELETE FROM " . $this->table_name . " WHERE hoa_don_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $id);
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
+        return $stmt->execute();
+    }
+
+    public function getTotalRecords() {
+        $query = "SELECT COUNT(*) as total FROM " . $this->table_name;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
+    }
+
+    public function search($searchTerm, $page = 1, $recordsPerPage = 10) {
+        $start = ($page - 1) * $recordsPerPage;
+        $query = "SELECT hm.*, ncc.ten_nha_cung_cap 
+                  FROM " . $this->table_name . " hm
+                  LEFT JOIN nha_cung_cap ncc ON hm.nha_cung_cap_id = ncc.nha_cung_cap_id
+                  WHERE hm.ngay_mua LIKE :search 
+                     OR ncc.ten_nha_cung_cap LIKE :search
+                  ORDER BY hm.ngay_mua DESC
+                  LIMIT :start, :records";
+        
+        $stmt = $this->conn->prepare($query);
+        $searchTerm = "%{$searchTerm}%";
+        $stmt->bindParam(":search", $searchTerm);
+        $stmt->bindParam(":start", $start, PDO::PARAM_INT);
+        $stmt->bindParam(":records", $recordsPerPage, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function generateReport($startDate, $endDate) {
+        $query = "SELECT hm.*, ncc.ten_nha_cung_cap 
+                  FROM " . $this->table_name . " hm
+                  LEFT JOIN nha_cung_cap ncc ON hm.nha_cung_cap_id = ncc.nha_cung_cap_id
+                  WHERE hm.ngay_mua BETWEEN :start_date AND :end_date
+                  ORDER BY hm.ngay_mua ASC";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":start_date", $startDate);
+        $stmt->bindParam(":end_date", $endDate);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>

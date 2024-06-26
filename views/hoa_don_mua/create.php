@@ -38,9 +38,6 @@
         <div class="card-header py-2">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">Thêm Mới Hóa Đơn</h5>
-                <div>
-                    <a href="index.php?model=hoadonmua&action=index" class="btn btn-secondary">Quay Lại</a>
-                </div>
             </div>
         </div>
         <div class="card-body">
@@ -56,7 +53,9 @@
                         <select class="form-control" id="nhaCungCap" name="nha_cung_cap_id" required>
                             <option value="">Chọn nhà cung cấp</option>
                             <?php foreach ($suppliers as $supplier): ?>
+                                <?php if ($supplier['trang_thai']!=0) { ?>
                                 <option value="<?= $supplier['nha_cung_cap_id']; ?>"><?= htmlspecialchars($supplier['ten_nha_cung_cap']); ?></option>
+                                <?php }?>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -80,6 +79,7 @@
                             <!-- Dòng mẫu -->
                             <tr id="row0">
                                 <td>
+                                    
                                     <select class="form-control" name="loai_tai_san[]" required>
                                         <option value="">Chọn loại tài sản</option>
                                         <?php while ($row = $stmtLoaiTaiSan->fetch(PDO::FETCH_ASSOC)): ?>
@@ -105,8 +105,10 @@
                     <label for="tongGiaTri">Tổng Giá Trị</label>
                     <input type="text" class="form-control" id="tongGiaTri" name="tong_gia_tri" readonly>
                 </div>
-
-                <button type="submit" class="btn btn-success mt-3">Lưu Hóa Đơn</button>
+                <div class="mt-3 d-flex justify-content-between">
+                    <a href="index.php?model=hoadonmua&action=index" class="btn btn-secondary">Quay Lại</a>
+                    <button type="submit" class="btn btn-success">Lưu Thay Đổi</button>
+                </div>
             </form>
         </div>
     </div>
