@@ -100,9 +100,37 @@
         const quantity = parseInt($('.taisan-item:last .quantity-input').val());
         let giaThanhLy = parseFloat($('.taisan-item:last .gia-thanh-ly-input').val());
 
-        // Kiểm tra nếu đã có tài sản này trong bảng
+        // Kiểm tra nếu đã có tài sản này trong bảng và số tiền nhập không khớp
         if (isTaisanExists(taisanId)) {
-            alert('Tài sản này đã có trong bảng. Chỉ được nhập số lượng.');
+            const existingRow = getExistingTaisanRow(taisanId);
+            const existingGiaThanhLy = parseFloat(existingRow.find('td:eq(2)').text().replace(/\./g, "").replace(' VND', '').trim());
+
+            if (existingGiaThanhLy !== giaThanhLy) {
+                alert('Bạn đã nhập cùng mặt hàng với số tiền khác. Vui lòng nhập lại.');
+                return;
+            }
+
+            let existingQuantity = parseInt(existingRow.find('td:eq(3)').text().trim());
+            let newQuantity = existingQuantity + quantity;
+            let newTotal = newQuantity * giaThanhLy;
+
+            existingRow.find('td:eq(3)').text(newQuantity);
+            existingRow.find('td:eq(4)').text(newTotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+
+            // Cập nhật dữ liệu tài sản trong mảng taisansData
+            taisansData.forEach(taisan => {
+                if (taisan.id == taisanId) {
+                    taisan.quantity = newQuantity;
+                    taisan.total = newTotal;
+                }
+            });
+
+            totalAmount += quantity * giaThanhLy;
+            $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+            taisanSelect.val('');
+            $('.quantity-input').val('');
+            $('.gia-thanh-ly-input').val('');
+            updateHiddenInput();
             return;
         }
 
@@ -116,55 +144,30 @@
             return;
         }
 
-        let taisanExists = false;
-        $('#taisan-list tbody tr').each(function() {
-            const row = $(this);
-            const existingTaisanId = row.data('id');
-            if (existingTaisanId == taisanId) {
-                let existingQuantity = parseInt(row.find('td:eq(3)').text());
-                let newQuantity = existingQuantity + quantity;
-                let newTotal = newQuantity * giaThanhLy;
+        let taisanTotal = quantity * giaThanhLy;
+        const taisanData = {
+            id: taisanId,
+            name: taisanName,
+            quantity: quantity,
+            price: giaThanhLy,
+            total: taisanTotal
+        };
+        taisansData.push(taisanData);
 
-                row.find('td:eq(3)').text(newQuantity);
-                row.find('td:eq(4)').text(newTotal.toLocaleString() + ' VND');
-                taisanExists = true;
+        const taisanRow = `
+            <tr data-id="${taisanId}">
+                <td>${taisanId}</td>
+                <td>${taisanName}</td>
+                <td>${giaThanhLy.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                <td>${quantity}</td>
+                <td>${taisanTotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                <td><button class="btn btn-danger btn-sm" id="xoa-taisan">Xóa</button></td>
+            </tr>
+        `;
+        $('#taisan-list tbody').append(taisanRow);
 
-                // Cập nhật dữ liệu tài sản trong mảng taisansData
-                taisansData.forEach(taisan => {
-                    if (taisan.id == taisanId) {
-                        taisan.quantity = newQuantity;
-                        taisan.total = newTotal;
-                    }
-                });
-            }
-        });
-
-        if (!taisanExists) {
-            const taisanTotal = quantity * giaThanhLy;
-            const taisanData = {
-                id: taisanId,
-                name: taisanName,
-                quantity: quantity,
-                price: giaThanhLy,
-                total: taisanTotal
-            };
-            taisansData.push(taisanData);
-
-            const taisanRow = `
-                <tr data-id="${taisanId}">
-                    <td>${taisanId}</td>
-                    <td>${taisanName}</td>
-                    <td>${giaThanhLy.toLocaleString()} VND</td>
-                    <td>${quantity}</td>
-                    <td>${taisanTotal.toLocaleString()} VND</td>
-                    <td><button class="btn btn-danger btn-sm " id="xoa-taisan">Xóa</button></td>
-                </tr>
-            `;
-            $('#taisan-list tbody').append(taisanRow);
-        }
-
-        totalAmount += quantity * giaThanhLy;
-        $('#total-amount').text(totalAmount.toLocaleString() + ' VND');
+        totalAmount += taisanTotal;
+        $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
         taisanSelect.val('');
         $('.quantity-input').val('');
         $('.gia-thanh-ly-input').val('');
@@ -187,26 +190,39 @@
         });
         return exists;
     }
+
+    // Lấy hàng tài sản đã tồn tại trong bảng
+    function getExistingTaisanRow(taisanId) {
+        let existingRow = null;
+        $('#taisan-list tbody tr').each(function() {
+            if ($(this).data('id') == taisanId) {
+                existingRow = $(this);
+                return false; // Thoát vòng lặp
+            }
+        });
+        return existingRow;
+    }
+
     $(document).ready(function() {
-    // Xử lý sự kiện khi nhấn nút Xóa trong form tài sản
-    $(document).on('click', '#xoa-taisan', function(event) {
-        event.preventDefault(); // Ngăn chặn hành động mặc định của nút
+        // Xử lý sự kiện khi nhấn nút Xóa trong form tài sản
+        $(document).on('click', '#xoa-taisan', function(event) {
+            event.preventDefault(); // Ngăn chặn hành động mặc định của nút
 
-        const row = $(this).closest('tr');
-        const giaThanhLy = parseFloat(row.find('td:eq(2)').text().replace(/\./g, "").replace(' VND', '')).trim();
-        const quantity = parseInt(row.find('td:eq(3)').text().replace(/[^0-9]/g, "").trim());
-        const taisanTotal = giaThanhLy * quantity;
-        totalAmount -= taisanTotal;
-        $('#total-amount-taisan').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
-        row.remove();
-        updateHiddenInput(); // Cập nhật lại giá trị hidden input
+            const row = $(this).closest('tr');
+            const giaThanhLy = parseFloat(row.find('td:eq(2)').text().replace(/\./g, "").replace(' VND', '').trim());
+            const quantity = parseInt(row.find('td:eq(3)').text().trim());
+            const taisanTotal = giaThanhLy * quantity;
+            totalAmount -= taisanTotal;
+            $('#total-amount').text(totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+            row.remove();
+            updateHiddenInput(); // Cập nhật lại giá trị hidden input
+        });
+
+        // Xử lý khi thêm tài sản vào bảng
+        $(document).on('click', '#add-taisan-btn', function(event) {
+            event.preventDefault(); // Ngăn chặn hành động mặc định của nút
+
+            addTaiSan();
+        });
     });
-
-    // Xử lý khi thêm tài sản vào bảng
-    $(document).on('click', '#add-taisan-btn', function(event) {
-        event.preventDefault(); // Ngăn chặn hành động mặc định của nút
-
-        addTaiSan();
-    });
-});
 </script>
