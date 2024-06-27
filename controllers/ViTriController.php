@@ -50,7 +50,7 @@ class ViTriController extends Controller {
     
             try {
                 $this->viTri->ten_vi_tri = $_POST['ten_vi_tri'];
-    
+                
                 if ($this->viTri->create()) {
                     $viTriId = $this->db->lastInsertId();
     
@@ -60,7 +60,7 @@ class ViTriController extends Controller {
                             'tai_san_id' => $_POST['tai_san_id'][$i],
                             'so_luong' => $_POST['so_luong'][$i]
                         );
-    
+                        var_dump($viTriChiTietData);
                         $this->viTriChiTiet->create($viTriChiTietData);
                     }
     
@@ -78,7 +78,7 @@ class ViTriController extends Controller {
                 $_SESSION['message_type'] = 'danger';
             }
         }
-    
+        var_dump($viTriChiTietData);
         $taiSanList = $this->taiSan->read();
         $content = 'views/vitris/create.php';
         include('views/layouts/base.php');

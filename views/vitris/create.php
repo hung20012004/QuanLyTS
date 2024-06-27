@@ -49,7 +49,7 @@
                     </div>
                 </div>
 
-                <h5 class="mt-4">Chi Tiết Vị Trí</h5>
+                <!-- <h5 class="mt-4">Chi Tiết Vị Trí</h5>
                 <div class="table-responsive">
                     <table id="tableChiTiet" class="table table-bordered">
                         <thead>
@@ -130,4 +130,4 @@
     document.addEventListener('DOMContentLoaded', function() {
         updateRowNumbers();
     });
-</script>
+</script> -->

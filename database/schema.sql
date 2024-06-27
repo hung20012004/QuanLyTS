@@ -28,7 +28,7 @@ CREATE TABLE khau_hao (
     tai_san_id INT,
     ngay_khau_hao DATE NOT NULL,
     so_tien DECIMAL(15,2) NOT NULL,
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
+    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id)
 );
 
 -- Bảng để lưu thông tin vị trí của tài sản
@@ -42,8 +42,8 @@ CREATE TABLE vi_tri_chi_tiet (
     vi_tri_id INT,
     so_luong INT,
     PRIMARY KEY (tai_san_id, vi_tri_id),
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE ,
-    FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id) ON DELETE CASCADE
+    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id),
+    FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id)
 );
 
 -- Bảng để lưu thông tin nhà cung cấp tài sản
@@ -68,8 +68,8 @@ CREATE TABLE chi_tiet_hoa_don_mua (
     tai_san_id INT,
     so_luong INT NOT NULL,
     don_gia DECIMAL(15,2) NOT NULL,
-    FOREIGN KEY (hoa_don_mua_id) REFERENCES hoa_don_mua(hoa_don_mua_id) ON DELETE CASCADE,
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
+    FOREIGN KEY (hoa_don_mua_id) REFERENCES hoa_don_mua(hoa_don_mua_id),
+    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id)
 );
 -- Bảng để lưu thông tin hóa đơn thanh lý tài sản
 CREATE TABLE hoa_don_thanh_ly (
@@ -85,8 +85,8 @@ CREATE TABLE chi_tiet_hoa_don_thanh_ly (
     tai_san_id INT,
     so_luong INT NOT NULL,
     gia_thanh_ly DECIMAL(15,2) NOT NULL,
-    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don_thanh_ly(hoa_don_id) ON DELETE CASCADE,
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
+    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don_thanh_ly(hoa_don_id),
+    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id)
 );
 -- Bảo trì
 CREATE TABLE maintenance_schedule (
@@ -95,5 +95,5 @@ CREATE TABLE maintenance_schedule (
     ngay_bat_dau DATE NOT NULL,
     ngay_ket_thuc DATE,
     mo_ta TEXT,
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
+    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id)
 );
