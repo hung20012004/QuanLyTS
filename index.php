@@ -63,6 +63,9 @@ switch ($action) {
     case 'edit':
         $controller->edit($id);
         break;
+    case 'viewedit':
+        $controller->viewedit($id);
+        break;
     case 'delete':
         $controller->delete($id);
         break;
@@ -83,6 +86,12 @@ switch ($action) {
         break;
     case 'statistic':
         $controller->statistics();
+        break;
+    case 'viewcreate':
+        $controller->viewcreate(); 
+        break;
+    case 'show':
+        $controller->show($id); 
         break;
     default:
         $controller->index();
