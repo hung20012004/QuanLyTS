@@ -52,7 +52,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($viTris as $viTri): ?>
+                        <?php foreach ($viTris as $viTri): 
+                                if ($viTri['vi_tri_id']!=0):?>
                             <tr>
                                 <td class="text-center"><?= $viTri['vi_tri_id'] ?></td>
                                 <td><?= htmlspecialchars($viTri['ten_vi_tri']) ?></td>
@@ -66,6 +67,7 @@
                                     </form>
                                 </td>
                             </tr>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </tbody>
                 </table>

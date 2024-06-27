@@ -63,7 +63,7 @@ class NhaCungCapController extends Controller {
             $this->nhaCungCap->ten_nha_cung_cap = $_POST['ten_nha_cung_cap'];
             
             // Kiểm tra xem tên mới đã tồn tại và trạng thái = 1 hay không
-            if ($this->nhaCungCap->checkExist($_POST['ten_nha_cung_cap'], $id)) {
+            if ($this->nhaCungCap->checkExist($_POST['ten_nha_cung_cap']) && $this->nhaCungCap->isActive($_POST['ten_nha_cung_cap'])) {
                 $_SESSION['message'] = 'Nhà cung cấp đã tồn tại trong cơ sở dữ liệu!';
                 $_SESSION['message_type'] = 'danger';
                 $nhaCungCap = $this->nhaCungCap->readById($id); // Lấy lại thông tin nhà cung cấp
@@ -73,11 +73,12 @@ class NhaCungCapController extends Controller {
             }
             
             // Kiểm tra nếu nhà cung cấp đã tồn tại nhưng có trạng thái = 0
-            if ($this->nhaCungCap->checkExist($_POST['ten_nha_cung_cap'], $id) && !$this->nhaCungCap->isActive($_POST['ten_nha_cung_cap'])) {
+            if ($this->nhaCungCap->checkExist($_POST['ten_nha_cung_cap']) && !$this->nhaCungCap->isActive($_POST['ten_nha_cung_cap'])) {
                 // Đổi trạng thái từ 0 sang 1
                 $this->nhaCungCap->updateStatusToActive($_POST['ten_nha_cung_cap']);
-                
-                $_SESSION['message'] = 'Đã cập nhật lại trạng thái nhà cung cấp thành hoạt động!';
+                $this->nhaCungCap->updateStatusToInactive($id); // Cập nhật trạng thái thành 0
+
+                $_SESSION['message'] = 'Sửa nhà cung cấp thành hoạt động!';
                 $_SESSION['message_type'] = 'success';
                 header("Location: index.php?model=nhacungcap");
                 return; // Dừng hàm sau khi cập nhật thành công để ngăn render lại form

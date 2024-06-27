@@ -39,43 +39,27 @@ class NhaCungCap {
         return false;
     }
     
-    //Kiểm tra nhà cung cấp đã tồn tại và có trạng thái = 1
+    //Kiểm tra nhà cung cấp đã tồn tại
     public function checkExist($ten_nha_cung_cap) {
-        // Select query with conditions for name and active status
-        $query = "SELECT nha_cung_cap_id FROM " . $this->table_name . " WHERE ten_nha_cung_cap = :ten_nha_cung_cap LIMIT 1";
-
-        // Prepare query statement
+        $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE ten_nha_cung_cap = :ten_nha_cung_cap";
         $stmt = $this->conn->prepare($query);
-
-        // Bind parameter
         $stmt->bindParam(':ten_nha_cung_cap', $ten_nha_cung_cap);
-
-        // Execute query
         $stmt->execute();
-
-        // Check if supplier exists and return true/false
-        return ($stmt->rowCount() > 0);
+        if ($stmt->fetchColumn() > 0) {
+            return true;
+        }
+        return false;
     }
 
+    //Kiểm tra trạng thái của nhà cung cấp
     public function isActive($ten_nha_cung_cap) {
-        // Select query to check if supplier is active
-        $query = "SELECT trang_thai FROM " . $this->table_name . " WHERE ten_nha_cung_cap = :ten_nha_cung_cap LIMIT 1";
-        
-        // Prepare query statement
+        $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE ten_nha_cung_cap = :ten_nha_cung_cap AND trang_thai = 1";
         $stmt = $this->conn->prepare($query);
-        
-        // Bind parameter
         $stmt->bindParam(':ten_nha_cung_cap', $ten_nha_cung_cap);
-        
-        // Execute query
         $stmt->execute();
-        
-        // Check if supplier exists and return true/false
-        if ($stmt->rowCount() > 0) {
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $row['trang_thai'] == 1;
+        if ($stmt->fetchColumn() > 0) {
+            return true;
         }
-        
         return false;
     }
 
@@ -97,6 +81,14 @@ class NhaCungCap {
             return false; // Trả về false nếu có lỗi
         }
     }
+
+    public function updateStatusToInactive($id) {
+        $query = "UPDATE " . $this->table_name . " SET trang_thai = 0 WHERE nha_cung_cap_id = :nha_cung_cap_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':nha_cung_cap_id', $id);
+        return $stmt->execute();
+    }
+    
 
     // Đọc thông tin nhà cung cấp theo ID
     public function readById($id) {
@@ -127,18 +119,8 @@ class NhaCungCap {
         return false;
     }
 
-    public function delete($id) {
-        $query = "DELETE FROM " . $this->table_name . " WHERE nha_cung_cap_id = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $id);
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
-    }
-    // // Xóa nhà cung cấp
     // public function delete($id) {
-    //     $query = "UPDATE " . $this->table_name . " SET trang_thai = 0 WHERE nha_cung_cap_id = ?";
+    //     $query = "DELETE FROM " . $this->table_name . " WHERE nha_cung_cap_id = ?";
     //     $stmt = $this->conn->prepare($query);
     //     $stmt->bindParam(1, $id);
     //     if ($stmt->execute()) {
@@ -146,5 +128,15 @@ class NhaCungCap {
     //     }
     //     return false;
     // }
+    // Xóa nhà cung cấp
+    public function delete($id) {
+        $query = "UPDATE " . $this->table_name . " SET trang_thai = 0 WHERE nha_cung_cap_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $id);
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
 }
 ?>

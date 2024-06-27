@@ -38,10 +38,10 @@ class TaiSan {
     }
 
     public function read() {
-        $query = "SELECT ts.*, lts.ten_loai_tai_san 
-                  FROM " . $this->table_name . " ts
-                  LEFT JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id
-                  ORDER BY ts.ten_tai_san ASC";
+        $query = "SELECT tai_san.*, loai_tai_san.ten_loai_tai_san 
+                  FROM " . $this->table_name . "
+                  LEFT JOIN loai_tai_san ON tai_san.loai_tai_san_id = loai_tai_san.loai_tai_san_id
+                  ORDER BY tai_san.ten_tai_san ASC";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();

@@ -12,6 +12,27 @@
 </div>
 
 <div class="container">
+    <?php if (isset($_SESSION['message'])): ?>
+        <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
+            <?= $_SESSION['message']; ?>
+        </div>
+        <?php
+        unset($_SESSION['message']);
+        unset($_SESSION['message_type']);
+        ?>
+        <script>
+            setTimeout(function() {
+                var alert = document.getElementById('alert-message');
+                if (alert) {
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                    setTimeout(function() {
+                        alert.style.display = 'none';
+                    }, 150); // Optional: wait for the fade-out transition to complete
+                }
+            }, 2000); // 2000 milliseconds = 2 seconds
+        </script>
+    <?php endif; ?>
     <div class="row justify-content-center mt-4">
         <div class="col-md-12">
             <div class="card">

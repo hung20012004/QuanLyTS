@@ -53,6 +53,7 @@
                     </thead>
                     <tbody>
                         <?php foreach ($taiSans as $taiSan): ?>
+                            <?php if ($taiSan['so_luong'] > 0): ?>
                             <tr>
                                 <td class="text-center"><?= $taiSan['tai_san_id'] ?></td>
                                 <td><?= htmlspecialchars($taiSan['ten_tai_san']) ?></td>
@@ -66,6 +67,7 @@
                                         class="btn btn-warning btn-sm mx-2">Sửa</a>
                                 </td>
                             </tr>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
