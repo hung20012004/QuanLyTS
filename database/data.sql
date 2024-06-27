@@ -39,7 +39,7 @@ INSERT INTO hoa_don_mua (ngay_mua, tong_gia_tri, nha_cung_cap_id) VALUES
 ('2023-02-20', 20000000, 2);
 
 -- Thêm dữ liệu vào bảng chi_tiet_hoa_don_mua
-INSERT INTO chi_tiet_hoa_don_mua (hoa_don_mua_id, tai_san_id, so_luong, don_gia) VALUES
+INSERT INTO chi_tiet_hoa_don_mua (hoa_don_id, tai_san_id, so_luong, don_gia) VALUES
 (1, 1, 5, 3000000),
 (2, 2, 20, 500000),
 (2, 3, 2, 8000000);

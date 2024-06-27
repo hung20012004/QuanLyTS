@@ -43,7 +43,6 @@
                         <?php if (isset($viTriChiTiets) && is_array($viTriChiTiets) && !empty($viTriChiTiets)): ?>
                             <?php foreach ($viTriChiTiets as $chiTiet): ?>
                             <tr>
-                                <td><?= isset($chiTiet['tai_san_id']) ? htmlspecialchars($chiTiet['tai_san_id']) : 'N/A' ?></td>
                                 <td><?= isset($chiTiet['ten_tai_san']) ? htmlspecialchars($chiTiet['ten_tai_san']) : 'N/A' ?></td>
                                 <td><?= isset($chiTiet['so_luong']) ? $chiTiet['so_luong'] : 'N/A' ?></td>
                             </tr>

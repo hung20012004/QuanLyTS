@@ -67,49 +67,79 @@ class ViTriController extends Controller {
         $content = 'views/vitris/create.php';
         include('views/layouts/base.php');
     }
+     
+    public function edit($id) {  
+        try {
+            // Begin transaction
+            $this->db->beginTransaction();
     
-        
-    
-    public function edit($id) {
-        if ($_POST) {
+            // Update main position information if changed
             $this->viTri->vi_tri_id = $id;
             $this->viTri->ten_vi_tri = $_POST['ten_vi_tri'];
+            $this->viTri->update();
     
-            if ($this->viTri->update()) {
-                foreach ($_POST['vi_tri_chi_tiets'] as $chiTiet) {
-                    if (isset($chiTiet['vi_tri_chi_tiet_id'])) {
-                        // Update existing chi tiet
-                        $this->viTriChiTiet->vi_tri_chi_tiet_id = $chiTiet['vi_tri_chi_tiet_id'];
-                        $this->viTriChiTiet->tai_san_id = $chiTiet['tai_san_id'];
-                        $this->viTriChiTiet->so_luong = $chiTiet['so_luong'];
+            // Process updating or adding position details
+            foreach ($_POST['vi_tri_chi_tiets'] as $chiTiet) {
+                $vi_tri_chi_tiet_id = $chiTiet['vi_tri_chi_tiet_id'];
+                $tai_san_id = $chiTiet['tai_san_id'];
+                $so_luong = $chiTiet['so_luong'];
+    
+                // Check if there's any change in quantity
+                $soLuongTruocCapNhat = $this->viTriChiTiet->readSoLuongById($vi_tri_chi_tiet_id);
+                $soLuongThayDoi = $so_luong - $soLuongTruocCapNhat;
+    
+                if ($soLuongThayDoi != 0) {
+                    // Perform inventory check only if quantity changes
+                    if (!$this->viTriChiTiet->kiemTraKho($tai_san_id, $soLuongThayDoi)) {
+                        throw new Exception('Kho không đủ số lượng.');
+                    }
+    
+                    // Update or create position detail
+                    if (!empty($vi_tri_chi_tiet_id)) {
+                        // Update existing position detail
+                        $this->viTriChiTiet->vi_tri_chi_tiet_id = $vi_tri_chi_tiet_id;
+                        $this->viTriChiTiet->vi_tri_id = $id;
+                        $this->viTriChiTiet->tai_san_id = $tai_san_id;
+                        $this->viTriChiTiet->so_luong = $so_luong;
                         $this->viTriChiTiet->update();
                     } else {
-                        // Create new chi tiet
+                        // Create new position detail
                         $this->viTriChiTiet->vi_tri_id = $id;
-                        $this->viTriChiTiet->tai_san_id = $chiTiet['tai_san_id'];
-                        $this->viTriChiTiet->so_luong = $chiTiet['so_luong'];
+                        $this->viTriChiTiet->tai_san_id = $tai_san_id;
+                        $this->viTriChiTiet->so_luong = $so_luong;
                         $this->viTriChiTiet->create();
                     }
-                }
     
-                $_SESSION['message'] = 'Sửa vị trí thành công!';
-                $_SESSION['message_type'] = 'success';
-                header("Location: index.php?model=vitri");
-                exit();
-            } else {
-                $_SESSION['message'] = 'Sửa thất bại!';
-                $_SESSION['message_type'] = 'danger';
+                    // Update inventory
+                    $this->viTriChiTiet->updateKho($tai_san_id, $soLuongThayDoi);
+                }
             }
-        } else {
-            $viTri = $this->viTri->readById($id);
-            $viTriChiTiets = $this->viTriChiTiet->readByViTriId($id);
-            $taiSanList = $this->taiSan->read(); // Add this line to get the list of TaiSan
-            $content = 'views/vitris/edit.php';
-            include('views/layouts/base.php');
+    
+            // Commit transaction
+            $this->db->commit();
+    
+            // Set success message and redirect to the list page
+            $_SESSION['message'] = 'Sửa vị trí thành công!';
+            $_SESSION['message_type'] = 'success';
+            header("Location: index.php?model=vitri");
+            exit();
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $this->db->rollBack();
+            $_SESSION['message'] = $e->getMessage();
+            $_SESSION['message_type'] = 'danger';
         }
+    
+        // Load data to display the edit form again on error or for further editing
+        $viTri = $this->viTri->readById($id);
+        $viTriChiTiets = $this->viTriChiTiet->readByViTriId($id);
+        $taiSanList = $this->taiSan->read(); // Assuming you have a method to fetch TaiSan list
+    
+        // Load the view to display the edit form
+        $content = 'views/vitris/edit.php';
+        include('views/layouts/base.php');
     }
     
-
     public function delete($id) {
         // First, transfer assets back to the main storage
         $viTriChiTiets = $this->viTriChiTiet->readByViTriId($id);
