@@ -76,7 +76,7 @@
                                         <input type="number" min="0" class="form-control so-luong" name="vi_tri_chi_tiets[<?= $index; ?>][so_luong]" value="<?= htmlspecialchars($chiTiet['so_luong']); ?>" required>
                                     </td>
                                     <td>
-                                        <input type="hidden" name="vi_tri_chi_tiets[<?= $index; ?>][vi_tri_chi_tiet_id]" value="<?= $chiTiet['vi_tri_chi_tiet_id']; ?>">
+                                        <input type="hidden" name="vi_tri_chi_tiets[<?= $index; ?>][vi_tri_id]" value="<?= $chiTiet['vi_tri_id']; ?>">
                                         <button type="button" class="btn btn-danger btn-sm" onclick="xoaDong(this)">Xóa</button>
                                     </td>
                                 </tr>

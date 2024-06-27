@@ -36,12 +36,13 @@ CREATE TABLE vi_tri (
     vi_tri_id INT AUTO_INCREMENT PRIMARY KEY,
     ten_vi_tri VARCHAR(100) NOT NULL UNIQUE
 );
+
 -- Chi tiết tai san vi tri
 CREATE TABLE vi_tri_chi_tiet (
+    vi_tri_chi_tiet_id INT PRIMARY KEY AUTO_INCREMENT,    
     tai_san_id INT,
     vi_tri_id INT,
     so_luong INT,
-    PRIMARY KEY (tai_san_id, vi_tri_id),
     FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id),
     FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id)
 );
@@ -68,9 +69,10 @@ CREATE TABLE chi_tiet_hoa_don_mua (
     tai_san_id INT,
     so_luong INT NOT NULL,
     don_gia DECIMAL(15,2) NOT NULL,
-    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don_mua(hoa_don_id) ON DELETE CASCADE,
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
+    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don_mua(hoa_don_id),
+    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id)
 );
+
 -- Bảng để lưu thông tin hóa đơn thanh lý tài sản
 CREATE TABLE hoa_don_thanh_ly (
     hoa_don_id INT AUTO_INCREMENT PRIMARY KEY,
