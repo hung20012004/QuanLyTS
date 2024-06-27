@@ -37,11 +37,22 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">Quản Lý Nhà Cung Cấp</h5>
                 <div>
+                    <button id="toggleSearch" class="btn btn-secondary">Tìm kiếm</button>
                     <a href="index.php?model=nhacungcap&action=create" class="btn btn-primary">Thêm Mới</a>
                 </div>
             </div>
         </div>
         <div class="card-body">
+            <form id="searchForm" class="mb-3" style="display: none;">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <div class="d-flex align-items-center">
+                            <label for="nhaCungCapSearch" class="mr-2 mb-0" style="white-space: nowrap;">Nhà cung cấp:</label>
+                            <input type="text" id="nhaCungCapSearch" class="form-control" placeholder="Nhập tên nhà cung cấp">
+                        </div>
+                    </div>
+                </div>
+            </form>
             <div class="table-responsive">
                 <table id="dataTable" class="table table-bordered" width="100%" cellspacing="0">
                     <thead class="bg-light text-black text-center">
@@ -75,11 +86,43 @@
         </div>
     </div>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        function confirmDelete() {
-            return confirm('Bạn có chắc muốn xóa nhà cung cấp này?');
-        }
-    });
-</script>
+        function filterTable() {
+            var nhaCungCapFilter = document.getElementById('nhaCungCapSearch').value.toLowerCase();
+            var table = document.getElementById('dataTable');
+            var rows = table.getElementsByTagName('tr');
 
+            for (var i = 1; i < rows.length; i++) {
+                var cells = rows[i].getElementsByTagName('td');
+                var nhaCungCap = cells[1].textContent.trim().toLowerCase();
+
+                if (nhaCungCap.includes(nhaCungCapFilter)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        document.getElementById('nhaCungCapSearch').addEventListener('input', filterTable);
+
+        var toggleButton = document.getElementById('toggleSearch');
+        var searchForm = document.getElementById('searchForm');
+
+        toggleButton.addEventListener('click', function () {
+            if (searchForm.style.display === 'none') {
+                searchForm.style.display = 'block';
+                toggleButton.textContent = 'Ẩn tìm kiếm';
+            } else {
+                searchForm.style.display = 'none';
+                toggleButton.textContent = 'Tìm kiếm';
+            }
+        });
+    });
+
+    function confirmDelete() {
+        return confirm('Bạn có chắc muốn xóa nhà cung cấp này?');
+    }
+</script>

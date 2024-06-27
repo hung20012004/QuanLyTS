@@ -56,6 +56,7 @@ CREATE TABLE nha_cung_cap (
 -- Bảng để lưu thông tin hóa đơn mua hàng
 CREATE TABLE hoa_don_mua (
     hoa_don_id INT AUTO_INCREMENT PRIMARY KEY,
+    hoa_don_id INT AUTO_INCREMENT PRIMARY KEY,
     ngay_mua DATE NOT NULL,
     tong_gia_tri DECIMAL(15,2) NOT NULL,
     nha_cung_cap_id INT,
@@ -65,6 +66,7 @@ CREATE TABLE hoa_don_mua (
 -- Bảng chi tiết hóa đơn mua hàng
 CREATE TABLE chi_tiet_hoa_don_mua (
     chi_tiet_id INT AUTO_INCREMENT PRIMARY KEY,
+    hoa_don_id INT,
     hoa_don_id INT,
     tai_san_id INT,
     so_luong INT NOT NULL,
