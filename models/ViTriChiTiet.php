@@ -59,7 +59,7 @@ class ViTriChiTiet {
         $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san 
                  FROM " . $this->table_name . "
                  JOIN tai_san ON vi_tri_chi_tiet.tai_san_id = tai_san.tai_san_id 
-                 WHERE vi_tri_id = ?";
+                 WHERE vi_tri_chi_tiet.vi_tri_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $vi_tri_id);
         $stmt->execute();
@@ -68,19 +68,19 @@ class ViTriChiTiet {
 
     // Cập nhật thông tin chi tiết vị trí
     public function update() {
-        $query = "UPDATE " . $this->table_name . " SET tai_san_id = :tai_san_id, so_luong = :so_luong WHERE vi_tri_chi_tiet_id = :vi_tri_chi_tiet_id";
+        $query = "UPDATE " . $this->table_name . " SET tai_san_id = :tai_san_id, so_luong = :so_luong WHERE vi_tri_id = :vi_tri_id";
 
         $stmt = $this->conn->prepare($query);
 
         // sanitize
         $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
         $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
-        $this->vi_tri_chi_tiet_id = htmlspecialchars(strip_tags($this->vi_tri_chi_tiet_id));
+        $this->vi_tri_id = htmlspecialchars(strip_tags($this->vi_tri_id));
 
         // bind values
         $stmt->bindParam(':tai_san_id', $this->tai_san_id);
         $stmt->bindParam(':so_luong', $this->so_luong);
-        $stmt->bindParam(':vi_tri_chi_tiet_id', $this->vi_tri_chi_tiet_id);
+        $stmt->bindParam(':vi_tri_chi_tiet_id', $this->vi_tri_id);
 
         if ($stmt->execute()) {
             return true;

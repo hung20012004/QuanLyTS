@@ -38,7 +38,6 @@ class ViTriController extends Controller {
         }
     
         $viTriChiTiets = $this->viTriChiTiet->readByViTriId($id);
-        //$viTriChiTiets = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         $content = 'views/vitris/show.php';
         include('views/layouts/base.php');
@@ -51,21 +50,8 @@ class ViTriController extends Controller {
             try {
                 $this->viTri->ten_vi_tri = $_POST['ten_vi_tri'];
                 
-                if ($this->viTri->create()) {
-                    $viTriId = $this->db->lastInsertId();
-    
-                    for ($i = 0; $i < count($_POST['tai_san_id']); $i++) {
-                        $viTriChiTietData = array(
-                            'vi_tri_id' => $viTriId,
-                            'tai_san_id' => $_POST['tai_san_id'][$i],
-                            'so_luong' => $_POST['so_luong'][$i]
-                        );
-                        var_dump($viTriChiTietData);
-                        $this->viTriChiTiet->create($viTriChiTietData);
-                    }
-    
+                if ($this->viTri->create()) {    
                     $this->db->commit();
-    
                     $_SESSION['message'] = 'Tạo vị trí mới thành công!';
                     $_SESSION['message_type'] = 'success';
                     header("Location: index.php?model=vitri");
@@ -78,8 +64,6 @@ class ViTriController extends Controller {
                 $_SESSION['message_type'] = 'danger';
             }
         }
-        var_dump($viTriChiTietData);
-        $taiSanList = $this->taiSan->read();
         $content = 'views/vitris/create.php';
         include('views/layouts/base.php');
     }
