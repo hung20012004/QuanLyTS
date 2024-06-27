@@ -22,6 +22,9 @@ class Controller {
     public function delete($id) {
         
     }
+    public function show($id) {
+        
+    }
     public function register() {}
     public function login() {}
     public function logout() {}

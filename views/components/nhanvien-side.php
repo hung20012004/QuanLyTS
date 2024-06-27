@@ -20,7 +20,7 @@
                     <span>Nhà cung cấp</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="tables.html">
+                <a class="nav-link" href="route.php?model=vitri&action=index">
                 <i class="fa-solid fa-location-dot"></i>
                     <span>Vị trí</span></a>
             </li>

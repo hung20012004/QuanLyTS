@@ -40,6 +40,7 @@
                 <h5 class="card-title mb-0">Chỉnh Sửa Hóa Đơn</h5>
             </div>
         </div>
+    </div>
         <div class="card-body">
             <form method="POST" action="index.php?model=hoadonmua&action=edit&id=<?= $invoice['hoa_don_id'] ?>">
                 <input type="hidden" name="hoa_don_id" value="<?= $invoice['hoa_don_id'] ?>">
