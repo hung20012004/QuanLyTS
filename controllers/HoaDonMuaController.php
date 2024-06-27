@@ -249,5 +249,14 @@ class HoaDonMuaController extends Controller {
             die("Lỗi khi xuất Excel: " . $e->getMessage());
         }
     }
+    public function show($id) {
+        $hoadon = $this->hoaDonMuaModel->readById($id);
+        $suppliers = $this->nhaCungCapModel->read();
+        $chitiethoadon  = $this->chiTietHoaDonMuaModel->readByHoaDonId($id);
+        $loai_tai_san_list = $this->loaiTaiSanModel->readAll();
+        
+        $content = 'views/hoa_don_mua/show.php';
+        include('views/layouts/base.php');
+    }
 }
 ?>

@@ -37,11 +37,22 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">Quản Lý Loại Tài Sản</h5>
                 <div>
+                    <button id="toggleSearch" class="btn btn-secondary">Tìm kiếm</button>
                     <a href="index.php?model=loaitaisan&action=create" class="btn btn-primary">Thêm Mới</a>
                 </div>
             </div>
         </div>
         <div class="card-body">
+            <form id="searchForm" class="mb-3" style="display: none;">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <div class="d-flex align-items-center">
+                            <label for="loaiTaiSanSearch" class="mr-2 mb-0" style="white-space: nowrap;">Loại tài sản:</label>
+                            <input type="text" id="loaiTaiSanSearch" class="form-control" placeholder="Nhập loại tài sản">
+                        </div>
+                    </div>
+                </div>
+            </form>
             <div class="table-responsive">
                 <table id="dataTable" class="table table-bordered" width="100%" cellspacing="0">
                     <thead class="bg-light text-black text-center">
@@ -51,7 +62,7 @@
                             <th>Thao Tác</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="loaiTaiSanTable">
                         <?php foreach ($loaiTaiSans as $loaiTaiSan): ?>
                             <?php if ($loaiTaiSan['loai_tai_san_id'] != 0): ?>
                                 <tr>
@@ -79,8 +90,40 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        window.confirmDelete = function() {
-            return confirm('Bạn có chắc muốn xóa loại tài sản này? Hành động này không thể hoàn tác và tất cả các tài sản thuộc loại này sẽ được cập nhật loại tài sản về mặc định.');
-        };
+        function filterTable() {
+            var loaiTaiSanFilter = document.getElementById('loaiTaiSanSearch').value.toLowerCase();
+            var table = document.getElementById('dataTable');
+            var rows = table.getElementsByTagName('tr');
+
+            for (var i = 1; i < rows.length; i++) {
+                var cells = rows[i].getElementsByTagName('td');
+                var loaiTaiSan = cells[1].textContent.trim().toLowerCase();
+
+                if (loaiTaiSan.includes(loaiTaiSanFilter)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        document.getElementById('loaiTaiSanSearch').addEventListener('input', filterTable);
+
+        var toggleButton = document.getElementById('toggleSearch');
+        var searchForm = document.getElementById('searchForm');
+
+        toggleButton.addEventListener('click', function () {
+            if (searchForm.style.display === 'none') {
+                searchForm.style.display = 'block';
+                toggleButton.textContent = 'Ẩn tìm kiếm';
+            } else {
+                searchForm.style.display = 'none';
+                toggleButton.textContent = 'Tìm kiếm';
+            }
+        });
     });
+
+    function confirmDelete() {
+        return confirm('Bạn có chắc muốn xóa loại tài sản này? Hành động này không thể hoàn tác và tất cả các tài sản thuộc loại này sẽ được cập nhật loại tài sản về mặc định.');
+    }
 </script>
