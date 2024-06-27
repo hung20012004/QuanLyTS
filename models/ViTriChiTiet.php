@@ -28,7 +28,7 @@ class ViTriChiTiet {
         $query = "INSERT INTO " . $this->table_name . " SET vi_tri_id=:vi_tri_id, tai_san_id=:tai_san_id, so_luong=:so_luong";
 
         $stmt = $this->conn->prepare($query);
-
+        
         // sanitize
         $this->vi_tri_id = htmlspecialchars(strip_tags($this->vi_tri_id));
         $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
@@ -38,7 +38,7 @@ class ViTriChiTiet {
         $stmt->bindParam(':vi_tri_id', $this->vi_tri_id);
         $stmt->bindParam(':tai_san_id', $this->tai_san_id);
         $stmt->bindParam(':so_luong', $this->so_luong);
-
+        
         if ($stmt->execute()) {
             return true;
         }

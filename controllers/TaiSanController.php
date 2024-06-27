@@ -15,8 +15,7 @@ class TaiSanController extends Controller {
     }
 
     public function index() {
-        $stmt = $this->taiSan->read();
-        $taiSans = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $taiSans = $this->taiSan->read();
         $content = 'views/taisans/index.php';
         include('views/layouts/base.php');
     }

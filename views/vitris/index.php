@@ -52,22 +52,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($viTris as $viTri): 
-                                if ($viTri['vi_tri_id']!=0):?>
+                        <?php foreach ($viTris as $viTri): ?>
                             <tr>
                                 <td class="text-center"><?= $viTri['vi_tri_id'] ?></td>
                                 <td><?= htmlspecialchars($viTri['ten_vi_tri']) ?></td>
                                 <td class="d-flex justify-content-center">
                                     <a href="index.php?model=vitri&action=show&id=<?= $viTri['vi_tri_id'] ?>"
                                         class="btn btn-info btn-sm mx-2">Xem</a>
-                                    <a href="index.php?model=vitri&action=edit&id=<?= $viTri['vi_tri_id'] ?>"
-                                        class="btn btn-warning btn-sm mx-2">Sửa</a>
-                                    <form action="index.php?model=vitri&action=delete&id=<?= $viTri['vi_tri_id'] ?>" method="POST" style="display: inline-block;">
-                                        <button type="submit" class="btn btn-danger btn-sm mx-2" onclick="return confirm('Bạn có chắc muốn xóa vị trí này?');">Xóa</button>
+                                    <?php if ($viTri['vi_tri_id']!=0): ?>
+                                        <a href="index.php?model=vitri&action=edit&id=<?= $viTri['vi_tri_id'] ?>"
+                                            class="btn btn-warning btn-sm mx-2">Sửa</a>
+                                        <form action="index.php?model=vitri&action=delete&id=<?= $viTri['vi_tri_id'] ?>" method="POST" style="display: inline-block;">
+                                            <button type="submit" class="btn btn-danger btn-sm mx-2" onclick="return confirm('Bạn có chắc muốn xóa vị trí này?');">Xóa</button>
                                     </form>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
-                            <?php endif; ?>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
