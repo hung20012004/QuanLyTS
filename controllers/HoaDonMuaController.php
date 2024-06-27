@@ -6,7 +6,7 @@ include_once 'models/NhaCungCap.php';
 include_once 'models/LoaiTaiSan.php';
 include_once 'models/ChiTietHoaDonMua.php';
 include_once 'models/TaiSan.php';
-
+include_once 'models/ViTriChiTiet.php';
 
 class HoaDonMuaController extends Controller {
     private $db;
@@ -49,7 +49,7 @@ class HoaDonMuaController extends Controller {
                     for ($i = 0; $i < count($_POST['ten_tai_san']); $i++) {
                         $taiSanData = array(
                             'ten_tai_san' => $_POST['ten_tai_san'][$i],
-                            'mo_ta' => $_POST['mo_ta'][$i],
+                            'mo_ta' => '',
                             'so_luong' => $_POST['so_luong'][$i],
                             'loai_tai_san_id' => $_POST['loai_tai_san'][$i]
                         );
@@ -61,6 +61,13 @@ class HoaDonMuaController extends Controller {
                         $this->chiTietHoaDonMuaModel->so_luong = $_POST['so_luong'][$i];
                         $this->chiTietHoaDonMuaModel->don_gia = $_POST['don_gia'][$i];
                         $this->chiTietHoaDonMuaModel->create();
+
+                        $viTri=new ViTriChiTiet($this->db);
+                        $viTri->tai_san_id=$taiSanId;
+                        $viTri->vi_tri_id=1;
+                        $viTri->so_luong = $_POST['so_luong'][$i];
+                        $viTri->create();
+
                     }
 
                     $this->db->commit();
@@ -69,7 +76,9 @@ class HoaDonMuaController extends Controller {
                     $_SESSION['message_type'] = 'success';
                     header("Location: index.php?model=hoadonmua");
                 } else {
-                    throw new Exception('Tạo mới hóa đơn thất bại!');
+                    $_SESSION['message'] = 'Tạo hóa đơn mới thất bại!';
+                    $_SESSION['message_type'] = 'danger';
+                    header("Location: index.php?model=hoadonmua");
                 }
             } catch (Exception $e) {
                 $this->db->rollBack();
