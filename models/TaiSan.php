@@ -8,7 +8,6 @@ class TaiSan {
     public $tai_san_id;
     public $ten_tai_san;
     public $mo_ta;
-    public $so_luong;
     public $loai_tai_san_id;
 
     public function __construct($db) {
@@ -17,18 +16,16 @@ class TaiSan {
 
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
-                  SET ten_tai_san=:ten_tai_san, mo_ta=:mo_ta, so_luong=:so_luong, loai_tai_san_id=:loai_tai_san_id";
+                  SET ten_tai_san=:ten_tai_san, mo_ta=:mo_ta, loai_tai_san_id=:loai_tai_san_id";
 
         $stmt = $this->conn->prepare($query);
 
         $this->ten_tai_san = htmlspecialchars(strip_tags($this->ten_tai_san));
         $this->mo_ta = htmlspecialchars(strip_tags($this->mo_ta));
-        $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
         $this->loai_tai_san_id = htmlspecialchars(strip_tags($this->loai_tai_san_id));
 
         $stmt->bindParam(':ten_tai_san', $this->ten_tai_san);
         $stmt->bindParam(':mo_ta', $this->mo_ta);
-        $stmt->bindParam(':so_luong', $this->so_luong);
         $stmt->bindParam(':loai_tai_san_id', $this->loai_tai_san_id);
 
         if($stmt->execute()) {
@@ -65,20 +62,18 @@ class TaiSan {
     public function update() {
         try{
             $query = "UPDATE " . $this->table_name . " 
-                    SET ten_tai_san=:ten_tai_san, mo_ta=:mo_ta, so_luong=:so_luong, loai_tai_san_id=:loai_tai_san_id 
+                    SET ten_tai_san=:ten_tai_san, mo_ta=:mo_ta, loai_tai_san_id=:loai_tai_san_id 
                     WHERE tai_san_id=:tai_san_id";
 
             $stmt = $this->conn->prepare($query);
 
             $this->ten_tai_san = htmlspecialchars(strip_tags($this->ten_tai_san));
             $this->mo_ta = htmlspecialchars(strip_tags($this->mo_ta));
-            $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
             $this->loai_tai_san_id = htmlspecialchars(strip_tags($this->loai_tai_san_id));
             $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
 
             $stmt->bindParam(':ten_tai_san', $this->ten_tai_san);
             $stmt->bindParam(':mo_ta', $this->mo_ta);
-            $stmt->bindParam(':so_luong', $this->so_luong);
             $stmt->bindParam(':loai_tai_san_id', $this->loai_tai_san_id);
             $stmt->bindParam(':tai_san_id', $this->tai_san_id);
 
@@ -98,7 +93,6 @@ class TaiSan {
     public function createOrUpdate($data) {
         $this->ten_tai_san = $data['ten_tai_san'];
         $this->mo_ta = $data['mo_ta'] ?? '';
-        $this->so_luong = $data['so_luong'];
         $this->loai_tai_san_id = $data['loai_tai_san_id'];
         return $this->create();
         // Kiểm tra xem tài sản đã tồn tại chưa
@@ -114,6 +108,27 @@ class TaiSan {
         $stmt->execute();
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function checkExists($ten_tai_san, $loai_tai_san_id) {
+        $query = "SELECT COUNT(*) FROM " . $this->table_name . " 
+                  WHERE ten_tai_san = :ten_tai_san AND loai_tai_san_id = :loai_tai_san_id";
+    
+        $stmt = $this->conn->prepare($query);
+        
+        // Làm sạch và gán giá trị cho các tham số
+        $ten_tai_san = htmlspecialchars(strip_tags($ten_tai_san));
+        $loai_tai_san_id = htmlspecialchars(strip_tags($loai_tai_san_id));
+    
+        $stmt->bindParam(':ten_tai_san', $ten_tai_san);
+        $stmt->bindParam(':loai_tai_san_id', $loai_tai_san_id);
+    
+        $stmt->execute();
+    
+        // Lấy kết quả
+        $count = $stmt->fetchColumn();
+    
+        // Trả về true nếu tài sản đã tồn tại, ngược lại trả về false
+        return $count > 0;
     }
 }
 ?>

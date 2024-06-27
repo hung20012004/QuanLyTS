@@ -7,7 +7,7 @@ class ViTriChiTiet {
 
     public $vi_tri_chi_tiet_id;
     public $vi_tri_id;
-    public $tai_san_id;
+    public $chi_tiet_id;
     public $so_luong;
     public $trong_kho;
 
@@ -25,18 +25,18 @@ class ViTriChiTiet {
 
     // Tạo chi tiết vị trí mới
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " SET vi_tri_id=:vi_tri_id, tai_san_id=:tai_san_id, so_luong=:so_luong";
+        $query = "INSERT INTO " . $this->table_name . " SET vi_tri_id=:vi_tri_id, chi_tiet_id=:chi_tiet_id, so_luong=:so_luong";
 
         $stmt = $this->conn->prepare($query);
         
         // sanitize
         $this->vi_tri_id = htmlspecialchars(strip_tags($this->vi_tri_id));
-        $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
+        $this->chi_tiet_id = htmlspecialchars(strip_tags($this->chi_tiet_id));
         $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
 
         // bind values
         $stmt->bindParam(':vi_tri_id', $this->vi_tri_id);
-        $stmt->bindParam(':tai_san_id', $this->tai_san_id);
+        $stmt->bindParam(':chi_tiet_id', $this->chi_tiet_id);
         $stmt->bindParam(':so_luong', $this->so_luong);
         
         if ($stmt->execute()) {
@@ -66,7 +66,7 @@ class ViTriChiTiet {
     public function readByViTriId($vi_tri_id) {
         $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san 
                  FROM " . $this->table_name . "
-                 JOIN tai_san ON vi_tri_chi_tiet.tai_san_id = tai_san.tai_san_id 
+                 JOIN tai_san ON vi_tri_chi_tiet.chi_tiet_id = tai_san.chi_tiet_id 
                  WHERE vi_tri_chi_tiet.vi_tri_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $vi_tri_id);
@@ -76,17 +76,17 @@ class ViTriChiTiet {
 
     // Cập nhật thông tin chi tiết vị trí
     public function update() {
-        $query = "UPDATE " . $this->table_name . " SET tai_san_id = :tai_san_id, so_luong = :so_luong WHERE vi_tri_chi_tiet_id = :vi_tri_chi_tiet_id";
+        $query = "UPDATE " . $this->table_name . " SET chi_tiet_id = :chi_tiet_id, so_luong = :so_luong WHERE vi_tri_chi_tiet_id = :vi_tri_chi_tiet_id";
 
         $stmt = $this->conn->prepare($query);
 
         // sanitize
-        $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
+        $this->chi_tiet_id = htmlspecialchars(strip_tags($this->chi_tiet_id));
         $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
         $this->vi_tri_chi_tiet_id = htmlspecialchars(strip_tags($this->vi_tri_chi_tiet_id));
 
         // bind values
-        $stmt->bindParam(':tai_san_id', $this->tai_san_id);
+        $stmt->bindParam(':chi_tiet_id', $this->chi_tiet_id);
         $stmt->bindParam(':so_luong', $this->so_luong);
         $stmt->bindParam(':vi_tri_chi_tiet_id', $this->vi_tri_chi_tiet_id);
 
@@ -99,7 +99,7 @@ class ViTriChiTiet {
     // Trong lớp viTriChiTiet hoặc một lớp quản lý tương ứng
     public function updateKho($taiSanId, $soLuongThayDoi) {
         // Assume there is a table or data structure for kho where vi_tri_id = 0
-        $sql = "UPDATE ". $this->table_name ." SET so_luong = so_luong + :soLuongThayDoi WHERE tai_san_id = :taiSanId AND vi_tri_id = 0";
+        $sql = "UPDATE ". $this->table_name ." SET so_luong = so_luong + :soLuongThayDoi WHERE chi_tiet_id = :taiSanId AND vi_tri_id = 0";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':soLuongThayDoi', $soLuongThayDoi, PDO::PARAM_INT);
         $stmt->bindParam(':taiSanId', $taiSanId, PDO::PARAM_INT);
@@ -120,7 +120,7 @@ class ViTriChiTiet {
 
     public function kiemTraKho($taiSanId, $soLuongCanThem) {
         // Assume there is a table or data structure for kho where vi_tri_id = 0
-        $sql = "SELECT so_luong FROM ". $this->table_name ." WHERE tai_san_id = :taiSanId AND vi_tri_id = 0";
+        $sql = "SELECT so_luong FROM ". $this->table_name ." WHERE chi_tiet_id = :taiSanId AND vi_tri_id = 0";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':taiSanId', $taiSanId, PDO::PARAM_INT);
         $stmt->execute();
@@ -135,8 +135,8 @@ class ViTriChiTiet {
     //Cộng tài sản trùng
     public function congSoLuongTrungLap($taiSanId) {
         $sql = "UPDATE vi_tri_chi_tiet SET so_luong = so_luong + (
-                SELECT SUM(so_luong) FROM ". $this->table_name ." WHERE vi_tri_id = :viTriId AND tai_san_id = :taiSanId
-            ) WHERE vi_tri_id = :viTriId AND tai_san_id = :taiSanId";
+                SELECT SUM(so_luong) FROM ". $this->table_name ." WHERE vi_tri_id = :viTriId AND chi_tiet_id = :taiSanId
+            ) WHERE vi_tri_id = :viTriId AND chi_tiet_id = :taiSanId";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':viTriId', $this->vi_tri_id, PDO::PARAM_INT);

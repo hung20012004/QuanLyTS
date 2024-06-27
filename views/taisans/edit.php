@@ -41,10 +41,6 @@
                             <textarea name="mo_ta" id="mo_ta" class="form-control" rows="3"><?= htmlspecialchars($taiSan['mo_ta']) ?></textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="so_luong" class="form-label">Số Lượng:</label>
-                            <input type="number" name="so_luong" id="so_luong" class="form-control" value="<?= $taiSan['so_luong'] ?>" required>
-                        </div>
-                        <div class="mb-3">
                             <label for="loai_tai_san_id" class="form-label">Loại Tài Sản:</label>
                             <select name="loai_tai_san_id" id="loai_tai_san_id" class="form-control" required>
                                 <?php foreach ($loaiTaiSans as $loaiTaiSan): ?>

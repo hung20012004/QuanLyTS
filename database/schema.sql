@@ -17,7 +17,6 @@ CREATE TABLE tai_san (
     tai_san_id INT AUTO_INCREMENT PRIMARY KEY,
     ten_tai_san VARCHAR(100) NOT NULL,
     mo_ta TEXT,
-    so_luong INT NOT NULL,
     loai_tai_san_id INT NOT NULL,
     FOREIGN KEY (loai_tai_san_id) REFERENCES loai_tai_san(loai_tai_san_id)
 );
@@ -37,15 +36,7 @@ CREATE TABLE vi_tri (
     ten_vi_tri VARCHAR(100) NOT NULL UNIQUE
 );
 
--- Chi tiết tai san vi tri
-CREATE TABLE vi_tri_chi_tiet (
-    vi_tri_chi_tiet_id INT PRIMARY KEY AUTO_INCREMENT,    
-    tai_san_id INT,
-    vi_tri_id INT,
-    so_luong INT,
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id),
-    FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id)
-);
+
 
 -- Bảng để lưu thông tin nhà cung cấp tài sản
 CREATE TABLE nha_cung_cap (
@@ -98,4 +89,13 @@ CREATE TABLE maintenance_schedule (
     ngay_ket_thuc DATE,
     mo_ta TEXT,
     FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id)
+);
+-- Chi tiết tai san vi tri
+CREATE TABLE vi_tri_chi_tiet (
+    vi_tri_chi_tiet_id INT PRIMARY KEY AUTO_INCREMENT,    
+    vi_tri_id INT,
+    so_luong INT,
+    chi_tiet_id INT,
+    FOREIGN KEY (chi_tiet_id) REFERENCES chi_tiet_hoa_don_mua(chi_tiet_id),
+    FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id)
 );

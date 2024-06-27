@@ -1,39 +1,4 @@
 <div class="container-fluid">
-    <div class="row mt-3">
-        <div class="col">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=hoadonmua&action=index">Hóa Đơn</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Thêm Mới</li>
-                </ol>
-            </nav>
-        </div>
-    </div>
-</div>
-
-<div class="container-fluid">
-    <?php if (isset($_SESSION['message'])): ?>
-        <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
-            <?= $_SESSION['message']; ?>
-        </div>
-        <?php
-        unset($_SESSION['message']);
-        unset($_SESSION['message_type']);
-        ?>
-        <script>
-            setTimeout(function() {
-                var alert = document.getElementById('alert-message');
-                if (alert) {
-                    alert.classList.remove('show');
-                    alert.classList.add('fade');
-                    setTimeout(function() {
-                        alert.style.display = 'none';
-                    }, 150); 
-                }
-            }, 7000); // 2000 milliseconds = 2 seconds  
-        </script>
-    <?php endif; ?>
-
     <div class="card shadow mb-4">
         <div class="card-header py-2">
             <div class="d-flex justify-content-between align-items-center">
@@ -41,7 +6,7 @@
             </div>
         </div>
         <div class="card-body">
-            <form method="POST" action="index.php?model=hoadonmua&action=create">
+            <form method="POST" action="index.php?model=hoadonmua&action=create" id="hoadonForm">
                 <!-- Ngày Mua và Nhà Cung Cấp -->
                 <div class="form-row">
                     <div class="form-group col-md-6">
@@ -53,9 +18,7 @@
                         <select class="form-control" id="nhaCungCap" name="nha_cung_cap_id" required>
                             <option value="">Chọn nhà cung cấp</option>
                             <?php foreach ($suppliers as $supplier): ?>
-                                <?php if ($supplier['trang_thai']!=0) { ?>
                                 <option value="<?= $supplier['nha_cung_cap_id']; ?>"><?= htmlspecialchars($supplier['ten_nha_cung_cap']); ?></option>
-                                <?php }?>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -76,20 +39,29 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Dòng mẫu -->
                             <tr id="row0">
                                 <td>
-                                    
-                                    <select class="form-control" name="loai_tai_san[]" required>
+                                    <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required>
                                         <option value="">Chọn loại tài sản</option>
-                                        <?php while ($row = $stmtLoaiTaiSan->fetch(PDO::FETCH_ASSOC)): ?>
-                                            <option value="<?= $row['loai_tai_san_id']; ?>"><?= htmlspecialchars($row['ten_loai_tai_san']); ?></option>
-                                        <?php endwhile; ?>
+                                        <?php foreach ($loai_tai_san_list as $loai): ?>
+                                            <option value="<?= $loai['loai_tai_san_id']; ?>"><?= htmlspecialchars($loai['ten_loai_tai_san']); ?></option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </td>
-                                <td><input type="text" class="form-control" name="ten_tai_san[]" required></td>
-                                <td><input type="number" class="form-control so-luong" name="so_luong[]" required onchange="tinhThanhTien(this)" oninput="tinhThanhTien(this)"></td>
-                                <td><input type="number" class="form-control don-gia" name="don_gia[]" required onchange="tinhThanhTien(this)" oninput="tinhThanhTien(this)"></td>
+                                <td>
+                                    <input list="taiSanList" class="form-control select-tai-san" name="ten_tai_san[]" placeholder="Chọn hoặc nhập tên tài sản" required>
+                                    <input type="hidden" class="tai-san-id" name="tai_san_id[]" value="">
+                                    <datalist id="taiSanList">
+                                        <?php foreach ($tai_san_list as $tai_san): ?>
+                                            <option 
+                                                data-loai-tai-san-id="<?= $tai_san['loai_tai_san_id']; ?>"
+                                                data-tai-san-id="<?= $tai_san['tai_san_id']; ?>"
+                                                value="<?= htmlspecialchars($tai_san['ten_tai_san']); ?>">
+                                        <?php endforeach; ?>
+                                    </datalist>
+                                </td>
+                                <td><input type="number" class="form-control so-luong" name="so_luong[]" required></td>
+                                <td><input type="number" class="form-control don-gia" name="don_gia[]" required></td>
                                 <td><input type="text" class="form-control thanh-tien" name="thanh_tien[]" readonly></td>
                                 <td>
                                     <button type="button" class="btn btn-danger btn-sm" onclick="xoaDong(this)">Xóa</button>
@@ -113,8 +85,42 @@
         </div>
     </div>
 </div>
-
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    initializeTaiSanListeners();
+    document.querySelectorAll('.so-luong, .don-gia').forEach(input => {
+        input.addEventListener('input', function() {
+            tinhThanhTien(this);
+        });
+    });
+});
+
+function initializeTaiSanListeners() {
+    document.querySelectorAll('.select-tai-san').forEach(function(input) {
+        input.addEventListener('input', handleTaiSanSelection);
+    });
+}
+
+function handleTaiSanSelection() {
+    var datalist = document.getElementById('taiSanList');
+    var option = Array.from(datalist.options).find(opt => opt.value === this.value);
+    var row = this.closest('tr');
+    var loaiTaiSanSelect = row.querySelector('.loai-tai-san');
+    var taiSanIdInput = row.querySelector('.tai-san-id');
+    
+    if (option) {
+        var loaiTaiSanId = option.dataset.loaiTaiSanId;
+        var taiSanId = option.dataset.taiSanId;
+        loaiTaiSanSelect.value = loaiTaiSanId;
+        loaiTaiSanSelect.disabled = true;
+        taiSanIdInput.value = taiSanId;
+    } else {
+        loaiTaiSanSelect.disabled = false;
+        loaiTaiSanSelect.value = '';
+        taiSanIdInput.value = '';
+    }
+}
+
 function tinhThanhTien(input) {
     var row = input.closest('tr');
     var soLuong = parseFloat(row.querySelector('.so-luong').value) || 0;
@@ -149,7 +155,18 @@ function themDong() {
     });
     newRow.querySelectorAll('select').forEach(function(select) {
         select.selectedIndex = 0;
+        select.disabled = false;
     });
+
+    var newTaiSanInput = newRow.querySelector('.select-tai-san');
+    newTaiSanInput.addEventListener('input', handleTaiSanSelection);
+
+    newRow.querySelectorAll('.so-luong, .don-gia').forEach(input => {
+        input.addEventListener('input', function() {
+            tinhThanhTien(this);
+        });
+    });
+
     tbody.appendChild(newRow);
     updateRowNumbers();
 }
@@ -164,7 +181,10 @@ function xoaDong(button) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    updateRowNumbers();
+document.getElementById('hoadonForm').addEventListener('submit', function(e) {
+    var disabledInputs = this.querySelectorAll('select:disabled, input:disabled');
+    disabledInputs.forEach(function(input) {
+        input.disabled = false;
+    });
 });
 </script>

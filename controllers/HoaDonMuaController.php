@@ -36,6 +36,8 @@ class HoaDonMuaController extends Controller {
 
     public function create() {
         if ($_POST) {
+            // echo '<pre>' , var_dump($_POST) , '</pre>';
+            //     exit();
             $this->db->beginTransaction();
 
             try {
@@ -47,23 +49,28 @@ class HoaDonMuaController extends Controller {
                     $hoaDonMuaId = $this->db->lastInsertId();
 
                     for ($i = 0; $i < count($_POST['ten_tai_san']); $i++) {
-                        $taiSanData = array(
-                            'ten_tai_san' => $_POST['ten_tai_san'][$i],
-                            'mo_ta' => '',
-                            'so_luong' => $_POST['so_luong'][$i],
-                            'loai_tai_san_id' => $_POST['loai_tai_san'][$i]
-                        );
-
-                        $taiSanId = $this->taiSanModel->createOrUpdate($taiSanData);
-
+                        $taiSanId=$_POST['tai_san_id'][$i];
+                        if($_POST['tai_san_id'][$i]==""){
+                            
+                            $taiSanData = array(
+                                'ten_tai_san' => $_POST['ten_tai_san'][$i],
+                                'mo_ta' => '',
+                                'so_luong' => $_POST['so_luong'][$i],
+                                'loai_tai_san_id' => $_POST['loai_tai_san_id'][$i]
+                            );
+                            $taiSanId = $this->taiSanModel->createOrUpdate($taiSanData);
+                        }
+                        // echo '<pre>' , var_dump($_POST) , '</pre>';
+                        //     exit();
                         $this->chiTietHoaDonMuaModel->hoa_don_id = $hoaDonMuaId;
                         $this->chiTietHoaDonMuaModel->tai_san_id = $taiSanId;
                         $this->chiTietHoaDonMuaModel->so_luong = $_POST['so_luong'][$i];
                         $this->chiTietHoaDonMuaModel->don_gia = $_POST['don_gia'][$i];
                         $this->chiTietHoaDonMuaModel->create();
+                        $chiTietID=  $this->db->lastInsertId();;
 
                         $viTri=new ViTriChiTiet($this->db);
-                        $viTri->tai_san_id=$taiSanId;
+                        $viTri->chi_tiet_id=$chiTietID;
                         $viTri->vi_tri_id=1;
                         $viTri->so_luong = $_POST['so_luong'][$i];
                         $viTri->create();
@@ -88,6 +95,8 @@ class HoaDonMuaController extends Controller {
         }
 
         $stmtLoaiTaiSan = $this->loaiTaiSanModel->readAll();
+        $loai_tai_san_list = $this->loaiTaiSanModel->readAll();
+        $tai_san_list=$this->taiSanModel->read();
         $suppliers = $this->nhaCungCapModel->read();
         $content = 'views/hoa_don_mua/create.php';
         include('views/layouts/base.php');
@@ -101,7 +110,7 @@ class HoaDonMuaController extends Controller {
             header("Location: index.php?model=hoadonmua");
             return;
         }
-    
+        $invoice_details = $this->chiTietHoaDonMuaModel->readByHoaDonId($id);
         if ($_POST) {
             $this->db->beginTransaction();
             try {
@@ -116,7 +125,6 @@ class HoaDonMuaController extends Controller {
                 for ($i = 0; $i < count($_POST['ten_tai_san']); $i++) {
                     $this->taiSanModel->ten_tai_san = $_POST['ten_tai_san'][$i];
                     $this->taiSanModel->loai_tai_san_id = $_POST['loai_tai_san'][$i];
-                    $this->taiSanModel->so_luong =  $_POST['so_luong'][$i];
 
                     $this->chiTietHoaDonMuaModel->chi_tiet_id = $_POST['chi_tiet_id'][$i];
                     $this->chiTietHoaDonMuaModel->don_gia = $_POST['don_gia'][$i];
@@ -132,7 +140,24 @@ class HoaDonMuaController extends Controller {
                         $this->chiTietHoaDonMuaModel->create();
                     }
                 }
-    
+                $viTri=new ViTriChiTiet($this->db);
+                        $viTri->chi_tiet_id=$this->chiTietHoaDonMuaModel->chi_tiet_id;
+                        $viTri->vi_tri_id=1;
+                        $viTri->so_luong = $_POST['so_luong'][$i];
+                        $viTri->update();
+                foreach($invoice_details as $detail){
+                    $test=0;
+                    for ($i = 0; $i < count($_POST['ten_tai_san']); $i++){
+                        if ($detail['chi_tiet_id']==$_POST['chi_tiet_id'][$i]) {
+                            $test=1;
+                            break;
+                        }
+                    }
+                    if($test==0){
+                        $this->chiTietHoaDonMuaModel->delete($detail['chi_tiet_id']);
+                    }
+                }
+                
                 $this->db->commit();
     
                 $_SESSION['message'] = 'Sửa hóa đơn thành công!';
@@ -149,7 +174,8 @@ class HoaDonMuaController extends Controller {
         $suppliers = $this->nhaCungCapModel->read();
         $invoice_details = $this->chiTietHoaDonMuaModel->readByHoaDonId($id);
         $loai_tai_san_list = $this->loaiTaiSanModel->readAll();
-        
+        $stmtLoaiTaiSan = $this->loaiTaiSanModel->readAll();
+        $tai_san_list=$this->taiSanModel->read();
         $content = 'views/hoa_don_mua/edit.php';
         include('views/layouts/base.php');
     }

@@ -28,7 +28,6 @@ class TaiSanController extends Controller {
         if ($_POST) {
             $this->taiSan->ten_tai_san = $_POST['ten_tai_san'];
             $this->taiSan->mo_ta = $_POST['mo_ta'];
-            $this->taiSan->so_luong = $_POST['so_luong'];
             $this->taiSan->loai_tai_san_id = $_POST['loai_tai_san_id'];
             if ($this->taiSan->create()) {
                 $_SESSION['message'] = 'Tạo tài sản mới thành công!';
@@ -49,7 +48,6 @@ class TaiSanController extends Controller {
             $this->taiSan->tai_san_id = $id;
             $this->taiSan->ten_tai_san = $_POST['ten_tai_san'];
             $this->taiSan->mo_ta = $_POST['mo_ta'];
-            $this->taiSan->so_luong = $_POST['so_luong'];
             $this->taiSan->loai_tai_san_id = $_POST['loai_tai_san_id'];
 
             if ($this->taiSan->update()) {

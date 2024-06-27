@@ -72,26 +72,22 @@
                             <th>ID</th>
                             <th>Tên Tài Sản</th>
                             <th>Mô Tả</th>
-                            <th>Số Lượng</th>
                             <th>Loại Tài Sản</th>
                             <th>Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($taiSans as $taiSan): ?>
-                            <?php if ($taiSan['so_luong'] > 0): ?>
                                 <tr>
                                     <td class="text-center"><?= $taiSan['tai_san_id'] ?></td>
                                     <td><?= htmlspecialchars($taiSan['ten_tai_san']) ?></td>
                                     <td><?= htmlspecialchars($taiSan['mo_ta']) ?></td>
-                                    <td><?= $taiSan['so_luong'] ?></td>
                                     <td><?= htmlspecialchars($taiSan['ten_loai_tai_san']) ?></td>
                                     <td class="d-flex justify-content-center">
                                         <a href="index.php?model=taisan&action=edit&id=<?= $taiSan['tai_san_id'] ?>"
                                             class="btn btn-warning btn-sm mx-2">Sửa</a>
                                     </td>
                                 </tr>
-                            <?php endif; ?>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
