@@ -4,7 +4,6 @@
 class User {
     private $conn;
     private $table_name = "users";
-
     public $user_id;
     public $email;
     public $ten;
