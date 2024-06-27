@@ -42,7 +42,6 @@
                 <!-- /.container-fluid -->
             </div>
             <!-- End of Main Content -->
-            <?php include 'views/components/footer.php'; ?>
         </div>
     </div>
     <!-- Scroll to Top Button-->

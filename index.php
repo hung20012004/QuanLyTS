@@ -69,9 +69,6 @@ switch ($action) {
     case 'delete':
         $controller->delete($id);
         break;
-    case 'show':
-        $controller->show($id);
-        break;
     case 'login':
         $controller->login();
         break;

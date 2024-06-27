@@ -1,6 +1,7 @@
 <?php
 include_once 'config/database.php';
 include_once 'models/TaiSan.php';
+include_once 'models/LoaiTaiSan.php';
 
 class TaiSanController extends Controller {
     private $db;
@@ -16,7 +17,10 @@ class TaiSanController extends Controller {
 
     public function index() {
         $taiSans = $this->taiSan->read();
+        $loaiTS=new LoaiTaiSan($this->db);
+        $loaiTaiSans=$loaiTS->read();
         $content = 'views/taisans/index.php';
+        
         include('views/layouts/base.php');
     }
 

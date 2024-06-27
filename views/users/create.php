@@ -50,10 +50,9 @@
                         <div class="mb-3">
                             <label for="role" class="form-label">Vai trò:</label>
                             <select name="role" id="role" class="form-control" required>
-                                <option>--Chọn vai trò--</option>
+                                <option>Chọn vai trò</option>
                                 <option value="NhanVien">Nhân viên quản lý tài sản</option>
                                 <option value="KyThuat">Kỹ thuật viên</option>
-                                <option value="KeToan">Kế toán</option>
                             </select>
                         </div>
                 </div>

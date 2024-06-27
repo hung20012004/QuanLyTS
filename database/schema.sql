@@ -68,13 +68,8 @@ CREATE TABLE chi_tiet_hoa_don_mua (
     tai_san_id INT,
     so_luong INT NOT NULL,
     don_gia DECIMAL(15,2) NOT NULL,
-<<<<<<< Updated upstream
-    FOREIGN KEY (hoa_don_mua_id) REFERENCES hoa_don_mua(hoa_don_mua_id),
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id)
-=======
     FOREIGN KEY (hoa_don_id) REFERENCES hoa_don_mua(hoa_don_id) ON DELETE CASCADE,
     FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
->>>>>>> Stashed changes
 );
 -- Bảng để lưu thông tin hóa đơn thanh lý tài sản
 CREATE TABLE hoa_don_thanh_ly (
