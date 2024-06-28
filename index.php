@@ -11,6 +11,8 @@ require 'controllers/ViTriController.php';
 require 'controllers/UserController.php';
 require 'controllers/AuthController.php';
 require 'controllers/TaiSanController.php';
+require 'controllers/KhauHaoController.php';
+
 
 $controller = new Controller();
 
@@ -50,6 +52,9 @@ switch ($model) {
         break;
     case 'loaitaisan':
         $controller = new LoaiTaiSanController();
+        break;
+    case 'khauhao':
+        $controller = new KhauHaoController();
         break;
     default:
         $controller = new Controller();
@@ -101,6 +106,9 @@ switch ($action) {
         break;
     case 'reset_password':
         $controller->reset_password();
+        break;
+    case 'viewcreatekh':
+        $controller->viewcreatekh($id); 
         break;
     default:
         $controller->index();

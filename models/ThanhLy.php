@@ -15,6 +15,14 @@ class ThanhLy {
         $this->conn = $db;
     }
 
+     public function readAll() {
+        $query = "SELECT * 
+                  FROM " . $this->table_name ."";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
     public function readAllWithDetails() {
         $query = "SELECT * 
                   FROM " . $this->table_name . "
@@ -85,9 +93,13 @@ class ThanhLy {
     }
 
    public function update($id) {
+
+    $this->tong_tien = str_replace('.', '', $this->tong_tien);
+    $this->tong_tien = floatval($this->tong_tien);
+    
     $query = "UPDATE " . $this->table_name . " 
               SET ngay_thanh_ly = :ngay_thanh_ly, tong_gia_tri = :tong_gia_tri 
-              WHERE hoa_don_id = :hoa_don_id";
+              WHERE hoa_don_id = ".$id."";
 
     $stmt = $this->conn->prepare($query);
 
@@ -98,30 +110,25 @@ class ThanhLy {
     // Gán các giá trị vào các tham số của câu lệnh SQL
     $stmt->bindParam(':ngay_thanh_ly', $this->ngay_thanh_ly);
     $stmt->bindParam(':tong_gia_tri', $this->tong_tien);
-    $stmt->bindParam(':hoa_don_id', $id);
-
     // Thực thi câu lệnh SQL và trả về kết quả
     return $stmt->execute();
 }
     public function delete($id) {
        try {
             // Xóa chi tiết hóa đơn
-            $chiTietQuery = "SELECT chi_tiet_id FROM chi_tiet_hoa_don_thanh_ly WHERE hoa_don_id = ?";
+            $chiTietQuery = "SELECT chi_tiet_id FROM chi_tiet_hoa_don_thanh_ly WHERE hoa_don_id = ".$id."";
             $stmt = $this->conn->prepare($chiTietQuery);
-            $stmt->bindParam(1, $id);
             $stmt->execute();
             $chiTietHoaDon = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             // Xóa chi tiết hóa đơn
-            $deleteChiTietQuery = "DELETE FROM chi_tiet_hoa_don_thanh_ly WHERE hoa_don_id = ?";
+            $deleteChiTietQuery = "DELETE FROM chi_tiet_hoa_don_thanh_ly WHERE hoa_don_id = ".$id."";
             $stmtDeleteChiTiet = $this->conn->prepare($deleteChiTietQuery);
-            $stmtDeleteChiTiet->bindParam(1, $id);
             $stmtDeleteChiTiet->execute();
 
             // Xóa hóa đơn
-            $deleteHoaDonQuery = "DELETE FROM " . $this->table_name . " WHERE hoa_don_id = ?";
+            $deleteHoaDonQuery = "DELETE FROM " . $this->table_name . " WHERE hoa_don_id = ".$id."";
             $stmtDeleteHoaDon = $this->conn->prepare($deleteHoaDonQuery);
-            $stmtDeleteHoaDon->bindParam(1, $id);
             $stmtDeleteHoaDon->execute();
 
             // $this->conn->commit();

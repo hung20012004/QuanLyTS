@@ -3,7 +3,7 @@
         <div class="col">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=thanhly&action=index">Thanh Lý</a></li>
+                    <li class="breadcrumb-item"><a href="index.php?model=khauhao&action=index">Khấu hao</a></li>
                 </ol>
             </nav>
         </div>
@@ -11,7 +11,7 @@
 </div>
 
 <div class="container-fluid">
-     <?php if (isset($_SESSION['message'])): ?>
+    <?php if (isset($_SESSION['message'])): ?>
         <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
             <?= $_SESSION['message']; ?>
         </div>
@@ -35,21 +35,23 @@
     <div class="card shadow mb-4">
         <div class="card-header py-2">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Quản Lý Hóa Đơn</h5>
+                <h5 class="card-title mb-0">Chi tiết khấu hao</h5>
                 <div>
-                    <a id="toggleSearch" class="btn btn-secondary" type="button">Tìm kiếm</a>
-                    <a href="index.php?model=thanhly&action=viewcreate" class="btn btn-primary">Thêm Mới</a>
-                    <a href="index.php?model=thanhly&action=export" class="btn btn-success">Xuất Excel</a>
-                </div>
+                    <!-- <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a> -->
+                    <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a>
+                    <a href="index.php?model=khauhao&action=viewcreatekh&id=<?= $ts ?>" class="btn btn-primary">Thêm mới</a>
+                    <a href="index.php?model=hoadonmua&action=export" class="btn btn-success">Xuất excel</a>
+               </div>
             </div>
+            
         </div>
         <div class="card-body">
             <form id="searchForm" class="mb-3" style="display: none;">
                 <div class="row">
                     <div class="col-md-6 mb-2">
                         <div class="d-flex align-items-center">
-                            <label for="ngayThanhLy" class="mr-2 mb-0" style="white-space: nowrap;">Ngày thanh lý:</label>
-                            <input type="date" id="ngayThanhLy" class="form-control" placeholder="Ngày thanh lý">
+                            <label for="ngayKhauhao" class="mr-2 mb-0" style="white-space: nowrap;">Ngày khấu hao:</label>
+                            <input type="date" id="ngayKhauhao" class="form-control" placeholder="Ngày khấu hao">
                         </div>
                     </div>
                     <div class="col-md-6 mb-2">
@@ -65,30 +67,32 @@
                     <thead class="bg-light text-black text-center">
                         <tr>
                             <th>ID</th>
-                            <th>Ngày thanh lý</th>
-                            <th>Tổng cộng</th>
-                            <th>Hành động</th>
+                            <th>Tên Tài Sản</th>
+                            <th>Ngày Khấu Hao</th>
+                            <th>Số Tiền</th>
+                            <th>Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody>
-                     <?php foreach ($hoa_don_thanh_lys as $hoadon): ?>
-                        <tr>
-                            <td class="text-center"><?= $hoadon['hoa_don_id'] ?></td>
-                            <td class="text-center"><?= htmlspecialchars(date('d-m-Y', strtotime($hoadon['ngay_thanh_ly']))) ?></td>
-                            <td class="text-center"><?= number_format($hoadon['tong_gia_tri'], 0, ',', '.') ?></td>
-                            <td class="d-flex justify-content-center">
-                                <a href="index.php?model=thanhly&action=show&id=<?= $hoadon['hoa_don_id'] ?>"
-                                   class="btn btn-info btn-sm mx-2">Xem</a>
-                                <a href="index.php?model=thanhly&action=viewedit&id=<?= $hoadon['hoa_don_id'] ?>"
-                                   class="btn btn-warning btn-sm mx-2">Sửa</a>
-                                <form action="index.php?model=thanhly&action=delete&id=<?= $hoadon['hoa_don_id'] ?>"
+                        <?php
+                        if ((is_array($KhauHaos))) {
+                         foreach ($KhauHaos as $kh): ?>
+                            <tr>
+                                <td class="text-center"><?= $kh['khau_hao_id'] ?></td>
+                                <td class="text-center"><?= htmlspecialchars($kh['ten_tai_san']) ?></td>
+                                <td class="text-center"> <?= htmlspecialchars(date('d-m-Y', strtotime($kh['ngay_khau_hao']))) ?></td>
+                                <td class="text-center"><?= number_format($kh['so_tien'], 0, ',', '.') ?></td>
+                                <td class="d-flex justify-content-center">
+                                    <a href="index.php?model=khauhao&action=edit&id=<?= $kh['khau_hao_id'] ?>"
+                                        class="btn btn-info btn-sm mx-2">Sửa</a>
+                                  <form action="index.php?model=thanhly&action=delete&id=<?= $kh['khau_hao_id'] ?>"
                                       method="POST" style="display: inline-block;"
                                       onsubmit="return confirmDelete();">
                                     <button type="submit" class="btn btn-danger btn-sm mx-2">Xóa</button>
-                                </form>
-                            </td>
-                        </tr>
-                     <?php endforeach; ?>
+                                     </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; }?>
                     </tbody>
                 </table>
             </div>
@@ -97,9 +101,9 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+     document.addEventListener('DOMContentLoaded', function () {
         function filterTable() {
-            var ngayThanhLyFilter = document.getElementById('ngayThanhLy').value;
+            var ngayKhauhaoFilter = document.getElementById('ngayKhauhao').value;
             var giaTriMinFilter = parseFloat(document.getElementById('giaTriMinSearch').value) || 0;
 
             var table = document.getElementById('dataTable');
@@ -107,18 +111,13 @@
 
             for (var i = 1; i < rows.length; i++) {
                 var cells = rows[i].getElementsByTagName('td');
-                var ngayThanhLy = cells[1].textContent.trim();
-                var giaTriText = cells[2].textContent.trim(); // Lấy giá trị số tiền từ cells[3]
+                var ngayKhauhao = cells[2].textContent.trim();
+                var giaTriText = cells[3].textContent.trim(); // Lấy giá trị số tiền từ cells[3]
                 var giaTri = parseFloat(giaTriText.replace(/\./g, '')); // Chuyển đổi giá trị số tiền thành số, loại bỏ dấu chấm
 
                 // Kiểm tra điều kiện lọc
-                var passNgayKhauhao = true; // Mặc định cho phép đi qua nếu không có điều kiện lọc ngày
-        if (ngayKhauhaoFilter) {
-            var ngayKhauhaoDate = new Date(ngayKhauhao); // Chuyển đổi ngày thành đối tượng ngày
-            var filterDate = new Date(ngayKhauhaoFilter); // Chuyển đổi ngày lọc thành đối tượng ngày
-            passNgayKhauhao = ngayKhauhaoDate.getTime() === filterDate.getTime(); // So sánh ngày
-        }
-                var passGiaTri = giaTri >= giaTriMinFilter;
+                var passNgayThanhLy = !ngayKhauhaoFilter || ngayKhauhao.includes(ngayKhauhaoFilter);
+                var passGiaTri = (giaTri > giaTriMinFilter , giaTri= giaTriMinFilter);
 
                 if (passNgayThanhLy && passGiaTri) {
                     rows[i].style.display = '';
@@ -128,13 +127,13 @@
             }
         }
 
-        document.getElementById('ngayThanhLy').addEventListener('input', filterTable);
+        document.getElementById('ngayKhauhao').addEventListener('input', filterTable);
         document.getElementById('giaTriMinSearch').addEventListener('input', filterTable);
 
         // Gọi filterTable ngay khi trang được tải để áp dụng bất kỳ giá trị mặc định nào
         filterTable();
 
-       var toggleButton = document.getElementById('toggleSearch');
+        var toggleButton = document.getElementById('toggleSearch');
         var searchForm = document.getElementById('searchForm');
 
         toggleButton.addEventListener('click', function () {
@@ -144,11 +143,11 @@
             } else {
                 searchForm.style.display = 'none';
                 toggleButton.textContent = 'Tìm kiếm';
-    }
+            }
         });
     });
 
     function confirmDelete() {
-        return confirm('Bạn có chắc muốn xóa hóa đơn này?');
+        return confirm('Bạn có chắc muốn xóa?');
     }
 </script>

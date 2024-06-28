@@ -16,7 +16,7 @@ class ThanhLyController {
     }
 
     public function index() {
-       $stmt = $this->thanhly->readAllWithDetails();
+        $stmt = $this->thanhly->readAll();
         $hoa_don_thanh_lys = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $content = 'views/thanhly/index.php';
         include('views/layouts/base.php');
@@ -58,17 +58,15 @@ class ThanhLyController {
 
         // Gọi hàm create để lưu vào cơ sở dữ liệu
         if ($this->thanhly->create()) {
-            echo"Thành công";
-            var_dump($this->thanhly->taisans);
+            $_SESSION['message'] = 'Tạo hóa đơn thanh lý mới thành công!';
+            $_SESSION['message_type'] = 'success';
             header("Location: index.php?model=thanhly");
-            $content = 'views/thanhly/index.php';
-            include('views/layouts/base.php');
+            exit();
         } else {
-            echo"Thất bại";
+              $_SESSION['message'] = 'Tạo hóa đơn thanh lý mới thất bại!';
+                $_SESSION['message_type'] = 'success';
             $stmt = $this->thanhly->viewcreate();
             $taisans = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $content = 'views/thanhly/create.php';
-            include('views/layouts/base.php');
         }
     }
                 
@@ -108,7 +106,6 @@ class ThanhLyController {
         include('views/layouts/base.php');
     }
 
-
 public function edit($id) {
     try {
         // Bắt đầu giao dịch
@@ -116,30 +113,44 @@ public function edit($id) {
 
         // Thực hiện các thao tác cập nhật thông tin chung của hóa đơn
         $this->thanhly->hoa_don_id = $id;
-        $this->thanhly->ngay_thanh_ly = $_POST['ngay_mua'];
-        $this->thanhly->tong_tien = $_POST['tong_gia_tri'];
+        $this->thanhly->ngay_thanh_ly = $_POST['ngay_thanh_ly'];
+        $this->thanhly->tong_tien = $_POST['tong_tien'];
         $this->thanhly->update($id);
 
-        var_dump($_POST['tai_san']);
-        // Xử lý cập nhật hoặc thêm mới chi tiết thanh lý (tài sản)
-         for ($i = 0; $i < count($_POST['tai_san']); $i++) {
+        // Lấy danh sách chi tiết hiện tại trong DB
+        $currentDetails = $this->chitietThanhLy->getByHoaDonId($id);
+        $currentDetailIds = array_column($currentDetails, 'chi_tiet_id');
+
+        // Duyệt qua các chi tiết từ form
+        $newDetailIds = [];
+
+        for ($i = 0; $i < count($_POST['tai_san']); $i++) {
             $chi_tiet_id = $_POST['chi_tiet_id'][$i];
             $so_luong = $_POST['so_luong'][$i];
             $gia_thanh_ly = $_POST['gia_thanh_ly'][$i];
             $taisan = $_POST['tai_san'][$i];
-            // Nếu chi_tiet_id đã tồn tại, cập nhật lại chi tiết
-            if($_POST['tai_san_id'][$i]!=''){
+            
+            if (!empty($chi_tiet_id)) {
+                // Cập nhật chi tiết nếu tồn tại
                 $this->chitietThanhLy->chi_tiet_id = $chi_tiet_id;
                 $this->chitietThanhLy->so_luong = $so_luong;
                 $this->chitietThanhLy->gia_thanh_ly = $gia_thanh_ly;
                 $this->chitietThanhLy->update();
+                $newDetailIds[] = $chi_tiet_id;
             } else {
-                // Nếu chi_tiet_id chưa tồn tại, thêm mới chi tiết
+                // Thêm mới chi tiết nếu chưa tồn tại
                 $this->chitietThanhLy->hoa_don_id = $id;
                 $this->chitietThanhLy->tai_san_id = $taisan;
                 $this->chitietThanhLy->so_luong = $so_luong;
                 $this->chitietThanhLy->gia_thanh_ly = $gia_thanh_ly;
                 $this->chitietThanhLy->create();
+            }
+        }
+
+        // Xóa các chi tiết không còn trong danh sách mới
+        foreach ($currentDetailIds as $currentId) {
+            if (!in_array($currentId, $newDetailIds)) {
+                $this->chitietThanhLy->delete($currentId);
             }
         }
 
@@ -169,15 +180,19 @@ public function edit($id) {
     $content = 'views/thanhly/edit.php';
     include('views/layouts/base.php');
 }
-    public function delete($id) {
+    // Load lại dữ liệu cũ để hiển thị lại form nếu có lỗi hoặc cần chỉnh sửa
+    
+    
+        public function delete($id) {
         if ($this->thanhly->delete($id)) {
             $_SESSION['message'] = 'Xóa hóa đơn thành công!';
             $_SESSION['message_type'] = 'success';
+             header("Location: index.php?model=thanhly");
         } else {
             $_SESSION['message'] = 'Xóa hóa đơn thất bại!';
             $_SESSION['message_type'] = 'danger';
+             header("Location: index.php?model=thanhly");
         }
-        header("Location: index.php?model=thanhly");
     }
 
     public function saveMultiple() {
@@ -185,88 +200,87 @@ public function edit($id) {
     }
 
      public function export() {
-        try {
-            // Truy vấn dữ liệu
-            $sql = "SELECT tl.hoa_don_id, tl.ngay_thanh_ly, tl.tong_gia_tri, ts.ten_tai_san, tlct.gia_thanh_ly, tlct.so_luong
-        FROM hoa_don_thanh_ly tl
-        JOIN chi_tiet_hoa_don_thanh_ly tlct ON tl.hoa_don_id = tlct.hoa_don_id
-        JOIN tai_san ts ON ts.tai_san_id = tlct.tai_san_id";  // Chỉnh sửa tên bảng chi tiết hóa đơn thành lý và tài sản
+    try {
+        // Truy vấn dữ liệu
+        $sql = "SELECT tl.hoa_don_id, tl.ngay_thanh_ly, tl.tong_gia_tri, ts.ten_tai_san, tlct.gia_thanh_ly, tlct.so_luong
+                FROM hoa_don_thanh_ly tl
+                JOIN chi_tiet_hoa_don_thanh_ly tlct ON tl.hoa_don_id = tlct.hoa_don_id
+                JOIN tai_san ts ON ts.tai_san_id = tlct.tai_san_id"; 
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-            // Tính toán thống kê
-            $totalInvoices = count($orders);
-            $totalValue = array_sum(array_column($orders, 'tong_gia_tri'));
-            $avgValue = $totalInvoices > 0 ? $totalValue / $totalInvoices : 0;
-    
-            // Tạo file Excel
-            require_once 'vendor/autoload.php';
-            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
-    
-            // Đặt tiêu đề
-            $sheet->setCellValue('A1', 'Báo cáo Hóa đơn mua');
-            $sheet->mergeCells('A1:D1');
-            $sheet->getStyle('A1')->getFont()->setBold(true);
-    
-            // Đặt tiêu đề cột
-            $sheet->setCellValue('A3', 'ID');
-            $sheet->setCellValue('B3', 'Ngày mua');
-            $sheet->setCellValue('C3', 'Tổng giá trị');
-            $sheet->getStyle('A3:C3')->getFont()->setBold(true);
-    
-            // Điền dữ liệu
-            $row = 3;
-            foreach ($orders as $order) {
-                $sheet->setCellValue('A' . $row, $order['hoa_don_id']);
-                $sheet->setCellValue('B' . $row, date('d-m-Y', strtotime($order['ngay_thanh_ly'])));
-                $sheet->setCellValue('C' . $row, round($order['tong_gia_tri']));
-                $row++;
-            }
-    
-            // Format số tiền
-            $lastRow = $row - 1;
-            $sheet->getStyle('C4:C' . $lastRow)->getNumberFormat()->setFormatCode('#,##0');
-    
-            // Thêm thống kê
-            $row += 2;
-            $sheet->setCellValue('A' . $row, 'Tổng số hóa đơn:');
-            $sheet->setCellValue('B' . $row, $totalInvoices);
+
+        // Tính toán thống kê
+        $totalInvoices = count($orders);
+        $totalValue = array_sum(array_column($orders, 'tong_gia_tri'));
+        $avgValue = $totalInvoices > 0 ? $totalValue / $totalInvoices : 0;
+
+        // Tạo đối tượng Spreadsheet và sheet
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $spreadsheet->getDefaultStyle()->getFont()->setName('Times New Roman');
+        $spreadsheet->getDefaultStyle()->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getDefaultStyle()->getFont()->setSize(13);
+
+        // Đặt tiêu đề
+        $sheet->setCellValue('A1', 'Báo cáo Hóa đơn thanh lý');
+        $sheet->mergeCells('A1:F1');
+        $sheet->getStyle('A1')->getFont()->setBold(true);
+        $sheet->getStyle('A1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFCCEEFF');
+        $sheet->getStyle('A1:F1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        // Đặt tiêu đề cột
+        $sheet->setCellValue('A2', 'ID');
+        $sheet->setCellValue('B2', 'Ngày thanh lý');
+        $sheet->setCellValue('C2', 'Tài sản');
+        $sheet->setCellValue('D2', 'Giá thanh lý');
+        $sheet->setCellValue('E2', 'Số lượng');
+        $sheet->setCellValue('F2', 'Tổng giá trị');
+        $sheet->getStyle('A2:F2')->getFont()->setBold(true);
+
+        // Điền dữ liệu từ mảng vào sheet
+        $row = 3;
+        foreach ($orders as $order) {
+            $sheet->setCellValue('A' . $row, $order['hoa_don_id']);
+            $sheet->setCellValue('B' . $row, date('d-m-Y', strtotime($order['ngay_thanh_ly'])));
+            $sheet->setCellValue('C' . $row, $order['ten_tai_san']);
+            $sheet->setCellValue('D' . $row, $order['gia_thanh_ly']);
+            $sheet->setCellValue('E' . $row, $order['so_luong']);
+            $sheet->setCellValue('F' . $row, $order['gia_thanh_ly'] * $order['so_luong']);
             $row++;
-            $sheet->setCellValue('A' . $row, 'Tổng giá trị:');
-            $sheet->setCellValue('B' . $row, round($totalValue));
-            $sheet->getStyle('B' . $row)->getNumberFormat()->setFormatCode('#,##0');
-            $row++;
-            $sheet->setCellValue('A' . $row, 'Trung bình giá trị:');
-            $sheet->setCellValue('B' . $row, round($avgValue));
-            $sheet->getStyle('B' . $row)->getNumberFormat()->setFormatCode('#,##0');
-    
-            // Tự động điều chỉnh độ rộng cột
-            foreach(range('A','D') as $col) {
-                $sheet->getColumnDimension($col)->setAutoSize(true);
-            }
-    
-            // Tạo writer
-            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-    
-            // Đặt headers để tải xuống file
-            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header('Content-Disposition: attachment; filename="Bao_cao_hoa_don_thanh_ly.xlsx"');
-            header('Cache-Control: max-age=0');
-    
-            // Đảm bảo tất cả output buffer đã được xóa
-            ob_end_clean();
-    
-            // Lưu file
-            $writer->save('php://output');
-            exit;
-    
-        } catch (PDOException $e) {
-            die("Lỗi khi xuất Excel: " . $e->getMessage());
         }
+
+        // Định dạng số và viền cho các ô
+        $highestRow = $sheet->getHighestRow();
+        $sheet->getStyle('A3:F' . $highestRow)->getNumberFormat()->setFormatCode('#,##0');
+        $sheet->getStyle('A1:F' . $highestRow)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+        // Tự động điều chỉnh độ rộng cột
+        foreach(range('A','F') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Tạo writer
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        // Đặt headers để tải xuống file
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="Bao_cao_hoa_don_thanh_ly.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        // Đảm bảo tất cả output buffer đã được xóa
+        ob_end_clean();
+
+        // Lưu file
+        $writer->save('php://output');
+        exit;
+
+    } catch (PDOException $e) {
+        die("Lỗi khi xuất Excel: " . $e->getMessage());
     }
+}
 }
 ?>
 

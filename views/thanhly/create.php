@@ -17,7 +17,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Thêm hóa đơn thanh lý</h5>
+                        <h5 class="card-title mb-0">Tạo hóa đơn thanh lý</h5>
                     </div>
                 </div>
                 <div class="card-body">
@@ -36,6 +36,7 @@
                                 <div class="form-group">
                                     <label for="taisan">Tài sản:</label>
                                     <select name="taisans[][taisan_id]" class="form-control taisan-select">
+                                        <option value=""></option>
                                         <?php foreach($taisans as $taisan): ?>
                                             <option value="<?= $taisan['tai_san_id']?>"><?= $taisan['ten_tai_san']?></option>
                                         <?php endforeach; ?>
@@ -77,7 +78,7 @@
                         </div>
                         <div class="form-row justify-content-end">
                             <button type="button" class="btn btn-success" onclick="addTaiSan()">Thêm tài sản</button>
-                            <button type="submit" class="btn btn-primary" name="btnThem">Tạo</button>
+                            <button type="submit" class="btn btn-primary" name="btnThem" style="margin-left: 10px;">Tạo</button>
                         </div>
                         <input type="hidden" id="hidden-taisans" name="hidden_taisans">
                     </form>
@@ -139,11 +140,10 @@
             giaThanhLy = taisanPrice; // Giá thành lý mặc định bằng giá đã chọn từ dropdown
         }
 
-        if (!taisanId || quantity <= 0 || giaThanhLy < 0) {
-            alert('Vui lòng chọn tài sản, nhập số lượng và giá thanh lý hợp lệ.');
-            return;
+        if (!taisanId || quantity <= 0 || giaThanhLy < 0 || isNaN(giaThanhLy)) {
+        alert('Vui lòng chọn tài sản, nhập số lượng và giá thanh lý hợp lệ.');
+        return;
         }
-
         let taisanTotal = quantity * giaThanhLy;
         const taisanData = {
             id: taisanId,
@@ -224,5 +224,13 @@
 
             addTaiSan();
         });
+
+        $('form').submit(function(event) {
+        // Kiểm tra số lượng bản ghi trong bảng
+        if ($('#taisan-list tbody tr').length === 0) {
+            alert('Vui lòng thêm ít nhất một tài sản để tạo hóa đơn thanh lý.');
+            event.preventDefault(); // Ngăn chặn việc submit form nếu không có bản ghi
+        }
+    });
     });
 </script>

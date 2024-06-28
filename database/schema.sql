@@ -26,8 +26,8 @@ CREATE TABLE khau_hao (
     khau_hao_id INT AUTO_INCREMENT PRIMARY KEY,
     tai_san_id INT,
     ngay_khau_hao DATE NOT NULL,
-    so_tien DECIMAL(15,2) NOT NULL,
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id)
+    so_tien DECIMAL(15,0) NOT NULL,
+    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
 );
 
 -- Bảng để lưu thông tin vị trí của tài sản
@@ -48,7 +48,7 @@ CREATE TABLE nha_cung_cap (
 CREATE TABLE hoa_don_mua (
     hoa_don_id INT AUTO_INCREMENT PRIMARY KEY,
     ngay_mua DATE NOT NULL,
-    tong_gia_tri DECIMAL(15,2) NOT NULL,
+    tong_gia_tri DECIMAL(15,0) NOT NULL,
     nha_cung_cap_id INT,
     FOREIGN KEY (nha_cung_cap_id) REFERENCES nha_cung_cap(nha_cung_cap_id)
 );
@@ -59,16 +59,16 @@ CREATE TABLE chi_tiet_hoa_don_mua (
     hoa_don_id INT,
     tai_san_id INT,
     so_luong INT NOT NULL,
-    don_gia DECIMAL(15,2) NOT NULL,
-    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don_mua(hoa_don_id),
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id)
+    don_gia DECIMAL(15,0) NOT NULL,
+    FOREIGN KEY (hoa_don_mua_id) REFERENCES hoa_don_mua(hoa_don_mua_id) ON DELETE CASCADE,
+    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
 );
 
 -- Bảng để lưu thông tin hóa đơn thanh lý tài sản
 CREATE TABLE hoa_don_thanh_ly (
     hoa_don_id INT AUTO_INCREMENT PRIMARY KEY,
     ngay_thanh_ly DATE NOT NULL,
-    tong_gia_tri DECIMAL(15,2) NOT NULL
+    tong_gia_tri DECIMAL(15,0) NOT NULL
 );
 
 -- Bảng chi tiết hóa đơn thanh lý tài sản
@@ -77,9 +77,9 @@ CREATE TABLE chi_tiet_hoa_don_thanh_ly (
     hoa_don_id INT,
     tai_san_id INT,
     so_luong INT NOT NULL,
-    gia_thanh_ly DECIMAL(15,2) NOT NULL,
-    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don_thanh_ly(hoa_don_id),
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id)
+    gia_thanh_ly DECIMAL(15,0) NOT NULL,
+    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don_thanh_ly(hoa_don_id) ON DELETE CASCADE,
+    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
 );
 -- Bảo trì
 CREATE TABLE maintenance_schedule (

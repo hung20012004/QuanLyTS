@@ -87,8 +87,17 @@ class ChiTietThanhLy {
         }
     }
 
+    public function getByHoaDonId($hoa_don_id) {
+    $query = "SELECT * FROM " . $this->table_name . " WHERE hoa_don_id = :hoa_don_id";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':hoa_don_id', $hoa_don_id);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
     public function delete($id) {
-        $query = "DELETE FROM " . $this->table_name . " WHERE hoa_don_id = :hoa_don_id";
+        $query = "DELETE FROM " . $this->table_name . " WHERE chi_tiet_id = :hoa_don_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':hoa_don_id', $id);
         $stmt->execute();
