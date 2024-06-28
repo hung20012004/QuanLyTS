@@ -15,6 +15,7 @@ class Controller {
 
     }
 
+
     public function edit($id) {
         
     }
@@ -31,5 +32,7 @@ class Controller {
     public function profile() {}
     public function export(){}
     public function statistics(){}
+    public function viewcreatekh($id) {}
+
 }
 ?>

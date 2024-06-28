@@ -37,7 +37,7 @@
     <div class="card shadow mb-4">
         <div class="card-header py-2">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Chỉnh Sửa Hóa Đơn</h5>
+                <h5 class="card-title mb-0"><strong>Chỉnh Sửa Hóa Đơn</strong></h5>
             </div>
         </div>
         <div class="card-body">
@@ -54,11 +54,11 @@
                 <div class="form-row">
                      <div class="form-group col-md-6">
                         <label for="ID">Mã Hóa Đơn</label>
-                        <input type="text" class="form-control" id="maHoaDon" name="ma_hoa_don" value="<?= $ds['hoa_don_id'] ?>" readonly>
+                        <input type="text" class="form-control" id="maHoaDon" name="ma_hoa_don" value="<?= $ds['hoa_don_id'] ?>" style="text-align: center;" readonly>
                     </div>
                     <div class="form-group col-md-6">
-                        <label for="ngayMua">Ngày Mua</label>
-                        <input type="date" class="form-control" id="ngayMua" name="ngay_mua" value="<?= $ds['ngay_thanh_ly'] ?>" required>
+                        <label for="ngayThanhLy">Ngày Mua</label>
+                        <input type="date" class="form-control" id="ngayThanhLy" name="ngay_thanh_ly" value="<?= $ds['ngay_thanh_ly'] ?>" style="text-align: center;" required>
                     </div>
                     
                 </div>
@@ -69,7 +69,7 @@
                 <!-- Bảng Chi Tiết -->
                 <h5 class="mt-4">Chi Tiết Hóa Đơn</h5>
                 <div class="table-responsive">
-                    <table id="tableChiTiet" class="table table-bordered">
+                    <table id="tableChiTiet" class="table table-bordered" style="text-align: center;">
                         <thead>
                             <tr>
                                 <th>Tài Sản</th>
@@ -86,7 +86,7 @@
                                         <select class="form-control" name="tai_san[]" required>
                                             <option value="">Chọn tài sản</option>
                                             <?php foreach ($taisans as $ts): ?>
-                                                <option value="<?= $ts['tai_san_id']; ?>" <?= ($ts['tai_san_id'] == $detail['tai_san_id']) ? 'selected' : ''; ?>>
+                                                <option value="<?= $ts['tai_san_id']; ?>" <?= ($ts['tai_san_id'] == $detail['tai_san_id']) ? 'selected' : ''; ?> style="text-align: center;">
                                                     <?= htmlspecialchars($ts['ten_tai_san']); ?>
                                                 </option>
                                             <?php endforeach; ?>
@@ -94,9 +94,9 @@
                                             <input type="hidden" class="form-control" name="chi_tiet_id[]" value="<?= isset($detail['chi_tiet_id']) ? htmlspecialchars($detail['chi_tiet_id']) : 0 ?>" required>
                                         </select>
                                     </td>
-                                    <td><input type="number" class="form-control so-luong" name="so_luong[]" value="<?= $detail['so_luong'] ?>" required onchange="tinhThanhTien(this)" oninput="tinhThanhTien(this)"></td>
-                                    <td><input type="number" step="0.01" class="form-control don-gia" name="gia_thanh_ly[]" value="<?= $detail['gia_thanh_ly'] ?>" required onchange="tinhThanhTien(this)" oninput="tinhThanhTien(this)"></td>
-                                    <td><input type="text" class="form-control thanh-tien" name="thanh_tien[]" value="<?= number_format($detail['so_luong'] * $detail['gia_thanh_ly'], 0, ',', '.')  ?>" readonly></td>
+                                    <td><input type="number" class="form-control so-luong" name="so_luong[]" value="<?= $detail['so_luong'] ?>" required onchange="tinhThanhTien(this)" oninput="tinhThanhTien(this)" style="text-align: center;"></td>
+                                    <td><input type="number" step="0.01" class="form-control don-gia" name="gia_thanh_ly[]" value="<?= $detail['gia_thanh_ly'] ?>" required onchange="tinhThanhTien(this)" oninput="tinhThanhTien(this)" style="text-align: center;"></td>
+                                    <td><input type="text" class="form-control thanh-tien" name="thanh_tien[]" value="<?= number_format($detail['so_luong'] * $detail['gia_thanh_ly'], 0, ',', '.')  ?>" readonly style="text-align: center;"></td>
                                     <td>
                                         <button type="button" class="btn btn-primary btn-sm" onclick="editRow(this)">Sửa</button>
                                         <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">Xóa</button>
@@ -106,20 +106,25 @@
                         </tbody>
                     </table>
                 </div>
-                <button type="button" class="btn btn-primary mt-2" onclick="addRow()">Thêm Dòng</button>
 
                 <!-- Tổng Giá Trị -->
-                <div class="form-group mt-3">
-                    <?php $tontai=0; foreach($dstl as $ds):
-                    if($tontai != $ds['hoa_don_id']) {?>
-                    <label for="tongGiaTri">Tổng Giá Trị</label>
-                    <input type="text" class="form-control" id="tongGiaTri" name="tong_gia_tri" value="<?= number_format($ds['tong_gia_tri'], 0, ',', '.') ?>" readonly>
-                    <?php } $tontai = $ds['hoa_don_id'];
-                endforeach;?>
-                </div>
+                 <div class="form-row">
+                    <div class="form-group col-md-9"></div>
+                        <div class="form-group col-md-3">
+                            <?php $tontai=0; foreach($dstl as $ds):
+                            if($tontai != $ds['hoa_don_id']) {?>
+                            <label for="tongGiaTri"><strong>Tổng Giá Trị</strong></label>
+                            <input type="text" class="form-control" id="tongGiaTri" name="tong_tien" value="<?= number_format($ds['tong_gia_tri'], 0, ',', '.') ?>" style="text-align: center;" readonly>
+                            <?php } $tontai = $ds['hoa_don_id'];
+                        endforeach;?>
+                        </div>
+                        
+                 </div>
+                
                 <div class="mt-3 d-flex justify-content-between">
                     <a href="index.php?model=thanhly&action=index" class="btn btn-secondary">Quay Lại</a>
-                    <button type="submit" class="btn btn-success">Lưu Thay Đổi</button>
+                    <button type="button" class="btn btn-primary col-ms-2" style="margin-left: 770px;" onclick="addRow()">Thêm Dòng</button>
+                    <button type="submit" class="btn btn-success col-ms-2" >Lưu Thay Đổi</button>
                 </div>
             </form>
         </div>
@@ -132,16 +137,16 @@ function tinhThanhTien(input) {
     var soLuong = parseFloat(row.querySelector('.so-luong').value) || 0;
     var donGia = parseFloat(row.querySelector('.don-gia').value) || 0;
     var thanhTien = soLuong * donGia;
-    row.querySelector('.thanh-tien').value = thanhTien.toFixed(2);
+    row.querySelector('.thanh-tien').value = thanhTien.toLocaleString('vi-VN', { minimumFractionDigits: 0 });
     tinhTongGiaTri();
 }
 
 function tinhTongGiaTri() {
     var total = 0;
     document.querySelectorAll('.thanh-tien').forEach(function(input) {
-        total += parseFloat(input.value) || 0;
+        total += parseFloat(input.value.replace(/\./g, '').replace(',', '.')) || 0;
     });
-    document.getElementById('tongGiaTri').value = total.toFixed(2);
+    document.getElementById('tongGiaTri').value = total.toLocaleString('vi-VN', { minimumFractionDigits: 0 });
 }
 
 function addRow() {
@@ -173,4 +178,5 @@ function deleteRow(button) {
         alert('Không thể xóa dòng cuối cùng.');
     }
 }
+
 </script>
