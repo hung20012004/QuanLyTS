@@ -15,6 +15,12 @@ class ChiTietThanhLy {
         $this->conn = $db;
     }
 
+      public function getById($chi_tiet_id) {
+        $stmt = $this->conn->prepare("SELECT * FROM chi_tiet_hoa_don_thanh_ly WHERE chi_tiet_id = ?");
+        $stmt->execute([$chi_tiet_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
                   SET hoa_don_id=:hoa_don_id, tai_san_id=:tai_san_id, so_luong=:so_luong, gia_thanh_ly=:don_gia";

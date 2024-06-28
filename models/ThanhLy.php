@@ -36,15 +36,9 @@ class ThanhLy {
     
     
     public function create() {
-           try {
-        // Bắt đầu transaction
-        $this->conn->beginTransaction();
 
-        // Kiểm tra ngày thanh lý
-        if (empty($this->ngay_thanh_ly)) {
-            throw new Exception('Ngày thanh lý không được để trống.');
-        }
-
+    $this->tong_tien = str_replace('.', '', $this->tong_tien);
+    $this->tong_tien = floatval($this->tong_tien);
         // Chèn dữ liệu vào bảng thanh lý
         $query = "INSERT INTO " . $this->table_name . " (ngay_thanh_ly, tong_gia_tri) VALUES (:ngay_thanh_ly, :tong_gia_tri)";
         $stmt = $this->conn->prepare($query);
@@ -70,19 +64,10 @@ class ThanhLy {
                 $stmt_detail->execute();
             }
 
-            // Commit transaction
-            $this->conn->commit();
-
             return true;
         } else {
             throw new Exception('Không thể chèn dữ liệu vào bảng thanh lý.');
         }
-    } catch (Exception $e) {
-        // Rollback transaction nếu có lỗi
-        $this->conn->rollBack();
-        error_log("Error: " . $e->getMessage());
-        return false;
-    }
     }
     
     public function viewcreate() {

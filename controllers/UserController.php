@@ -75,5 +75,26 @@ class UserController extends Controller {
         }
         header("Location: index.php?model=user");
     }
+
+    public function statistics() {
+    // Gọi phương thức từ model để lấy dữ liệu thống kê
+   $data = $this->user->getUsersByRole();
+    $usersByRole = $data['usersByRole'];
+    $totalUsers = $data['totalUsers'];
+    // Hiển thị view thống kê và truyền dữ liệu vào
+    $content = 'views/thongke/user.php';
+    include('views/layouts/base.php');
 }
+
+// Action để hiển thị chi tiết người dùng theo role
+public function roleDetail($role) {
+    // Gọi phương thức từ model để lấy danh sách người dùng theo role
+    $users = $this->user->getUsersByRoleSortedByName($role);
+
+    // Hiển thị view chi tiết người dùng và truyền dữ liệu vào
+    include('views/user/role_detail.php');
+}
+}
+
+    
 ?>

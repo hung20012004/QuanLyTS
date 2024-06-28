@@ -21,14 +21,15 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <?php if (!empty($errors)): ?>
+                    <?php if (!empty($_SESSION['errors'])): ?>
                         <div class="alert alert-danger">
                             <ul>
-                                <?php foreach ($errors as $error): ?>
+                                <?php foreach ($_SESSION['errors'] as $error): ?>
                                     <li><?php echo $error; ?></li>
                                 <?php endforeach; ?>
                             </ul>
                         </div>
+                        <?php unset($_SESSION['errors']); ?>
                     <?php endif; ?>
                     <form action="index.php?model=thanhly&action=create" method="POST">
                         <div id="taisan-container">
@@ -44,7 +45,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="quantity">Số lượng:</label>
-                                    <input type="number" name="taisans[][quantity]" class="form-control quantity-input" min="1" oninput="updateTotalPrice(this)">
+                                    <input type="number" name="taisans[][quantity]" class="form-control quantity-input" min="1" >
                                 </div>
                                 <div class="form-group">
                                     <label for="gia_thanh_ly">Giá thanh lý:</label>
@@ -72,7 +73,7 @@
                                         </thead>
                                         <tbody></tbody>
                                     </table>
-                                    <div style="text-align: right"><strong>Tổng cộng: </strong><span id="total-amount">0</span> VND</div>
+                                    <div style="text-align: right"><strong>Tổng cộng: </strong><span id="total-amount">0</span></div>
                                 </div>
                             </div>
                         </div>
@@ -87,7 +88,6 @@
         </div>
     </div>
 </div>
-
 
 <script>
     let totalAmount = 0;
@@ -141,8 +141,8 @@
         }
 
         if (!taisanId || quantity <= 0 || giaThanhLy < 0 || isNaN(giaThanhLy)) {
-        alert('Vui lòng chọn tài sản, nhập số lượng và giá thanh lý hợp lệ.');
-        return;
+            alert('Vui lòng chọn tài sản, nhập số lượng và giá thanh lý hợp lệ.');
+            return;
         }
         let taisanTotal = quantity * giaThanhLy;
         const taisanData = {
@@ -226,11 +226,11 @@
         });
 
         $('form').submit(function(event) {
-        // Kiểm tra số lượng bản ghi trong bảng
-        if ($('#taisan-list tbody tr').length === 0) {
-            alert('Vui lòng thêm ít nhất một tài sản để tạo hóa đơn thanh lý.');
-            event.preventDefault(); // Ngăn chặn việc submit form nếu không có bản ghi
-        }
-    });
+            // Kiểm tra số lượng bản ghi trong bảng
+            if ($('#taisan-list tbody tr').length === 0) {
+                alert('Vui lòng thêm ít nhất một tài sản để tạo hóa đơn thanh lý.');
+                event.preventDefault(); // Ngăn chặn việc submit form nếu không có bản ghi
+            }
+        });
     });
 </script>
