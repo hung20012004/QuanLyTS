@@ -41,7 +41,7 @@
             </div>
         </div>
         <div class="card-body">
-            <form method="POST" action="index.php?model=vitri&action=edit&id=<?= $viTri['vi_tri_id']; ?>">
+            <form method="POST" action="index.php?model=vitri&action=edit&id=<?= $viTri['vi_tri_id']; ?>" id="vitriForm">
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="ten_vi_tri">Vị trí</label>
@@ -54,32 +54,45 @@
                     <table id="tableChiTiet" class="table table-bordered">
                         <thead>
                             <tr>
+                                <th>Loại tài sản</th>
                                 <th>Tên Tài Sản</th>
+                                <th>Ngày mua</th>
                                 <th>Số Lượng</th>
                                 <th>Hành Động</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($viTriChiTiets as $index => $chiTiet): ?>
-                                <tr id="row<?= $index; ?>">
-                                    <td>
-                                        <select class="form-control tai_san_select" name="vi_tri_chi_tiets[<?= $index; ?>][tai_san_id]" required>
-                                            <option value="">Chọn tài sản</option>
-                                            <?php foreach ($taiSanList as $row) : ?>
-                                                <option value="<?= $row['tai_san_id']; ?>" <?= $row['tai_san_id'] == $chiTiet['tai_san_id'] ? 'selected' : ''; ?>>
-                                                    <?= htmlspecialchars($row['ten_tai_san']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="number" min="0" class="form-control so-luong" name="vi_tri_chi_tiets[<?= $index; ?>][so_luong]" value="<?= htmlspecialchars($chiTiet['so_luong']); ?>" required>
-                                    </td>
-                                    <td>
-                                        <input type="hidden" name="vi_tri_chi_tiets[<?= $index; ?>][vi_tri_id]" value="<?= $chiTiet['vi_tri_id']; ?>">
-                                        <button type="button" class="btn btn-danger btn-sm" onclick="xoaDong(this)">Xóa</button>
-                                    </td>
-                                </tr>
+                            <?php foreach ($viTriChiTiets as $index => $detail): ?>
+                            <tr id="row<?= $index; ?>">
+                                <td>
+                                    <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required <?= !empty($detail['tai_san_id']) ? 'disabled' : '' ?>>
+                                        <option value="">Chọn loại tài sản</option>
+                                        <?php foreach ($loaiTaiSan as $loai): ?>
+                                            <option value="<?= $loai['loai_tai_san_id']; ?>" <?= ($loai['loai_tai_san_id'] == $detail['loai_tai_san_id']) ? 'selected' : ''; ?>>
+                                                <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input list="taiSanList" class="form-control select-tai-san" name="ten_tai_san[]" value="<?= htmlspecialchars($detail['ten_tai_san']) ?>" placeholder="Chọn hoặc nhập tên tài sản" required>
+                                    <input type="hidden" name="chi_tiet_id[]" value="<?= $detail['chi_tiet_id'] ?>">
+                                    <input type="hidden" class="tai-san-id" name="tai_san_id[]" value="<?= $detail['tai_san_id'] ?? '' ?>">
+                                    <datalist id="taiSanList">
+                                        <?php foreach ($tai_san_list as $tai_san): ?>
+                                            <option 
+                                                data-loai-tai-san-id="<?= $tai_san['loai_tai_san_id']; ?>"
+                                                data-tai-san-id="<?= $tai_san['tai_san_id']; ?>"
+                                                value="<?= htmlspecialchars($tai_san['ten_tai_san']); ?>">
+                                        <?php endforeach; ?>
+                                    </datalist>
+                                </td>
+                                <td><input type="number" class="form-control so-luong" name="so_luong[]" value="<?= $detail['so_luong'] ?>" required></td>
+                                <td><input type="date" class="form-control so-luong" name="ngay_mua[]" value="<?= $detail['ngay_mua'] ?>" required></td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="xoaDong(this)">Xóa</button>
+                                </td>
+                            </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
@@ -96,6 +109,32 @@
 </div>
 
 <script>
+    function initializeTaiSanListeners() {
+        document.querySelectorAll('.select-tai-san').forEach(function(input) {
+            input.addEventListener('input', handleTaiSanSelection);
+        });
+    }
+
+    function handleTaiSanSelection() {
+        var datalist = document.getElementById('taiSanList');
+        var option = Array.from(datalist.options).find(opt => opt.value === this.value);
+        var row = this.closest('tr');
+        var loaiTaiSanSelect = row.querySelector('.loai-tai-san');
+        var taiSanIdInput = row.querySelector('.tai-san-id');
+        
+        if (option) {
+            var loaiTaiSanId = option.dataset.loaiTaiSanId;
+            var taiSanId = option.dataset.taiSanId;
+            loaiTaiSanSelect.value = loaiTaiSanId;
+            loaiTaiSanSelect.disabled = true;
+            taiSanIdInput.value = taiSanId;
+        } else {
+            loaiTaiSanSelect.disabled = false;
+            loaiTaiSanSelect.value = '';
+            taiSanIdInput.value = '';
+        }
+    }
+
     function updateRowNumbers() {
         document.querySelectorAll('#tableChiTiet tbody tr').forEach(function(row, index) {
             row.id = 'row' + index;
@@ -107,16 +146,16 @@
         var newRow = tbody.rows[0].cloneNode(true);
         var rowCount = tbody.rows.length;
         newRow.id = 'row' + rowCount;
-
-        // Reset input values
         newRow.querySelectorAll('input').forEach(function(input) {
             input.value = '';
         });
-
-        // Reset select values
         newRow.querySelectorAll('select').forEach(function(select) {
             select.selectedIndex = 0;
+            select.disabled = false;
         });
+
+        var newTaiSanInput = newRow.querySelector('.select-tai-san');
+        newTaiSanInput.addEventListener('input', handleTaiSanSelection);
 
         tbody.appendChild(newRow);
         updateRowNumbers();
@@ -132,7 +171,10 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        updateRowNumbers();
+    document.getElementById('vitriForm').addEventListener('submit', function(e) {
+        var disabledInputs = this.querySelectorAll('select:disabled, input:disabled');
+        disabledInputs.forEach(function(input) {
+            input.disabled = false;
+        });
     });
 </script>

@@ -59,7 +59,7 @@
                                 <td class="d-flex justify-content-center">
                                     <a href="index.php?model=vitri&action=show&id=<?= $viTri['vi_tri_id'] ?>"
                                         class="btn btn-info btn-sm mx-2">Xem</a>
-                                    <?php if ($viTri['vi_tri_id']!=0): ?>
+                                    <?php if ($viTri['vi_tri_id']!=1): ?>
                                         <a href="index.php?model=vitri&action=edit&id=<?= $viTri['vi_tri_id'] ?>"
                                             class="btn btn-warning btn-sm mx-2">Sửa</a>
                                         <form action="index.php?model=vitri&action=delete&id=<?= $viTri['vi_tri_id'] ?>" method="POST" style="display: inline-block;">

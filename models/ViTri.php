@@ -77,5 +77,17 @@ class ViTri {
         }
         return false;
     }
+
+    //Kiểm tra đã tồn tại chưa
+    public function checkExist($ten_vi_tri) {
+        $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE ten_vi_tri = :ten_vi_tri";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':ten_vi_tri', $ten_vi_tri);
+        $stmt->execute();
+        if ($stmt->fetchColumn() > 0) {
+            return true;
+        }
+        return false;
+    }
 }
 ?>

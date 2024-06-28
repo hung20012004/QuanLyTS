@@ -10,6 +10,8 @@ class ViTriController extends Controller {
     private $viTriChiTiet;
     private $taiSan;
     private $loaiTaiSan;
+    private $hoaDonMua;
+    private$chiTietHoaDon;
 
     public function __construct() {
         $database = new Database();
@@ -18,6 +20,8 @@ class ViTriController extends Controller {
         $this->viTriChiTiet = new ViTriChiTiet($this->db);
         $this->taiSan = new TaiSan($this->db);
         $this->loaiTaiSan = new LoaiTaiSan($this->db);
+        $this->hoaDonMua = new HoaDonMua($this->db);
+        $this->chiTietHoaDon = new ChiTietHoaDonMua($this->db);
     }
 
     public function index() {
@@ -49,7 +53,15 @@ class ViTriController extends Controller {
     
             try {
                 $this->viTri->ten_vi_tri = $_POST['ten_vi_tri'];
-                
+
+                if($this->viTri->checkExist($_POST['ten_vi_tri'])){
+                    $_SESSION['message'] = 'Vị trí đã tồn tại!';
+                    $_SESSION['message_type'] = 'danger';
+                    $content = 'views/vitris/create.php'; // Hiển thị lại form tạo mới
+                    include('views/layouts/base.php');
+                    return; // Dừng hàm để ngăn không chuyển hướng
+                }
+
                 if ($this->viTri->create()) {    
                     $this->db->commit();
                     $_SESSION['message'] = 'Tạo vị trí mới thành công!';
@@ -68,74 +80,80 @@ class ViTriController extends Controller {
         include('views/layouts/base.php');
     }
      
-    public function edit($id) {  
-        try {
-            // Begin transaction
+    public function edit($id) {
+        $viTri = $this->viTri->readById($id);
+        if (!$viTri) {
+            $_SESSION['message'] = 'Không tìm thấy vị trí!';
+            $_SESSION['message_type'] = 'danger';
+            header("Location: index.php?model=vitri");
+            return;
+        }
+        $vi_tri_chi_tiet = $this->viTriChiTiet->readByViTriId($id);
+    
+        if ($_POST) {
             $this->db->beginTransaction();
+            try {
+                // Update vi_tri
+                $this->viTri->vi_tri_id = $id;
+                $this->viTri->ten_vi_tri = $_POST['ten_vi_tri'];
+                if($this->viTri->checkExist($_POST['ten_vi_tri']) && $this->viTri->ten_vi_tri != $_POST['ten_vi_tri']){
+                    $_SESSION['message'] = 'Vị trí đã tồn tại!';
+                    $_SESSION['message_type'] = 'danger';
+                    $content = 'views/vitris/edit.php'; // Hiển thị lại form tạo mới
+                    include('views/layouts/base.php');
+                    return; // Dừng hàm để ngăn không chuyển hướng
+                }
+                $this->viTri->update();
+                
+                // Update vi_tri_chi_tiet
+                $this->viTriChiTiet->vi_tri_id = $id;
+                for ($i = 0; $i < count($_POST['chi_tiet_id']); $i++) {
+                    $this->viTriChiTiet->so_luong = $_POST['so_luong'][$i];
+                    $this->viTriChiTiet->chi_tiet_id = $_POST['chi_tiet_id'][$i];
     
-            // Update main position information if changed
-            $this->viTri->vi_tri_id = $id;
-            $this->viTri->ten_vi_tri = $_POST['ten_vi_tri'];
-            $this->viTri->update();
-    
-            // Process updating or adding position details
-            foreach ($_POST['vi_tri_chi_tiets'] as $chiTiet) {
-                $vi_tri_chi_tiet_id = $chiTiet['vi_tri_chi_tiet_id'];
-                $tai_san_id = $chiTiet['tai_san_id'];
-                $so_luong = $chiTiet['so_luong'];
-    
-                // Check if there's any change in quantity
-                $soLuongTruocCapNhat = $this->viTriChiTiet->readSoLuongById($vi_tri_chi_tiet_id);
-                $soLuongThayDoi = $so_luong - $soLuongTruocCapNhat;
-    
-                if ($soLuongThayDoi != 0) {
-                    // Perform inventory check only if quantity changes
-                    if (!$this->viTriChiTiet->kiemTraKho($tai_san_id, $soLuongThayDoi)) {
-                        throw new Exception('Kho không đủ số lượng.');
-                    }
-    
-                    // Update or create position detail
-                    if (!empty($vi_tri_chi_tiet_id)) {
-                        // Update existing position detail
-                        $this->viTriChiTiet->vi_tri_chi_tiet_id = $vi_tri_chi_tiet_id;
-                        $this->viTriChiTiet->vi_tri_id = $id;
-                        $this->viTriChiTiet->tai_san_id = $tai_san_id;
-                        $this->viTriChiTiet->so_luong = $so_luong;
+                    if ($_POST['chi_tiet_id'][$i] != '') {
                         $this->viTriChiTiet->update();
                     } else {
-                        // Create new position detail
-                        $this->viTriChiTiet->vi_tri_id = $id;
-                        $this->viTriChiTiet->tai_san_id = $tai_san_id;
-                        $this->viTriChiTiet->so_luong = $so_luong;
                         $this->viTriChiTiet->create();
                     }
     
-                    // Update inventory
-                    $this->viTriChiTiet->updateKho($tai_san_id, $soLuongThayDoi);
+                    // Get ngay_mua and tai_san_id from chi_tiet_hoa_don_mua
+                    // $chiTietHoaDonMua = $this->chiTietHoaDon->readByChiTietId($_POST['chi_tiet_id'][$i]);
+                    // if ($chiTietHoaDonMua) {
+                    //     $ngay_mua = $chiTietHoaDonMua['ngay_mua'];
+                    //     $tai_san_id = $chiTietHoaDonMua['tai_san_id'];
+                    //     // You can use $ngay_mua and $tai_san_id as needed
+                    // }
                 }
+    
+                // Delete removed vi_tri_chi_tiet
+                foreach ($vi_tri_chi_tiet as $detail) {
+                    $found = false;
+                    for ($i = 0; $i < count($_POST['chi_tiet_id']); $i++) {
+                        if ($detail['id'] == $_POST['chi_tiet_id'][$i]) {
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if (!$found) {
+                        $this->viTriChiTiet->delete($detail['vi_tri_chi_tiet_id']);
+                    }
+                }
+    
+                $this->db->commit();
+                $_SESSION['message'] = 'Sửa vị trí thành công!';
+                $_SESSION['message_type'] = 'success';
+                header("Location: index.php?model=vitri");
+                exit();
+            } catch (Exception $e) {
+                $this->db->rollBack();
+                $_SESSION['message'] = $e->getMessage();
+                $_SESSION['message_type'] = 'danger';
             }
-    
-            // Commit transaction
-            $this->db->commit();
-    
-            // Set success message and redirect to the list page
-            $_SESSION['message'] = 'Sửa vị trí thành công!';
-            $_SESSION['message_type'] = 'success';
-            header("Location: index.php?model=vitri");
-            exit();
-        } catch (Exception $e) {
-            // Rollback transaction on error
-            $this->db->rollBack();
-            $_SESSION['message'] = $e->getMessage();
-            $_SESSION['message_type'] = 'danger';
         }
-    
-        // Load data to display the edit form again on error or for further editing
-        $viTri = $this->viTri->readById($id);
+        $loaiTaiSan = $this->loaiTaiSan->readAll();
+        $tai_san_list = $this->taiSan->read();
         $viTriChiTiets = $this->viTriChiTiet->readByViTriId($id);
-        $taiSanList = $this->taiSan->read(); // Assuming you have a method to fetch TaiSan list
-    
-        // Load the view to display the edit form
         $content = 'views/vitris/edit.php';
         include('views/layouts/base.php');
     }
