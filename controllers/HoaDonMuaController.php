@@ -156,7 +156,10 @@ class HoaDonMuaController extends Controller
                         if (empty($_POST['chi_tiet_id'][$i])) {
                             $this->chiTietHoaDonMuaModel->create();
                             $chiTietID = $this->db->lastInsertId();
-                            $this->viTriChiTietModel->create($chiTietID, 1, $_POST['so_luong'][$i]);
+                            $this->viTriChiTietModel->chi_tiet_id=$chiTietID;
+                            $this->viTriChiTietModel->vi_tri_id=1;
+                            $this->viTriChiTietModel->so_luong=$_POST['so_luong'][$i];
+                            $this->viTriChiTietModel->create();
                         } else {
                             $this->chiTietHoaDonMuaModel->chi_tiet_id = $_POST['chi_tiet_id'][$i];
                             $this->chiTietHoaDonMuaModel->update();
@@ -180,6 +183,8 @@ class HoaDonMuaController extends Controller
                     $this->db->rollBack();
                     $_SESSION['message'] = $e->getMessage();
                     $_SESSION['message_type'] = 'danger';
+                    header('Location: index.php?model=hoadonmua&action=index');
+                    exit();
                 }
             }
         }

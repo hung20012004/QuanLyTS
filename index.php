@@ -107,9 +107,9 @@ switch ($action) {
     case 'reset_password':
         $controller->reset_password();
         break;
-    case 'viewcreatekh':
-        $controller->viewcreatekh($id); 
-        break;
+    // case 'viewcreatekh':
+    //     $controller->viewcreatekh($id); 
+    //     break;
     default:
         $controller->index();
         break;

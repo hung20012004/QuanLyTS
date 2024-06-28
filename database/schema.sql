@@ -21,14 +21,7 @@ CREATE TABLE tai_san (
     FOREIGN KEY (loai_tai_san_id) REFERENCES loai_tai_san(loai_tai_san_id)
 );
 
--- Bảng để lưu thông tin khấu hao của tài sản
-CREATE TABLE khau_hao (
-    khau_hao_id INT AUTO_INCREMENT PRIMARY KEY,
-    tai_san_id INT,
-    ngay_khau_hao DATE NOT NULL,
-    so_tien DECIMAL(15,0) NOT NULL,
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
-);
+
 
 -- Bảng để lưu thông tin vị trí của tài sản
 CREATE TABLE vi_tri (
@@ -60,7 +53,7 @@ CREATE TABLE chi_tiet_hoa_don_mua (
     tai_san_id INT,
     so_luong INT NOT NULL,
     don_gia DECIMAL(15,0) NOT NULL,
-    FOREIGN KEY (hoa_don_mua_id) REFERENCES hoa_don_mua(hoa_don_mua_id) ON DELETE CASCADE,
+    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don_mua(hoa_don_id) ON DELETE CASCADE,
     FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
 );
 
@@ -81,15 +74,7 @@ CREATE TABLE chi_tiet_hoa_don_thanh_ly (
     FOREIGN KEY (hoa_don_id) REFERENCES hoa_don_thanh_ly(hoa_don_id) ON DELETE CASCADE,
     FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
 );
--- Bảo trì
-CREATE TABLE maintenance_schedule (
-    schedule_id INT AUTO_INCREMENT PRIMARY KEY,
-    tai_san_id INT,
-    ngay_bat_dau DATE NOT NULL,
-    ngay_ket_thuc DATE,
-    mo_ta TEXT,
-    FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id)
-);
+
 -- Chi tiết tai san vi tri
 CREATE TABLE vi_tri_chi_tiet (
     vi_tri_chi_tiet_id INT PRIMARY KEY AUTO_INCREMENT,    
@@ -98,4 +83,21 @@ CREATE TABLE vi_tri_chi_tiet (
     chi_tiet_id INT,
     FOREIGN KEY (chi_tiet_id) REFERENCES chi_tiet_hoa_don_mua(chi_tiet_id),
     FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id)
+);
+-- Bảo trì
+CREATE TABLE maintenance_schedule (
+    schedule_id INT AUTO_INCREMENT PRIMARY KEY,
+    vi_tri_chi_tiet_id INT,
+    ngay_bat_dau DATE NOT NULL,
+    ngay_ket_thuc DATE,
+    mo_ta TEXT,
+    FOREIGN KEY (vi_tri_chi_tiet_id) REFERENCES vi_tri_chi_tiet(vi_tri_chi_tiet_id)
+);
+-- Bảng để lưu thông tin khấu hao của tài sản
+CREATE TABLE khau_hao (
+    khau_hao_id INT AUTO_INCREMENT PRIMARY KEY,
+    chi_tiet_id INT,
+    ngay_khau_hao DATE NOT NULL,
+    so_tien DECIMAL(15,0) NOT NULL,
+    FOREIGN KEY (chi_tiet_id) REFERENCES chi_tiet_hoa_don_mua(chi_tiet_id) ON UPDATE CASCADE
 );
