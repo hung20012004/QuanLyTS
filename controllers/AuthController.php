@@ -62,8 +62,50 @@ class AuthController extends Controller {
     
         include('views/auth/login.php');
     }
-    
+    public function sendEmail($to, $subject, $message) {
+        $headers = "From: no-reply@yourwebsite.com\r\n";
+        $headers .= "Reply-To: no-reply@yourwebsite.com\r\n";
+        $headers .= "Content-type: text/html\r\n";
+        mail($to, $subject, $message, $headers);
+    }
+    public function forgot_password_request() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $email = $_POST['email'];
+            
+            // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
+            $user = $this->authModel->getUserByEmail($email);
+            if ($user) {
+                $token = bin2hex(random_bytes(50)); // Tạo token ngẫu nhiên
+                $this->authModel->setResetToken($email, $token);
 
+                $resetLink = "http://yourwebsite.com/index.php?model=auth&action=reset_password&token=$token";
+                $subject = "Đặt lại mật khẩu của bạn";
+                $message = "Nhấp vào liên kết sau để đặt lại mật khẩu của bạn: <a href='$resetLink'>$resetLink</a>";
+                $this->sendEmail($email, $subject, $message); // Gửi email
+
+                echo "Một liên kết đặt lại mật khẩu đã được gửi đến email của bạn.";
+            } else {
+                echo "Email không tồn tại trong hệ thống.";
+            }
+        }
+    }
+    
+    public function reset_password() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $token = $_POST['token'];
+            $newPassword = password_hash($_POST['password'], PASSWORD_BCRYPT);
+
+            // Xác thực token và cập nhật mật khẩu mới
+            if ($this->authModel->resetPassword($token, $newPassword)) {
+                echo "Mật khẩu của bạn đã được cập nhật thành công.";
+            } else {
+                echo "Liên kết không hợp lệ hoặc đã hết hạn.";
+            }
+        } else {
+            $token = $_GET['token'];
+            include('views/auth/reset-password.php');
+        }
+    }
     public function logout() {
         // session_start();
         session_destroy();

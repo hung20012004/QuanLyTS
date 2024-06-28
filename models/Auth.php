@@ -78,4 +78,13 @@ class Auth {
             return false; // Mật khẩu hiện tại không chính xác
         }
     }
+    public function setResetToken($email, $token) {
+        $stmt = $this->db->prepare("UPDATE users SET reset_token = ?, reset_token_expiry = DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE email = ?");
+        return $stmt->execute([$token, $email]);
+    }
+
+    public function resetPassword($token, $newPassword) {
+        $stmt = $this->db->prepare("UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ? AND reset_token_expiry > NOW()");
+        return $stmt->execute([$newPassword, $token]);
+    }
 }

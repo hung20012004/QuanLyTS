@@ -46,10 +46,7 @@
                                 </form>
                                 <hr>
                                 <div class="text-center">
-                                    <a class="small" href="index.php?model=auth&action=register">Đăng ký</a>
-                                </div>
-                                <div class="text-center">
-                                    <a class="small" href="forgot-password.html">Quên mật khẩu</a>
+                                    <a class="small" href="index.php?model=auth&action=forgot_password">Quên mật khẩu</a>
                                 </div>
                             </div>
                         </div>
