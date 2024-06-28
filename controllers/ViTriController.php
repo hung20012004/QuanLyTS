@@ -112,7 +112,7 @@ class ViTriController extends Controller {
                     $this->viTriChiTiet->chi_tiet_id = $_POST['chi_tiet_id'][$i];
     
                     if ($_POST['chi_tiet_id'][$i] != '') {
-                        $this->viTriChiTiet->update();
+                        $this->viTriChiTiet->update($_POST['chi_tiet_id'][$i],$id,$_POST['so_luong'][$i]);
                     } else {
                         $this->viTriChiTiet->create();
                     }
