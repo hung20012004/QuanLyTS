@@ -36,6 +36,7 @@
                     <thead>
                         <tr>
                             <th>Tên tài sản</th>
+                            <th>Ngày mua</th>
                             <th>Số lượng</th>
                         </tr>
                     </thead>
@@ -44,6 +45,7 @@
                             <?php foreach ($viTriChiTiets as $chiTiet): ?>
                             <tr>
                                 <td><?= isset($chiTiet['ten_tai_san']) ? htmlspecialchars($chiTiet['ten_tai_san']) : 'N/A' ?></td>
+                                <td><?= isset($chiTiet['ngay_mua']) ? htmlspecialchars($chiTiet['ngay_mua']) : 'N/A' ?></td>
                                 <td><?= isset($chiTiet['so_luong']) ? $chiTiet['so_luong'] : 'N/A' ?></td>
                             </tr>
                             <?php endforeach; ?>

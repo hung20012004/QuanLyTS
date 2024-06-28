@@ -66,6 +66,20 @@ class ChiTietHoaDonMua {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function readByChiTietId($chi_tiet_id) {
+        $query = "SELECT ct.*, ts.ten_tai_san, hd.ngay_mua
+                  FROM " . $this->table_name . " ct
+                  INNER JOIN tai_san ts ON ct.tai_san_id = ts.tai_san_id
+                  INNER JOIN hoa_don_mua hd ON ct.hoa_don_id = hd.hoa_don_id
+                  WHERE ct.chi_tiet_id = :chi_tiet_id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':chi_tiet_id', $chi_tiet_id);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function update() {
         try{
         $query = "UPDATE " . $this->table_name . " 

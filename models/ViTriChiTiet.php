@@ -54,19 +54,13 @@ class ViTriChiTiet {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function readSoLuongById($id) {
-        $query = "SELECT so_luong FROM " . $this->table_name . " WHERE vi_tri_chi_tiet_id = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $id);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['so_luong'];
-    }
-
     // Đọc thông tin chi tiết vị trí theo ID vị trí
     public function readByViTriId($vi_tri_id) {
-        $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san 
-                 FROM " . $this->table_name . "
-                 JOIN tai_san ON vi_tri_chi_tiet.chi_tiet_id = tai_san.chi_tiet_id 
+        $query = "SELECT vi_tri_chi_tiet.*, tai_san.*, hoa_don_mua.ngay_mua
+                 FROM (( " . $this->table_name . "
+                 INNER JOIN chi_tiet_hoa_don_mua ON vi_tri_chi_tiet.chi_tiet_id = chi_tiet_hoa_don_mua.chi_tiet_id )
+                 INNER JOIN tai_san ON chi_tiet_hoa_don_mua.tai_san_id = tai_san.tai_san_id)
+                 INNER JOIN hoa_don_mua ON chi_tiet_hoa_don_mua.hoa_don_id = hoa_don_mua.hoa_don_id
                  WHERE vi_tri_chi_tiet.vi_tri_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $vi_tri_id);
@@ -97,12 +91,12 @@ class ViTriChiTiet {
     }
 
     // Trong lớp viTriChiTiet hoặc một lớp quản lý tương ứng
-    public function updateKho($taiSanId, $soLuongThayDoi) {
+    public function updateKho($chiTietID, $soLuongThayDoi) {
         // Assume there is a table or data structure for kho where vi_tri_id = 0
-        $sql = "UPDATE ". $this->table_name ." SET so_luong = so_luong + :soLuongThayDoi WHERE chi_tiet_id = :taiSanId AND vi_tri_id = 0";
+        $sql = "UPDATE ". $this->table_name ." SET so_luong = so_luong + :soLuongThayDoi WHERE chi_tiet_id = :chiTietID AND vi_tri_id = 0";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':soLuongThayDoi', $soLuongThayDoi, PDO::PARAM_INT);
-        $stmt->bindParam(':taiSanId', $taiSanId, PDO::PARAM_INT);
+        $stmt->bindParam(':chiTietID', $chiTietID, PDO::PARAM_INT);
         $stmt->execute();
     }
 

@@ -26,5 +26,5 @@ class LoadData {
 }
 
 $loader = new LoadData();
-$loader->runSQLFromFile('C:\xampp\htdocs\QuanLyTS\database\data.sql'); // Đường dẫn tới file data.sql
+$loader->runSQLFromFile('G:\XAMPP\htdocs\QuanLyTS\database\data.sql'); // Đường dẫn tới file data.sql
 ?>
