@@ -75,21 +75,21 @@ class ViTriChiTiet {
     }
 
     // Cập nhật thông tin chi tiết vị trí
-    public function update() {
-        $query = "UPDATE " . $this->table_name . " SET chi_tiet_id = :chi_tiet_id, so_luong = :so_luong WHERE vi_tri_chi_tiet_id = :vi_tri_chi_tiet_id";
-
+    public function update($chi_tiet_id, $vi_tri_id, $so_luong) {
+        $query = "UPDATE " . $this->table_name . " SET so_luong = :so_luong WHERE chi_tiet_id = :chi_tiet_id AND vi_tri_id = :vi_tri_id";
+    
         $stmt = $this->conn->prepare($query);
-
+    
         // sanitize
-        $this->chi_tiet_id = htmlspecialchars(strip_tags($this->chi_tiet_id));
-        $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
-        $this->vi_tri_chi_tiet_id = htmlspecialchars(strip_tags($this->vi_tri_chi_tiet_id));
-
+        $chi_tiet_id = htmlspecialchars(strip_tags($chi_tiet_id));
+        $vi_tri_id = htmlspecialchars(strip_tags($vi_tri_id));
+        $so_luong = htmlspecialchars(strip_tags($so_luong));
+    
         // bind values
-        $stmt->bindParam(':chi_tiet_id', $this->chi_tiet_id);
-        $stmt->bindParam(':so_luong', $this->so_luong);
-        $stmt->bindParam(':vi_tri_chi_tiet_id', $this->vi_tri_chi_tiet_id);
-
+        $stmt->bindParam(':chi_tiet_id', $chi_tiet_id);
+        $stmt->bindParam(':vi_tri_id', $vi_tri_id);
+        $stmt->bindParam(':so_luong', $so_luong);
+    
         if ($stmt->execute()) {
             return true;
         }
@@ -117,7 +117,16 @@ class ViTriChiTiet {
         }
         return false;
     }
-
+    public function getQuantityByChiTietIdAndViTriId($chiTietId, $viTriId)
+    {
+        $query = "SELECT so_luong FROM " . $this->table_name . " WHERE chi_tiet_id = :chi_tiet_id AND vi_tri_id = :vi_tri_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':chi_tiet_id', $chiTietId);
+        $stmt->bindParam(':vi_tri_id', $viTriId);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['so_luong'] : null;
+    }
     public function kiemTraKho($taiSanId, $soLuongCanThem) {
         // Assume there is a table or data structure for kho where vi_tri_id = 0
         $sql = "SELECT so_luong FROM ". $this->table_name ." WHERE chi_tiet_id = :taiSanId AND vi_tri_id = 0";

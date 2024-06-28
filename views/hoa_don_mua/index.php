@@ -119,11 +119,8 @@
                                         class="btn btn-info btn-sm mx-2">Xem</a>
                                     <a href="index.php?model=hoadonmua&action=edit&id=<?php echo $invoice['hoa_don_id']; ?>"
                                         class="btn btn-warning btn-sm mx-2">Sửa</a>
-                                    <form
-                                        action="index.php?model=hoadonmua&action=delete&id=<?php echo $invoice['hoa_don_id']; ?>"
-                                        method="POST" style="display: inline-block;" onsubmit="return confirmDelete();">
-                                        <button type="submit" class="btn btn-danger btn-sm mx-2">Xóa</button>
-                                    </form>
+                                    <a href="index.php?model=hoadonmua&action=delete&id=<?php echo $invoice['hoa_don_id']; ?>"
+                                        class="btn btn-danger btn-sm mx-2" onclick="return confirmDelete(<?php echo $invoice['hoa_don_id']; ?>);">Xóa</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -187,8 +184,23 @@
         });
     });
 
-    function confirmDelete() {
-        return confirm('Bạn có chắc muốn xóa hóa đơn này?');
+    function confirmDelete(id) {
+        if (confirm('Bạn có chắc muốn xóa hóa đơn này?')) {
+            fetch('index.php?model=hoadonmua&action=delete&id=' + id)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Xóa hóa đơn thành công!');
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa hóa đơn.');
+                });
+        }
+        return false;
     }
-
 </script>
