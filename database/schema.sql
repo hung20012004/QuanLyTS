@@ -97,7 +97,7 @@ CREATE TABLE maintenance_schedule (
 CREATE TABLE khau_hao (
     khau_hao_id INT AUTO_INCREMENT PRIMARY KEY,
     chi_tiet_id INT,
-    ngay_khau_hao DATE NOT NULL,
+    thoi_gian_khau_hao INT,
     so_tien DECIMAL(15,0) NOT NULL,
     FOREIGN KEY (chi_tiet_id) REFERENCES chi_tiet_hoa_don_mua(chi_tiet_id) ON UPDATE CASCADE
 );
