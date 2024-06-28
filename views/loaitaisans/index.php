@@ -69,8 +69,6 @@
                                     <td class="text-center"><?= $loaiTaiSan['loai_tai_san_id'] ?></td>
                                     <td><?= htmlspecialchars($loaiTaiSan['ten_loai_tai_san']) ?></td>
                                     <td class="d-flex justify-content-center">
-                                        <a href="index.php?model=loaitaisan&action=show&id=<?= $loaiTaiSan['loai_tai_san_id'] ?>"
-                                            class="btn btn-info btn-sm mx-2">Xem</a>
                                         <a href="index.php?model=loaitaisan&action=edit&id=<?= $loaiTaiSan['loai_tai_san_id'] ?>"
                                             class="btn btn-warning btn-sm mx-2">Sửa</a>
                                         <form action="index.php?model=loaitaisan&action=delete&id=<?= $loaiTaiSan['loai_tai_san_id'] ?>"

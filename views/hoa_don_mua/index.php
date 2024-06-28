@@ -30,7 +30,7 @@
                         alert.style.display = 'none';
                     }, 150);
                 }
-            }, 2000); // 2000 milliseconds = 2 seconds
+            }, 7000); // 2000 milliseconds = 2 seconds
         </script>
     <?php endif; ?>
 

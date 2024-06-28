@@ -156,7 +156,10 @@ class HoaDonMuaController extends Controller
                         if (empty($_POST['chi_tiet_id'][$i])) {
                             $this->chiTietHoaDonMuaModel->create();
                             $chiTietID = $this->db->lastInsertId();
-                            $this->viTriChiTietModel->create($chiTietID, 1, $_POST['so_luong'][$i]);
+                            $this->viTriChiTietModel->chi_tiet_id=$chiTietID;
+                            $this->viTriChiTietModel->vi_tri_id=1;
+                            $this->viTriChiTietModel->so_luong=$_POST['so_luong'][$i];
+                            $this->viTriChiTietModel->create();
                         } else {
                             $this->chiTietHoaDonMuaModel->chi_tiet_id = $_POST['chi_tiet_id'][$i];
                             $this->chiTietHoaDonMuaModel->update();
@@ -180,6 +183,8 @@ class HoaDonMuaController extends Controller
                     $this->db->rollBack();
                     $_SESSION['message'] = $e->getMessage();
                     $_SESSION['message_type'] = 'danger';
+                    header('Location: index.php?model=hoadonmua&action=index');
+                    exit();
                 }
             }
         }
@@ -320,6 +325,44 @@ class HoaDonMuaController extends Controller
 
         $content = 'views/hoa_don_mua/show.php';
         include ('views/layouts/base.php');
+    }
+    public function statistics()
+    {
+        // Lấy dữ liệu thống kê
+        $totalInvoices = $this->hoaDonMuaModel->getTotalInvoices();
+        $totalValue = $this->hoaDonMuaModel->getTotalValue();
+        $avgValue = $totalInvoices > 0 ? $totalValue / $totalInvoices : 0;
+    
+        // Thống kê theo tháng
+        $monthlyInvoices = $this->hoaDonMuaModel->getMonthlyInvoices();
+    
+        // Thống kê theo nhà cung cấp
+        $supplierInvoices = $this->hoaDonMuaModel->getSupplierInvoices();
+    
+        // Lấy top 5 tài sản được mua nhiều nhất
+        $topAssets = $this->chiTietHoaDonMuaModel->getTopAssets(5);
+    
+        // Chuẩn bị dữ liệu cho biểu đồ
+        $chartData = [
+            'monthlyLabels' => array_column($monthlyInvoices, 'month'),
+            'monthlyData' => array_column($monthlyInvoices, 'count'),
+            'supplierLabels' => array_column($supplierInvoices, 'ten_nha_cung_cap'),
+            'supplierData' => array_column($supplierInvoices, 'count'),
+        ];
+    
+        // Truyền dữ liệu vào view
+        $data = [
+            'totalInvoices' => $totalInvoices,
+            'totalValue' => $totalValue,
+            'avgValue' => $avgValue,
+            'monthlyInvoices' => $monthlyInvoices,
+            'supplierInvoices' => $supplierInvoices,
+            'topAssets' => $topAssets,
+            'chartData' => json_encode($chartData),
+        ];
+    
+        $content = 'views/hoa_don_mua/statistic.php';
+        include('views/layouts/base.php');
     }
 }
 ?>

@@ -69,8 +69,6 @@
                                 <td class="text-center"><?= $nhaCungCap['nha_cung_cap_id'] ?></td>
                                 <td><?= htmlspecialchars($nhaCungCap['ten_nha_cung_cap']) ?></td>
                                 <td class="d-flex justify-content-center">
-                                    <a href="index.php?model=nhacungcap&action=show&id=<?= $nhaCungCap['nha_cung_cap_id'] ?>"
-                                        class="btn btn-info btn-sm mx-2">Xem</a>
                                     <a href="index.php?model=nhacungcap&action=edit&id=<?= $nhaCungCap['nha_cung_cap_id'] ?>"
                                         class="btn btn-warning btn-sm mx-2">Sửa</a>
                                     <form action="index.php?model=nhacungcap&action=delete&id=<?= $nhaCungCap['nha_cung_cap_id'] ?>" method="POST" style="display: inline-block;">
