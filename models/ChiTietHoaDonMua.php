@@ -102,12 +102,17 @@ class ChiTietHoaDonMua {
     }
 
     public function delete($chi_tiet_id) {
-        $query = "DELETE FROM " . $this->table_name . " WHERE chi_tiet_id = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $chi_tiet_id);
-        return $stmt->execute();
-    }
+        $query1 = "DELETE FROM vi_tri_chi_tiet WHERE chi_tiet_id = ? AND vi_tri_id = '1'";
+        $stmt1 = $this->conn->prepare($query1);
+        $stmt1->bindParam(1, $chi_tiet_id);
+        $stmt1->execute();
 
+        // Xóa bản ghi trong bảng chi tiết hóa đơn mua
+        $query2 = "DELETE FROM " . $this->table_name . " WHERE chi_tiet_id = ?";
+        $stmt2 = $this->conn->prepare($query2);
+        $stmt2->bindParam(1, $chi_tiet_id);
+        $stmt2->execute();
+    }
     public function deleteByHoaDonId($hoa_don_id) {
         $query = "DELETE FROM " . $this->table_name . " WHERE hoa_don_id = ?";
         $stmt = $this->conn->prepare($query);

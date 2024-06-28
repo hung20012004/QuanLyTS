@@ -16,17 +16,22 @@
             </div>
         </div>
         <div class="card-body">
+            <?php if ($quantityMismatch): ?>
+                <div class="alert alert-danger">
+                    Không thể sửa hóa đơn do số lượng không khớp với số lượng trong kho!
+                </div>
+            <?php endif; ?>
             <form method="POST" action="index.php?model=hoadonmua&action=edit&id=<?= $invoice['hoa_don_id'] ?>" id="hoadonForm">
                 <input type="hidden" name="hoa_don_id" value="<?= $invoice['hoa_don_id'] ?>">
                 <!-- Ngày Mua và Nhà Cung Cấp -->
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="ngayMua">Ngày Mua</label>
-                        <input type="date" class="form-control" id="ngayMua" name="ngay_mua" value="<?= $invoice['ngay_mua'] ?>" required>
+                        <input type="date" class="form-control" id="ngayMua" name="ngay_mua" value="<?= $invoice['ngay_mua'] ?>" required <?= $quantityMismatch ? 'disabled' : '' ?>>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="nhaCungCap">Nhà Cung Cấp</label>
-                        <select class="form-control" id="nhaCungCap" name="nha_cung_cap_id" required>
+                        <select class="form-control" id="nhaCungCap" name="nha_cung_cap_id" required <?= $quantityMismatch ? 'disabled' : '' ?>>
                             <option value="">Chọn nhà cung cấp</option>
                             <?php foreach ($suppliers as $supplier): ?>
                                 <option value="<?= $supplier['nha_cung_cap_id']; ?>" <?= ($supplier['nha_cung_cap_id'] == $invoice['nha_cung_cap_id']) ? 'selected' : ''; ?>>
@@ -54,12 +59,10 @@
                         <tbody>
                             <?php foreach ($invoice_details as $index => $detail): ?>
                             <tr id="row<?= $index ?>">
-                                
-                                <?php  $loai_tai_san_list = $this->loaiTaiSanModel->readAll();?>
                                 <td>
-                                    
-                                    <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required <?= !empty($detail['tai_san_id']) ? 'disabled' : '' ?>>
+                                    <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required <?= !empty($detail['tai_san_id']) || $quantityMismatch ? 'disabled' : '' ?>>
                                         <option value="">Chọn loại tài sản</option>
+                                        <?php $loai_tai_san_list = $this->loaiTaiSanModel->readAll();?>
                                         <?php foreach ($loai_tai_san_list as $loai): ?>
                                             <option value="<?= $loai['loai_tai_san_id']; ?>" <?= ($loai['loai_tai_san_id'] == $detail['loai_tai_san_id']) ? 'selected' : ''; ?>>
                                                 <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
@@ -68,7 +71,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <input list="taiSanList" class="form-control select-tai-san" name="ten_tai_san[]" value="<?= htmlspecialchars($detail['ten_tai_san']) ?>" placeholder="Chọn hoặc nhập tên tài sản" required>
+                                    <input list="taiSanList" class="form-control select-tai-san" name="ten_tai_san[]" value="<?= htmlspecialchars($detail['ten_tai_san']) ?>" placeholder="Chọn hoặc nhập tên tài sản" required <?= $quantityMismatch ? 'disabled' : '' ?>>
                                     <input type="hidden" name="chi_tiet_id[]" value="<?= $detail['chi_tiet_id'] ?>">
                                     <input type="hidden" class="tai-san-id" name="tai_san_id[]" value="<?= $detail['tai_san_id'] ?? '' ?>">
                                     <datalist id="taiSanList">
@@ -80,18 +83,18 @@
                                         <?php endforeach; ?>
                                     </datalist>
                                 </td>
-                                <td><input type="number" class="form-control so-luong" name="so_luong[]" value="<?= $detail['so_luong'] ?>" required></td>
-                                <td><input type="number" class="form-control don-gia" name="don_gia[]" value="<?= $detail['don_gia'] ?>" required></td>
+                                <td><input type="number" class="form-control so-luong" name="so_luong[]" value="<?= $detail['so_luong'] ?>" required <?= $quantityMismatch ? 'disabled' : '' ?>></td>
+                                <td><input type="number" class="form-control don-gia" name="don_gia[]" value="<?= $detail['don_gia'] ?>" required <?= $quantityMismatch ? 'disabled' : '' ?>></td>
                                 <td><input type="text" class="form-control thanh-tien" name="thanh_tien[]" value="<?= $detail['so_luong'] * $detail['don_gia'] ?>" readonly></td>
                                 <td>
-                                    <button type="button" class="btn btn-danger btn-sm" onclick="xoaDong(this)">Xóa</button>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="xoaDong(this)" <?= $quantityMismatch ? 'disabled' : '' ?>>Xóa</button>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
-                <button type="button" class="btn btn-primary mt-2" onclick="themDong()">Thêm Dòng</button>
+                <button type="button" class="btn btn-primary mt-2" onclick="themDong()" <?= $quantityMismatch ? 'disabled' : '' ?>>Thêm Dòng</button>
 
                 <!-- Tổng Giá Trị -->
                 <div class="form-group mt-3">
@@ -100,7 +103,11 @@
                 </div>
                 <div class="mt-3 d-flex justify-content-between">
                     <a href="index.php?model=hoadonmua&action=index" class="btn btn-secondary">Quay Lại</a>
-                    <button type="submit" class="btn btn-success">Lưu Thay Đổi</button>
+                    <?php if ($quantityMismatch): ?>
+                        <button type="button" class="btn btn-success" disabled>Lưu Thay Đổi</button>
+                    <?php else: ?>
+                        <button type="submit" class="btn btn-success">Lưu Thay Đổi</button>
+                    <?php endif; ?>
                 </div>
             </form>
         </div>
@@ -196,8 +203,18 @@ function themDong() {
 function xoaDong(button) {
     var row = button.closest('tr');
     if (document.querySelectorAll('#tableChiTiet tbody tr').length > 1) {
-        row.remove();
-        updateRowNumbers();
+        var chiTietId = row.querySelector('input[name="chi_tiet_id[]"]').value;
+        if (chiTietId) {
+            // Nếu có chi_tiet_id, thêm một trường ẩn để đánh dấu là cần xóa
+            var deleteInput = document.createElement('input');
+            deleteInput.type = 'hidden';
+            deleteInput.name = 'deleted_chi_tiet_id[]';
+            deleteInput.value = chiTietId;
+            document.getElementById('hoadonForm').appendChild(deleteInput);
+        }
+        // Ẩn hàng thay vì xóa khỏi DOM
+        row.style.display = 'none';
+        tinhTongGiaTri();
     } else {
         alert('Không thể xóa dòng cuối cùng.');
     }
