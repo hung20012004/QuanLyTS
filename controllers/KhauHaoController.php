@@ -170,7 +170,8 @@ class KhauHaoController extends Controller
                 $insertStmt->execute([$chiTietId, $thoiGian, $soTien]);
             }
         }
-
+        $_SESSION['message'] = 'Cập nhật thông tin khấu hao thành công!';
+        $_SESSION['message_type'] = 'success';
         // Redirect để tránh gửi lại form khi refresh
         header("Location: index.php?model=khauhao&action=detail&id=" . $id);
         exit();

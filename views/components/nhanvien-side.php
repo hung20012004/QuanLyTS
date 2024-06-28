@@ -33,7 +33,7 @@
                 <div id="collapseThree" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="route.php?model=hoadonmua&action=index">Quản lý hóa đơn</a>
-                        <a class="collapse-item" href="cards.html">Thống kê</a>
+                        <a class="collapse-item" href="route.php?model=hoadonmua&action=statistic">Thống kê</a>
                     </div>
                 </div>
             </li>

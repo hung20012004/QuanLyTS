@@ -119,5 +119,18 @@ class ChiTietHoaDonMua {
         $stmt->bindParam(1, $hoa_don_id);
         return $stmt->execute();
     }
+    public function getTopAssets($limit = 5)
+{
+    $query = "SELECT ts.ten_tai_san, SUM(cthdm.so_luong) as total_quantity
+              FROM chi_tiet_hoa_don_mua cthdm
+              JOIN tai_san ts ON cthdm.tai_san_id = ts.tai_san_id
+              GROUP BY cthdm.tai_san_id
+              ORDER BY total_quantity DESC
+              LIMIT :limit";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }
 ?>

@@ -175,5 +175,43 @@ class HoaDonMua {
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getTotalInvoices()
+{
+    $query = "SELECT COUNT(*) as total FROM hoa_don_mua";
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+}
+
+public function getTotalValue()
+{
+    $query = "SELECT SUM(tong_gia_tri) as total FROM hoa_don_mua";
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+}
+
+public function getMonthlyInvoices()
+{
+    $query = "SELECT DATE_FORMAT(ngay_mua, '%Y-%m') as month, COUNT(*) as count 
+              FROM hoa_don_mua 
+              GROUP BY DATE_FORMAT(ngay_mua, '%Y-%m') 
+              ORDER BY month";
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function getSupplierInvoices()
+{
+    $query = "SELECT ncc.ten_nha_cung_cap, COUNT(*) as count 
+              FROM hoa_don_mua hdm
+              JOIN nha_cung_cap ncc ON hdm.nha_cung_cap_id = ncc.nha_cung_cap_id
+              GROUP BY hdm.nha_cung_cap_id
+              ORDER BY count DESC";
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }
 ?>
