@@ -78,16 +78,21 @@
                     </thead>
                     <tbody>
                         <?php foreach ($taiSans as $taiSan): ?>
-                                <tr>
-                                    <td class="text-center"><?= $taiSan['tai_san_id'] ?></td>
-                                    <td><?= htmlspecialchars($taiSan['ten_tai_san']) ?></td>
-                                    <td><?= htmlspecialchars($taiSan['mo_ta']) ?></td>
-                                    <td><?= htmlspecialchars($taiSan['ten_loai_tai_san']) ?></td>
-                                    <td class="d-flex justify-content-center">
-                                        <a href="index.php?model=taisan&action=edit&id=<?= $taiSan['tai_san_id'] ?>"
-                                            class="btn btn-warning btn-sm mx-2">Sửa</a>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td class="text-center"><?= $taiSan['tai_san_id'] ?></td>
+                                <td><?= htmlspecialchars($taiSan['ten_tai_san']) ?></td>
+                                <td><?= htmlspecialchars($taiSan['mo_ta']) ?></td>
+                                <td><?= htmlspecialchars($taiSan['ten_loai_tai_san']) ?></td>
+                                <td class="d-flex justify-content-center">
+                                    <a href="index.php?model=taisan&action=edit&id=<?= $taiSan['tai_san_id'] ?>" class="btn btn-warning btn-sm mx-2">Sửa</a>
+                                    <a href="index.php?model=taisan&action=detail&id=<?= $taiSan['tai_san_id'] ?>" class="btn btn-info btn-sm mx-2">Chi Tiết</a>
+                                </td>
+                            </tr>
+                            <tr id="detail-<?= $taiSan['tai_san_id'] ?>" style="display: none;">
+                                <td colspan="5">
+                                    <div class="detail-content"></div>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -107,7 +112,7 @@
             for (var i = 1; i < rows.length; i++) {
                 var cells = rows[i].getElementsByTagName('td');
                 var tenTaiSan = cells[1].textContent.trim().toLowerCase();
-                var tenLoaiTaiSan = cells[4].textContent.trim().toLowerCase();
+                var tenLoaiTaiSan = cells[3].textContent.trim().toLowerCase();
 
                 if ((tenTaiSan.includes(taiSanFilter) || taiSanFilter === '') && 
                     (tenLoaiTaiSan.includes(loaiTaiSanFilter) || loaiTaiSanFilter === '')) {
@@ -135,7 +140,17 @@
         });
     });
 
-    function confirmDelete() {
-        return confirm('Bạn có chắc muốn xóa tài sản này?');
+    function showDetail(taiSanId) {
+        var detailRow = document.getElementById('detail-' + taiSanId);
+        if (detailRow.style.display === 'none') {
+            fetch('index.php?model=taisan&action=detail&id=' + taiSanId)
+                .then(response => response.text())
+                .then(data => {
+                    detailRow.querySelector('.detail-content').innerHTML = data;
+                    detailRow.style.display = 'table-row';
+                });
+        } else {
+            detailRow.style.display = 'none';
+        }
     }
 </script>

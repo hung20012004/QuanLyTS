@@ -88,10 +88,19 @@ switch ($action) {
         $controller->statistics();
         break;
     case 'viewcreate':
-        $controller->viewcreate(); 
+        $controller->viewcreate();
         break;
     case 'show':
-        $controller->show($id); 
+        $controller->show($id);
+        break;
+    case 'detail':
+        $controller->detail($id);
+        break;
+    case 'forgot_password':
+        $controller->forgot_password_request();
+        break;
+    case 'reset_password':
+        $controller->reset_password();
         break;
     default:
         $controller->index();

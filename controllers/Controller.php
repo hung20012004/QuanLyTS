@@ -31,5 +31,8 @@ class Controller {
     public function profile() {}
     public function export(){}
     public function statistics(){}
+    public function forgot_password_request(){}
+    public function reset_password(){}
+    public function detail($id){}
 }
 ?>
