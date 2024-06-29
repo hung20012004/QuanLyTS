@@ -111,6 +111,9 @@ switch ($action) {
     case 'reset_password':
         $controller->reset_password();
         break;
+    case 'getQuantityInStock':
+        $controller->getQuantityInStock();
+        break;
     // case 'viewcreatekh':
     //     $controller->viewcreatekh($id); 
     //     break;

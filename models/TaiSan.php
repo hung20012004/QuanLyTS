@@ -145,5 +145,13 @@ class TaiSan {
         // Trả về true nếu tài sản đã tồn tại, ngược lại trả về false
         return $count > 0;
     }
+    public function getAllTaiSanWithLoaiTaiSan() {
+        $query = "SELECT ts.*, lts.ten_loai_tai_san
+                  FROM tai_san ts
+                  INNER JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

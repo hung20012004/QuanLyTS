@@ -96,5 +96,69 @@ class ViTri {
         }
         return false;
     }
+    public function updateViTri($id, $tenViTri, $viTriChiTiets) {
+        try {
+            // Bắt đầu transaction
+            $this->conn->beginTransaction();
+
+            // Cập nhật thông tin chính của vị trí
+            $query = "UPDATE vi_tri SET ten_vi_tri = :ten_vi_tri WHERE vi_tri_id = :vi_tri_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':ten_vi_tri', $tenViTri);
+            $stmt->bindParam(':vi_tri_id', $id);
+            $stmt->execute();
+
+            // Xóa các chi tiết vị trí cũ
+            $queryDelete = "DELETE FROM vi_tri_chi_tiet WHERE vi_tri_id = :vi_tri_id";
+            $stmtDelete = $this->conn->prepare($queryDelete);
+            $stmtDelete->bindParam(':vi_tri_id', $id);
+            $stmtDelete->execute();
+
+            // Thêm lại các chi tiết vị trí mới
+            $queryInsert = "INSERT INTO vi_tri_chi_tiet (vi_tri_id, tai_san_id, so_luong_kho, so_luong_chuyen) VALUES (:vi_tri_id, :tai_san_id, :so_luong_kho, :so_luong_chuyen)";
+            $stmtInsert = $this->conn->prepare($queryInsert);
+
+            foreach ($viTriChiTiets as $viTriChiTiet) {
+                $stmtInsert->bindParam(':vi_tri_id', $id);
+                $stmtInsert->bindParam(':tai_san_id', $viTriChiTiet['tai_san_id']);
+                $stmtInsert->bindParam(':so_luong_kho', $viTriChiTiet['so_luong_kho']);
+                $stmtInsert->bindParam(':so_luong_chuyen', $viTriChiTiet['so_luong_chuyen']);
+                $stmtInsert->execute();
+            }
+
+            // Commit transaction
+            $this->conn->commit();
+            return true;
+        } catch (PDOException $e) {
+            // Rollback nếu có lỗi
+            $this->conn->rollBack();
+            return false;
+        }
+    }
+    public function getViTriById($id) {
+        $query = "SELECT * FROM vi_tri WHERE vi_tri_id = :vi_tri_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':vi_tri_id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function getViTriChiTiets($id) {
+        $query = "SELECT vct.vi_tri_id, vct.so_luong, v.ten_vi_tri,
+                         cthdm.tai_san_id, cthdm.so_luong as so_luong_kho, cthdm.hoa_don_id,
+                         ts.ten_tai_san, lts.ten_loai_tai_san, hd.ngay_mua
+                  FROM vi_tri_chi_tiet vct
+                  LEFT JOIN chi_tiet_hoa_don_mua cthdm ON vct.chi_tiet_id = cthdm.chi_tiet_id
+                  LEFT JOIN tai_san ts ON cthdm.tai_san_id = ts.tai_san_id
+                  LEFT JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id
+                  LEFT JOIN hoa_don_mua hd ON cthdm.hoa_don_id = hd.hoa_don_id
+                  LEFT JOIN vi_tri v ON vct.vi_tri_id = v.vi_tri_id
+                  WHERE vct.vi_tri_id = :id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>
