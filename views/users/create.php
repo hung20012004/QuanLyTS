@@ -50,7 +50,6 @@
                         <div class="mb-3">
                             <label for="role" class="form-label">Vai trò:</label>
                             <select name="role" id="role" class="form-control" required>
-                                <option>Chọn vai trò</option>
                                 <option value="NhanVien" <?php echo $role === 'NhanVien' ? 'selected' : ''; ?>>Nhân viên quản lý tài sản</option>
                                 <option value="KyThuat" <?php echo $role === 'KyThuat' ? 'selected' : ''; ?>>Kỹ thuật viên</option>
                             </select>
@@ -77,4 +76,15 @@
             this.querySelector('i').classList.toggle('fa-eye-slash');
         });
     });
+    document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+    const roleSelect = document.getElementById('role');
+
+    form.addEventListener('submit', function(event) {
+        if (roleSelect.value === '') {
+            event.preventDefault();
+            alert('Vui lòng chọn vai trò cho người dùng.');
+        }
+    });
+});
 </script>
