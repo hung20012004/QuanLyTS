@@ -41,13 +41,14 @@
                 </div>
             </div>
         </div>
-        <div class="card-body" id="searchForm" style="display: none;">
-            <form action="index.php?model=khauhao&action=search" method="POST">
+        <div class="card-body">
+            <form id="searchForm" class="mb-3" style="display: none;">
                 <div class="row">
+                    <form action="index.php?model=khauhao&action=create" method="POST">
                     <div class="col-md-4 mb-2">
                         <div class="d-flex align-items-center">
                             <label for="taiSanSearch" class="mr-2 mb-0" style="white-space: nowrap;">Tài sản:</label>
-                            <input type="text" id="taiSanSearch" name="ten_tai_san" class="form-control" placeholder="Nhập tên tài sản">
+                            <input type="text" id="taiSanSearch" name = "ten_tai_san" class="form-control" placeholder="Nhập tên tài sản">
                         </div>
                     </div>
                     <div class="col-md-4 mb-2">
@@ -62,14 +63,13 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                    </div>
+                    </div >
                     <div class="col-md-4 mb-2">  
-                        <button type="submit" class="btn btn-success">Tìm kiếm</button>
+                            <input type="submit" class="btn btn-success" value="Tìm kiếm">
                     </div>
+                    </form>
                 </div>
             </form>
-        </div>
-        <div class="card-body">
             <div class="table-responsive">
                 <table id="dataTable" class="table table-bordered" width="100%" cellspacing="0">
                     <thead class="bg-light text-black text-center">
@@ -89,6 +89,7 @@
                                 <td><?= htmlspecialchars($kh['mo_ta']) ?></td>
                                 <td><?= htmlspecialchars($kh['ten_loai_tai_san']) ?></td>
                                 <td class="d-flex justify-content-center">
+                                 
                                     <a href="index.php?model=khauhao&action=detail&id=<?= $kh['tai_san_id'] ?>" class="btn btn-info btn-sm mx-2">Chi Tiết</a>
                                 </td>
                             </tr>
@@ -107,6 +108,29 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        function filterTable() {
+            var taiSanFilter = document.getElementById('taiSanSearch').value.toLowerCase();
+            var loaiTaiSanFilter = document.getElementById('loaiTaiSanSearch').value.toLowerCase();
+            var table = document.getElementById('dataTable');
+            var rows = table.getElementsByTagName('tr');
+
+            for (var i = 1; i < rows.length; i++) {
+                var cells = rows[i].getElementsByTagName('td');
+                var tenTaiSan = cells[1].textContent.trim().toLowerCase();
+                var tenLoaiTaiSan = cells[3].textContent.trim().toLowerCase();
+
+                if ((tenTaiSan.includes(taiSanFilter) || taiSanFilter === '') && 
+                    (tenLoaiTaiSan.includes(loaiTaiSanFilter) || loaiTaiSanFilter === '')) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        document.getElementById('taiSanSearch').addEventListener('input', filterTable);
+        document.getElementById('loaiTaiSanSearch').addEventListener('change', filterTable);
+
         var toggleButton = document.getElementById('toggleSearch');
         var searchForm = document.getElementById('searchForm');
 
@@ -120,4 +144,18 @@
             }
         });
     });
-</script>F
+
+    function showDetail(taiSanId) {
+        var detailRow = document.getElementById('detail-' + taiSanId);
+        if (detailRow.style.display === 'none') {
+            fetch('index.php?model=taisan&action=detail&id=' + taiSanId)
+                .then(response => response.text())
+                .then(data => {
+                    detailRow.querySelector('.detail-content').innerHTML = data;
+                    detailRow.style.display = 'table-row';
+                });
+        } else {
+            detailRow.style.display = 'none';
+        }
+    }
+</script>

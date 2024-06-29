@@ -1,17 +1,5 @@
 <div class="container-fluid">
-    <div class="row mt-3">
-        <div class="col">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=thanhly&action=index">Thanh Lý</a></li>
-                </ol>
-            </nav>
-        </div>
-    </div>
-</div>
-
-<div class="container-fluid">
-     <?php if (isset($_SESSION['message'])): ?>
+    <?php if (isset($_SESSION['message'])): ?>
         <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
             <?= $_SESSION['message']; ?>
         </div>
@@ -32,6 +20,7 @@
             }, 2000); // 2000 milliseconds = 2 seconds
         </script>
     <?php endif; ?>
+
     <div class="card shadow mb-4">
         <div class="card-header py-2">
             <div class="d-flex justify-content-between align-items-center">
@@ -49,7 +38,7 @@
                     <div class="col-md-6 mb-2">
                         <div class="d-flex align-items-center">
                             <label for="ngayThanhLy" class="mr-2 mb-0" style="white-space: nowrap;">Ngày thanh lý:</label>
-                            <input type="date" id="ngayThanhLy" class="form-control" placeholder="Ngày thanh lý">
+                            <input type="text" id="ngayThanhLy" class="form-control" placeholder="dd/mm/yyyy">
                         </div>
                     </div>
                     <div class="col-md-6 mb-2">
@@ -60,6 +49,7 @@
                     </div>
                 </div>
             </form>
+
             <div class="table-responsive">
                 <table id="dataTable" class="table table-bordered" width="100%" cellspacing="0">
                     <thead class="bg-light text-black text-center">
@@ -71,10 +61,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                     <?php foreach ($hoa_don_thanh_lys as $hoadon): ?>
+                    <?php foreach ($hoa_don_thanh_lys as $hoadon): ?>
                         <tr>
                             <td class="text-center"><?= $hoadon['hoa_don_id'] ?></td>
-                            <td class="text-center"><?= htmlspecialchars(date('d-m-Y', strtotime($hoadon['ngay_thanh_ly']))) ?></td>
+                            <td class="text-center"><?= htmlspecialchars(date('d/m/Y', strtotime($hoadon['ngay_thanh_ly']))) ?></td>
                             <td class="text-center"><?= number_format($hoadon['tong_gia_tri'], 0, ',', '.') ?></td>
                             <td class="d-flex justify-content-center">
                                 <a href="index.php?model=thanhly&action=show&id=<?= $hoadon['hoa_don_id'] ?>"
@@ -88,7 +78,7 @@
                                 </form>
                             </td>
                         </tr>
-                     <?php endforeach; ?>
+                    <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
@@ -98,6 +88,14 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        function formatDate(date) {
+            var d = new Date(date);
+            var day = d.getDate();
+            var month = d.getMonth() + 1;
+            var year = d.getFullYear();
+            return day + '/' + month + '/' + year;
+        }
+
         function filterTable() {
             var ngayThanhLyFilter = document.getElementById('ngayThanhLy').value;
             var giaTriMinFilter = parseFloat(document.getElementById('giaTriMinSearch').value) || 0;
@@ -107,17 +105,17 @@
 
             for (var i = 1; i < rows.length; i++) {
                 var cells = rows[i].getElementsByTagName('td');
-                var ngayThanhLy = cells[1].textContent.trim();
-                var giaTriText = cells[2].textContent.trim(); // Lấy giá trị số tiền từ cells[3]
+                var ngayThanhLy = cells[1].textContent.trim(); // Lấy giá trị ngày tháng từ cột thứ 2
+                var giaTriText = cells[2].textContent.trim(); // Lấy giá trị số tiền từ cột thứ 3
                 var giaTri = parseFloat(giaTriText.replace(/\./g, '')); // Chuyển đổi giá trị số tiền thành số, loại bỏ dấu chấm
 
                 // Kiểm tra điều kiện lọc
-                var passNgayKhauhao = true; // Mặc định cho phép đi qua nếu không có điều kiện lọc ngày
-        if (ngayKhauhaoFilter) {
-            var ngayKhauhaoDate = new Date(ngayKhauhao); // Chuyển đổi ngày thành đối tượng ngày
-            var filterDate = new Date(ngayKhauhaoFilter); // Chuyển đổi ngày lọc thành đối tượng ngày
-            passNgayKhauhao = ngayKhauhaoDate.getTime() === filterDate.getTime(); // So sánh ngày
-        }
+                var passNgayThanhLy = true; // Mặc định cho phép đi qua nếu không có điều kiện lọc ngày
+                if (ngayThanhLyFilter) {
+                    var formattedNgayThanhLy = formatDate(ngayThanhLy); // Chuyển đổi định dạng ngày tháng
+                    passNgayThanhLy = formattedNgayThanhLy === ngayThanhLyFilter;
+                }
+
                 var passGiaTri = giaTri >= giaTriMinFilter;
 
                 if (passNgayThanhLy && passGiaTri) {
@@ -134,7 +132,7 @@
         // Gọi filterTable ngay khi trang được tải để áp dụng bất kỳ giá trị mặc định nào
         filterTable();
 
-       var toggleButton = document.getElementById('toggleSearch');
+        var toggleButton = document.getElementById('toggleSearch');
         var searchForm = document.getElementById('searchForm');
 
         toggleButton.addEventListener('click', function () {
@@ -144,7 +142,7 @@
             } else {
                 searchForm.style.display = 'none';
                 toggleButton.textContent = 'Tìm kiếm';
-    }
+            }
         });
     });
 

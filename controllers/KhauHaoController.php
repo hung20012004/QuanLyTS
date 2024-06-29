@@ -21,9 +21,8 @@ class KhauHaoController extends Controller
 
     public function index()
     {
-        $taiSans = $this->taiSan->read();
-        $loaiTS = new LoaiTaiSan($this->db);
-        $loaiTaiSans = $loaiTS->read();
+        $loaitss = $this->khauhao->readloaits();
+        $khau_hao_all = $this->khauhao->readKhAll();
         $content = 'views/khauhao/index.php';
 
         include ('views/layouts/base.php');
@@ -182,5 +181,22 @@ class KhauHaoController extends Controller
     include('views/layouts/base.php');
 }
 
+public function search()
+{
+    if($_POST)
+    {
+        $tenTaiSan = isset($_POST['ten_tai_san']) ? $_POST['ten_tai_san'] : '';
+    $loaiTaiSan = isset($_POST['loai_tai_san']) ? $_POST['loai_tai_san'] : '';
+    
+    // Gọi phương thức tìm kiếm khấu hao từ model
+    $loaitss = $this->khauhao->readloaits();
+    $khau_hao_all = $this->khauhao->search($tenTaiSan, $loaiTaiSan);
+    
+    // Load view để hiển thị kết quả tìm kiếm
+    $content = 'views/khauhao/index.php';
+    include('views/layouts/base.php');
+    }
+    
+}
 }
 ?>

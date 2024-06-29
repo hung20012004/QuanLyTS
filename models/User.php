@@ -94,6 +94,30 @@ class User {
         }
         return false;
     }
+
+    public function getUsersByRole() {
+    $sql = "SELECT role, COUNT(*) as total FROM users GROUP BY role";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute();
+    $usersByRole = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Tính tổng số lượng người dùng
+    $totalUsers = array_sum(array_column($usersByRole, 'total'));
+
+    return [
+        'usersByRole' => $usersByRole,
+        'totalUsers' => $totalUsers
+    ];
+}
+
+    // Phương thức lấy danh sách người dùng theo role sắp xếp theo tên
+    public function getUsersByRoleSortedByName($role) {
+        $sql = "SELECT * FROM users WHERE role = :role ORDER BY ten ASC"; // Sắp xếp theo tên (ten là trường lưu tên người dùng)
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':role', $role, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
 }
 ?>

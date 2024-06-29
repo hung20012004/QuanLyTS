@@ -20,7 +20,7 @@
         unset($_SESSION['message']);
         unset($_SESSION['message_type']);
         ?>
-        <script>
+        <!-- <script>
             setTimeout(function() {
                 var alert = document.getElementById('alert-message');
                 if (alert) {
@@ -31,7 +31,7 @@
                     }, 150); 
                 }
             }, 2000);
-        </script>
+        </script> -->
     <?php endif; ?>
 
     <div class="card shadow mb-4">
@@ -83,14 +83,14 @@
                             <?php foreach ($dstl as $index => $detail): ?>
                                 <tr id="row<?= $index ?>">
                                     <td>
-                                        <select class="form-control" name="tai_san[]" required>
+                                        <select class="form-control" name="tai_san_id[]" required>
                                             <option value="">Chọn tài sản</option>
                                             <?php foreach ($taisans as $ts): ?>
                                                 <option value="<?= $ts['tai_san_id']; ?>" <?= ($ts['tai_san_id'] == $detail['tai_san_id']) ? 'selected' : ''; ?> style="text-align: center;">
                                                     <?= htmlspecialchars($ts['ten_tai_san']); ?>
                                                 </option>
                                             <?php endforeach; ?>
-                                            <input type="hidden" class="form-control" name="tai_san_id[]" value="<?= isset($detail['tai_san_id']) ? htmlspecialchars($detail['tai_san_id']) : 0 ?>" required>
+                                            <!-- <input type="hidden" class="form-control" name="tai_san_id[]" value="<?= isset($detail['tai_san_id']) ? htmlspecialchars($detail['tai_san_id']) : 0 ?>" required> -->
                                             <input type="hidden" class="form-control" name="chi_tiet_id[]" value="<?= isset($detail['chi_tiet_id']) ? htmlspecialchars($detail['chi_tiet_id']) : 0 ?>" required>
                                         </select>
                                     </td>
@@ -173,7 +173,7 @@ function deleteRow(button) {
     var row = button.closest('tr');
     if (document.querySelectorAll('#tableChiTiet tbody tr').length > 1) {
         row.remove();
-        tinhTongGiaTri();
+        tinhTongGiaTri(); // Cập nhật lại tổng giá trị sau khi xóa
     } else {
         alert('Không thể xóa dòng cuối cùng.');
     }

@@ -23,7 +23,16 @@ class ThanhLyController {
     }
 
     public function viewcreate() {
-        $stmt = $this->thanhly->viewcreate();
+        $stmt = $this->db->prepare(
+                "SELECT cthd.tai_san_id, ts.ten_tai_san
+                FROM vi_tri vt
+                JOIN vi_tri_chi_tiet vtct ON vt.vi_tri_id = vtct.vi_tri_id
+                JOIN chi_tiet_hoa_don_mua cthd ON vtct.chi_tiet_id= cthd.chi_tiet_id
+                JOIN tai_san ts ON ts.tai_san_id= cthd.tai_san_id
+                WHERE vt.vi_tri_id=1 AND vtct.so_luong > 0
+                GROUP BY cthd.tai_san_id   
+                ORDER BY ts.ten_tai_san ASC");
+        $stmt->execute();
         $taisans = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $content = 'views/thanhly/create.php';
         include('views/layouts/base.php');
@@ -31,51 +40,99 @@ class ThanhLyController {
      
     public function create()
     {
-      if (isset($_POST['btnThem'])) {
-        $ngay_thanh_ly = $_POST['ngay_thanh_ly'];
-        $taisanadds = json_decode($_POST['hidden_taisans'], true);
+        try {
+            $this->db->beginTransaction();
+            $tong_cong = 0;
 
-        // Kiểm tra và xử lý dữ liệu từ form và JSON
-        if (empty($ngay_thanh_ly) || empty($taisanadds) || !is_array($taisanadds)) {
-            // Xử lý lỗi dữ liệu không hợp lệ
-            echo "Dữ liệu không hợp lệ";
-            return;
-        }
-    
-        // Gán giá trị cho đối tượng
-        $this->thanhly->ngay_thanh_ly = $ngay_thanh_ly;
-        $this->thanhly->taisans = $taisanadds;
-
-
-        // Tính toán tổng tiền
-        $this->thanhly->tong_tien = 0;
-        foreach ($taisanadds as $taisan) {
-            if (isset($taisan['quantity']) && isset($taisan['price'])) {
-                $this->thanhly->tong_tien += $taisan['quantity'] * $taisan['price'];
+            // Tính tổng cộng
+            for ($i = 0; $i < count($_POST['tai_san_id']); $i++) {
+                $tong_cong += $_POST['so_luong'][$i] * $_POST['gia_thanh_ly'][$i];
             }
-        }
 
+            // Lấy dữ liệu từ form
+            $ngay_thanh_ly = $_POST['ngay_thanh_ly'];
 
-        // Gọi hàm create để lưu vào cơ sở dữ liệu
-        if ($this->thanhly->create()) {
-            $_SESSION['message'] = 'Tạo hóa đơn thanh lý mới thành công!';
+            // Thêm vào bảng hoa_don_thanh_ly
+            $stmt = $this->db->prepare("INSERT INTO hoa_don_thanh_ly (ngay_thanh_ly, tong_gia_tri) VALUES (:ngay_thanh_ly, :tong_gia_tri)");
+            $stmt->bindParam(':ngay_thanh_ly', $ngay_thanh_ly);
+            $stmt->bindParam(':tong_gia_tri', $tong_cong);
+            $stmt->execute();
+
+            // Lấy ID của hóa đơn thanh lý vừa tạo
+            $hoa_don_thanh_ly_id = $this->db->lastInsertId();
+
+            // Thêm chi tiết hóa đơn vào bảng chi_tiet_hoa_don_thanh_ly
+            $tai_san_ids = $_POST['tai_san_id'];
+            $so_luongs = $_POST['so_luong'];
+            $gia_thanh_lys = $_POST['gia_thanh_ly'];
+
+            for ($i = 0; $i < count($tai_san_ids); $i++) {
+                $tai_san_id = $tai_san_ids[$i];
+                $so_luong = $so_luongs[$i];
+                $gia_thanh_ly = $gia_thanh_lys[$i];
+
+                // Kiểm tra số lượng tài sản
+                $sql = "SELECT vtct.so_luong
+                        FROM vi_tri vt
+                        JOIN vi_tri_chi_tiet vtct ON vt.vi_tri_id = vtct.vi_tri_id
+                        JOIN chi_tiet_hoa_don_mua cthd ON vtct.chi_tiet_id = cthd.chi_tiet_id
+                        JOIN tai_san ts ON ts.tai_san_id = cthd.tai_san_id
+                        WHERE vt.vi_tri_id = 1 AND cthd.tai_san_id = ?";
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute([$tai_san_id]);
+                $current_so_luong = $stmt->fetchColumn();
+
+                if ($current_so_luong < $so_luong) {
+                    // Thông báo lỗi và hủy bỏ phiên giao dịch
+                    $_SESSION['message'] = "Số lượng tài sản không đủ để thanh lý.";
+                    $_SESSION['message_type'] = "danger";
+                    $this->db->rollBack();
+                    header("Location: index.php?model=thanhly&action=create");
+                    return;
+                }
+
+                // Trừ số lượng tài sản trong bảng vi_tri_chi_tiet
+                $sql = "UPDATE vi_tri_chi_tiet 
+                        SET so_luong = so_luong - :so_luong 
+                        WHERE chi_tiet_id IN (
+                            SELECT vtct.chi_tiet_id
+                            FROM vi_tri vt
+                            JOIN vi_tri_chi_tiet vtct ON vt.vi_tri_id = vtct.vi_tri_id
+                            JOIN chi_tiet_hoa_don_mua cthd ON vtct.chi_tiet_id = cthd.chi_tiet_id
+                            WHERE vt.vi_tri_id = 1 AND cthd.tai_san_id = :tai_san_id
+                        )";
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute(['so_luong' => $so_luong, 'tai_san_id' => $tai_san_id]);
+
+                // Thêm chi tiết hóa đơn thanh lý
+                $stmt = $this->db->prepare("INSERT INTO chi_tiet_hoa_don_thanh_ly (hoa_don_id, tai_san_id, so_luong, gia_thanh_ly) VALUES (:hoa_don_thanh_ly_id, :tai_san_id, :so_luong, :gia_thanh_ly)");
+                $stmt->bindParam(':hoa_don_thanh_ly_id', $hoa_don_thanh_ly_id);
+                $stmt->bindParam(':tai_san_id', $tai_san_id);
+                $stmt->bindParam(':so_luong', $so_luong);
+                $stmt->bindParam(':gia_thanh_ly', $gia_thanh_ly);
+                $stmt->execute();
+            }
+
+            $this->db->commit();
+
+            // Chuyển hướng đến trang danh sách hóa đơn với thông báo thành công
+            $_SESSION['message'] = 'Tạo hóa đơn thành công!';
             $_SESSION['message_type'] = 'success';
-            header("Location: index.php?model=thanhly");
+            header('Location: index.php?model=thanhly&action=index');
             exit();
-        } else {
-              $_SESSION['message'] = 'Tạo hóa đơn thanh lý mới thất bại!';
-                $_SESSION['message_type'] = 'success';
-            $stmt = $this->thanhly->viewcreate();
-            $taisans = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            $_SESSION['message'] = 'Lỗi khi tạo hóa đơn: ' . $e->getMessage();
+            $_SESSION['message_type'] = 'danger';
+            header('Location: index.php?model=thanhly&action=create');
+            exit();
         }
     }
-                
-    }
+
 
     public function viewedit($id) {
-
-    $ds = $this->thanhly->viewcreate();
-    $taisans = $ds->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->thanhly->viewcreate();
+        $taisans = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Lấy thông tin hóa đơn thanh lý cần chỉnh sửa
     $tl = $this->thanhly->viewedit($id);
@@ -107,80 +164,146 @@ class ThanhLyController {
     }
 
 public function edit($id) {
-    try {
-        // Bắt đầu giao dịch
-        $this->db->beginTransaction();
+    if ($_POST) {
+        try {
+            // Bắt đầu giao dịch
+            $this->db->beginTransaction();
 
-        // Thực hiện các thao tác cập nhật thông tin chung của hóa đơn
-        $this->thanhly->hoa_don_id = $id;
-        $this->thanhly->ngay_thanh_ly = $_POST['ngay_thanh_ly'];
-        $this->thanhly->tong_tien = $_POST['tong_tien'];
-        $this->thanhly->update($id);
+            // Thực hiện các thao tác cập nhật thông tin chung của hóa đơn
+            $this->thanhly->hoa_don_id = $id;
+            $this->thanhly->ngay_thanh_ly = $_POST['ngay_thanh_ly'];
+            $this->thanhly->tong_tien = $_POST['tong_tien'];
+            $this->thanhly->update($id);
 
-        // Lấy danh sách chi tiết hiện tại trong DB
-        $currentDetails = $this->chitietThanhLy->getByHoaDonId($id);
-        $currentDetailIds = array_column($currentDetails, 'chi_tiet_id');
+            // Lấy danh sách chi tiết hiện tại trong DB
+            $currentDetails = $this->chitietThanhLy->getByHoaDonId($id);
+            $soluonghientai = $currentDetails['so_luong'];
 
-        // Duyệt qua các chi tiết từ form
-        $newDetailIds = [];
+            // Duyệt qua các chi tiết từ form
+            foreach ($_POST['chi_tiet_id'] as $index => $chi_tiet_id) {
+                $so_luong = $_POST['so_luong'][$index];
+                $gia_thanh_ly = $_POST['gia_thanh_ly'][$index];
+                $taisan = $_POST['tai_san_id'][$index];
+                // Tìm chi tiết hóa đơn trong danh sách hiện tại
+                $found = false;
+                foreach ($currentDetails as $detail) {
+                    if ($detail['chi_tiet_id'] == $chi_tiet_id) {
+                        // Cập nhật chi tiết nếu tồn tại
+                        $this->chitietThanhLy->chi_tiet_id = $chi_tiet_id;
+                        $this->chitietThanhLy->so_luong = $so_luong;
+                        $this->chitietThanhLy->gia_thanh_ly = $gia_thanh_ly;
+                        $this->chitietThanhLy->tai_san_id = $taisan;
+                        $this->chitietThanhLy->update();
+                        $this->updateQuantity($id,$so_luong- $detail['so_luong'],$taisan);
+                        // Xóa chi tiết khỏi danh sách hiện tại để loại bỏ sau khi cập nhật
+                        unset($currentDetails[array_search($detail, $currentDetails)]);
+                        $found = true;
+                        break;
+                    }
+                }
 
-        for ($i = 0; $i < count($_POST['tai_san']); $i++) {
-            $chi_tiet_id = $_POST['chi_tiet_id'][$i];
-            $so_luong = $_POST['so_luong'][$i];
-            $gia_thanh_ly = $_POST['gia_thanh_ly'][$i];
-            $taisan = $_POST['tai_san'][$i];
-            
-            if (!empty($chi_tiet_id)) {
-                // Cập nhật chi tiết nếu tồn tại
-                $this->chitietThanhLy->chi_tiet_id = $chi_tiet_id;
-                $this->chitietThanhLy->so_luong = $so_luong;
-                $this->chitietThanhLy->gia_thanh_ly = $gia_thanh_ly;
-                $this->chitietThanhLy->update();
-                $newDetailIds[] = $chi_tiet_id;
-            } else {
-                // Thêm mới chi tiết nếu chưa tồn tại
-                $this->chitietThanhLy->hoa_don_id = $id;
-                $this->chitietThanhLy->tai_san_id = $taisan;
-                $this->chitietThanhLy->so_luong = $so_luong;
-                $this->chitietThanhLy->gia_thanh_ly = $gia_thanh_ly;
-                $this->chitietThanhLy->create();
+                if (!$found) {
+                    // Thêm mới chi tiết nếu không tồn tại trong danh sách hiện tại
+                    $this->chitietThanhLy->hoa_don_id = $id;
+                    $this->chitietThanhLy->tai_san_id = $taisan;
+                    $this->chitietThanhLy->so_luong = $so_luong;
+                    $this->chitietThanhLy->gia_thanh_ly = $gia_thanh_ly;
+                    $this->chitietThanhLy->create();
+                    $this->updateQuantity($id,$so_luong, $taisan);
+                }
             }
-        }
 
-        // Xóa các chi tiết không còn trong danh sách mới
-        foreach ($currentDetailIds as $currentId) {
-            if (!in_array($currentId, $newDetailIds)) {
-                $this->chitietThanhLy->delete($currentId);
+            // Xóa các chi tiết không còn trong danh sách mới
+            foreach ($currentDetails as $detail) {
+                $this->chitietThanhLy->delete($detail['chi_tiet_id']);
+                 $this->updateQuantity($id,-$detail['so_luong'] , $$detail['tai_san_id']);
             }
+
+            // Commit giao dịch
+            $this->db->commit();
+
+            // Thông báo thành công và chuyển hướng về trang danh sách
+            $_SESSION['message'] = 'Sửa hóa đơn thành công!';
+            $_SESSION['message_type'] = 'success';
+            header("Location: index.php?model=thanhly&action=index");
+            exit();
+        } catch (Exception $e) {
+            // Xử lý ngoại lệ và roll back giao dịch nếu có lỗi
+            $this->db->rollBack();
+            $_SESSION['message'] = $e->getMessage();
+            $_SESSION['message_type'] = 'danger';
+            header("Location: index.php?model=thanhly&action=viewedit&id=$id");
+            exit();
         }
+    }
+}
+public function updateQuantity($id, $so_luong_change, $tai_san_id) {
+   
+        // $stmt1 = $this->db->prepare("SELECT vtct.chi_tiet_id, vtct.so_luong 
+        //         FROM vi_tri vt
+        //         JOIN vi_tri_chi_tiet vtct ON vt.vi_tri_id = vtct.vi_tri_id
+        //         JOIN chi_tiet_hoa_don_mua cthd ON vtct.chi_tiet_id= cthd.chi_tiet_id
+        //         WHERE vt.vi_tri_id=1 AND cthd.tai_san_id = ? AND vtct.so_luong > 0 ");
+        //         $stmt1->execute([$tai_san_id]);
+        //         $vitri= $stmt1->fetchAll(PDO::FETCH_ASSOC);
+        //         $firstChi_tiet = isset($vitri['chi_tiet_id']) ? $vitri['chi_tiet_id'] : null;
 
-        // Commit giao dịch
-        $this->db->commit();
 
-        // Thông báo thành công và chuyển hướng về trang danh sách
-        $_SESSION['message'] = 'Sửa hóa đơn thành công!';
-        $_SESSION['message_type'] = 'success';
-        header("Location: index.php?model=thanhly");
-        exit();
-    } catch (Exception $e) {
-        // Xử lý ngoại lệ và roll back giao dịch nếu có lỗi
-        $this->db->rollBack();
-        $_SESSION['message'] = $e->getMessage();
-        $_SESSION['message_type'] = 'danger';
+                $stmt = $this->db->prepare(
+                "SELECT vtct.so_luong 
+                FROM vi_tri vt
+                JOIN vi_tri_chi_tiet vtct ON vt.vi_tri_id = vtct.vi_tri_id
+                JOIN chi_tiet_hoa_don_mua cthd ON vtct.chi_tiet_id= cthd.chi_tiet_id
+                WHERE vt.vi_tri_id=1 AND cthd.tai_san_id = ? AND vtct.so_luong>0");
+            $stmt->execute([$tai_san_id]);
+            $currentQuantity = $stmt->fetchColumn();
+
+
+    $stmt1 = $this->db->prepare("SELECT ten_tai_san FROM tai_san WHERE tai_san_id = ?");
+    $stmt1->execute([$tai_san_id]);
+    $Tents = $stmt1->fetchColumn();
+    
+    $newQuantity = $currentQuantity;
+    if($so_luong_change>0 && $so_luong_change<$currentQuantity)
+    {
+        $newQuantity = $currentQuantity - $so_luong_change;
+        //  $_SESSION['message'] = " số lượng của ".$Tents." hiện tại là ".$currentQuantity."  newquantity la ".$newQuantity."";
+        //     $_SESSION['message_type'] = 'danger';
+        //     header("Location: index.php?model=thanhly&action=viewedit&id=".$id."");
+        //     exit();
+    }
+    elseif($so_luong_change<0)
+    {
+        $newQuantity = $currentQuantity - $so_luong_change;
+        //  $_SESSION['message'] = "Số lượng giảm đi quá nhiều, số lượng của ".$Tents." hiện tại là ".$currentQuantity."  newquantity la ".$newQuantity."";
+        //     $_SESSION['message_type'] = 'danger';
+        //     header("Location: index.php?model=thanhly&action=viewedit&id=".$id."");
+        //     exit();
+
+    }
+    // Kiểm tra và cập nhật lại số lượng
+
+    // Kiểm tra số lượng mới có hợp lệ không
+    if ($newQuantity < 0 ) {
+             $_SESSION['message'] = "Số lượng không đủ để cập nhật, số lượng của ".$Tents." hiện tại là ".$currentQuantity." so luong change la".$so_luong_change."";
+            $_SESSION['message_type'] = 'danger';
+            header("Location: index.php?model=thanhly&action=viewedit&id=".$id."");
+            exit();
     }
 
-    // Load lại dữ liệu cũ để hiển thị lại form nếu có lỗi hoặc cần chỉnh sửa
-    $ds = $this->thanhly->viewcreate();
-    $taisans = $ds->fetchAll(PDO::FETCH_ASSOC);
+    //  elseif ($newQuantity < 0 && $so_luong_change < 0 && $newQuantity > $so_luong_change) {
+    //     $_SESSION['message'] = "Số lượng giảm đi quá nhiều, số lượng của ".$Tents." hiện tại là ".$currentQuantity."  so luong change la".$so_luong_change."";
+    //         $_SESSION['message_type'] = 'danger';
+    //         header("Location: index.php?model=thanhly&action=viewedit&id=".$id."");
+    //         exit();
+    // }
 
-    $tl = $this->thanhly->viewedit($id);
-    $dstl = $tl->fetchAll(PDO::FETCH_ASSOC);
-
-    // Load view để hiển thị form chỉnh sửa
-    $content = 'views/thanhly/edit.php';
-    include('views/layouts/base.php');
+    $updateStmt = $this->db->prepare("UPDATE vi_tri_chi_tiet vtct 
+                    JOIN chi_tiet_hoa_don_mua cthd ON vtct.chi_tiet_id= cthd.chi_tiet_id
+                    JOIN vi_tri vt ON vt.vi_tri_id = vtct.vi_tri_id
+                    SET vtct.so_luong = ? WHERE tai_san_id = ? AND vt.vi_tri_id = 1");
+    $updateStmt->execute([$newQuantity, $tai_san_id]);
 }
-    // Load lại dữ liệu cũ để hiển thị lại form nếu có lỗi hoặc cần chỉnh sửa
     
     
         public function delete($id) {
@@ -281,6 +404,40 @@ public function edit($id) {
         die("Lỗi khi xuất Excel: " . $e->getMessage());
     }
 }
+
+public function statistics()
+    {
+        // Lấy dữ liệu thống kê
+        $totalInvoices = $this->thanhly->getTotalInvoices();
+        $totalValue = $this->thanhly->getTotalValue();
+        $avgValue = $totalInvoices > 0 ? $totalValue / $totalInvoices : 0;
+    
+        // Thống kê theo tháng
+        $monthlyInvoices = $this->thanhly->getMonthlyInvoices();
+    
+    
+        // Lấy top 5 tài sản được mua nhiều nhất
+        $topAssets = $this->thanhly->getTopAssets(5);
+    
+        // Chuẩn bị dữ liệu cho biểu đồ
+        $chartData = [
+            'monthlyLabels' => array_column($monthlyInvoices, 'month'),
+            'monthlyData' => array_column($monthlyInvoices, 'count'),
+        ];
+    
+        // Truyền dữ liệu vào view
+        $data = [
+            'totalInvoices' => $totalInvoices,
+            'totalValue' => $totalValue,
+            'avgValue' => $avgValue,
+            'monthlyInvoices' => $monthlyInvoices,
+            'topAssets' => $topAssets,
+            'chartData' => json_encode($chartData),
+        ];
+    
+        $content = 'views/thanhly/statistics_thanhly.php';
+        include('views/layouts/base.php');
+    }
 }
 ?>
 
