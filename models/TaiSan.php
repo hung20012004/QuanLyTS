@@ -59,6 +59,21 @@ class TaiSan {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function readAllInStock(){
+        $query = "SELECT ts.*, lts.ten_loai_tai_san, ct.chi_tiet_id, hd.ngay_mua, vt.so_luong
+                  FROM " . $this->table_name . " ts 
+                  JOIN chi_tiet_hoa_don_mua ct ON ct.tai_san_id = ts.tai_san_id 
+                  JOIN vi_tri_chi_tiet vt ON vt.chi_tiet_id = ct.chi_tiet_id 
+                  JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id 
+                  JOIN hoa_don_mua hd ON hd.hoa_don_id = ct.hoa_don_id
+                  WHERE vt.vi_tri_id = 1 ";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function update() {
         try{
             $query = "UPDATE " . $this->table_name . " 
@@ -129,6 +144,14 @@ class TaiSan {
     
         // Trả về true nếu tài sản đã tồn tại, ngược lại trả về false
         return $count > 0;
+    }
+    public function getAllTaiSanWithLoaiTaiSan() {
+        $query = "SELECT ts.*, lts.ten_loai_tai_san
+                  FROM tai_san ts
+                  INNER JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>

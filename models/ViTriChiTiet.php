@@ -121,11 +121,11 @@ class ViTriChiTiet {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? $result['so_luong'] : null;
     }
-    public function kiemTraKho($taiSanId, $soLuongCanThem) {
+    public function kiemTraKho($chi_tiet_id, $soLuongCanThem) {
         // Assume there is a table or data structure for kho where vi_tri_id = 0
-        $sql = "SELECT so_luong FROM ". $this->table_name ." WHERE chi_tiet_id = :taiSanId AND vi_tri_id = 0";
+        $sql = "SELECT so_luong FROM ". $this->table_name ." WHERE chi_tiet_id = :chi_tiet_id AND vi_tri_id = 1";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':taiSanId', $taiSanId, PDO::PARAM_INT);
+        $stmt->bindParam(':chi_tiet_id', $chi_tiet_id, PDO::PARAM_INT);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -134,19 +134,15 @@ class ViTriChiTiet {
         // Kiểm tra nếu số lượng trong kho đủ để thực hiện thay đổi
         return ($soLuongTrongKho + $soLuongCanThem >= 0); // Nếu cần giảm số lượng, hãy thay đổi điều kiện này phù hợp
     }
-    
-    //Cộng tài sản trùng
-    public function congSoLuongTrungLap($taiSanId) {
-        $sql = "UPDATE vi_tri_chi_tiet SET so_luong = so_luong + (
-                SELECT SUM(so_luong) FROM ". $this->table_name ." WHERE vi_tri_id = :viTriId AND chi_tiet_id = :taiSanId
-            ) WHERE vi_tri_id = :viTriId AND chi_tiet_id = :taiSanId";
-        
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':viTriId', $this->vi_tri_id, PDO::PARAM_INT);
-        $stmt->bindParam(':taiSanId', $taiSanId, PDO::PARAM_INT);
-        
-        return $stmt->execute();
-    }
 
+    public function checkExist($id){
+        $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE vi_tri_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $id);
+        if ($stmt->fetchColumn() > 0) {
+            return true;
+        }
+        return false;
+    }
 }
 ?>

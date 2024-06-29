@@ -213,5 +213,13 @@ public function getSupplierInvoices()
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+public function getAllPurchaseDates() {
+    $query = "SELECT DISTINCT hoa_don_id, ngay_mua
+              FROM hoa_don_mua
+              ORDER BY ngay_mua DESC";
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }
 ?>

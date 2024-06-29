@@ -1,6 +1,15 @@
 <div class="container-fluid">
-    <h1 class="h3 mb-2 text-gray-800">Thống kê Hóa Đơn Mua</h1>
-    <p class="mb-4">Tổng quan về hóa đơn mua trong hệ thống.</p>
+    <div class="row mt-3">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item active">Thống kê hóa đơn mua</a></li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
 
     <div class="row">
         <!-- Tổng số hóa đơn -->
