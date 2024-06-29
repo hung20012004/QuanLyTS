@@ -103,7 +103,7 @@ CREATE TABLE khau_hao (
 );
 CREATE TABLE tinh_trang (
     tinh_trang_id INT AUTO_INCREMENT PRIMARY KEY,
-    schedule_id_id INT,
+    schedule_id INT,
     mo_ta_tinh_trang TEXT,
     FOREIGN KEY (schedule_id) REFERENCES maintenance_schedule(schedule_id)
 );
