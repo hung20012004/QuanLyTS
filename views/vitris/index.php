@@ -64,7 +64,7 @@
                                             class="btn btn-warning btn-sm mx-2">Sửa</a>
                                         <form action="index.php?model=vitri&action=delete&id=<?= $viTri['vi_tri_id'] ?>" method="POST" style="display: inline-block;">
                                             <button type="submit" class="btn btn-danger btn-sm mx-2" onclick="return confirm('Bạn có chắc muốn xóa vị trí này?');">Xóa</button>
-                                    </form>
+                                        </form>
                                     <?php endif; ?>
                                 </td>
                             </tr>
