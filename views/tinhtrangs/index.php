@@ -66,6 +66,9 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-md-4 mb-2">
+                        <button type="button" id="searchButton" class="btn btn-primary">Tìm</button>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-2">
@@ -75,6 +78,7 @@
                         </div>
                     </div>
                 </div>
+                
             </form>
             <div class="table-responsive">
                 <table id="dataTable" class="table table-bordered" width="100%" cellspacing="0">
@@ -121,10 +125,20 @@
 
             for (var i = 1; i < rows.length; i++) {
                 var cells = rows[i].getElementsByTagName('td');
-                var viTri = cells[1].textContent.trim().toLowerCase();
-                var ngayMua = cells[2].textContent.trim();
+                var viTri = cells[0].textContent.trim().toLowerCase();
+                var ngayMuaRange = cells[2].textContent.trim();
+                
+                //Tách ngày mua
+                var [ngayMuaStart, ngayMuaEnd] = ngayMuaRange.split(' - ').map(dateStr => {
+                    var [day, month, year] = dateStr.split('-').map(Number);
+                    return new Date(year, month - 1, day);
+                });
+
+                // Chuyển đổi định dạng ngày bắt đầu và ngày kết thúc từ input
+                var ngayBatDauDate = ngayBatDau ? new Date(ngayBatDau) : null;
+                var ngayKetThucDate = ngayKetThuc ? new Date(ngayKetThuc) : null;
                 // Kiểm tra điều kiện lọc
-                var passNgay = (!ngayBatDau || ngayMua >= ngayBatDau) && (!ngayKetThuc || ngayMua <= ngayKetThuc);
+                var passNgay = (!ngayBatDauDate || (ngayMuaStart >= ngayBatDauDate )) && (!ngayKetThucDate || (ngayMuaEnd <= ngayKetThucDate));
                 var passViTri = viTriFilter === '' || viTri.includes(viTriFilter);
 
                 if (passNgay && passViTri) {
@@ -134,13 +148,14 @@
                 }
             }
         }
+        document.getElementById('searchButton').addEventListener('click', filterTable);
 
-        document.getElementById('ngayBatDau').addEventListener('change', filterTable);
-        document.getElementById('ngayKetThuc').addEventListener('change', filterTable);
-        document.getElementById('ViTriSearch').addEventListener('change', filterTable);
+        // document.getElementById('ngayBatDau').addEventListener('change', filterTable);
+        // document.getElementById('ngayKetThuc').addEventListener('change', filterTable);
+        // document.getElementById('ViTriSearch').addEventListener('change', filterTable);
 
         // Gọi filterTable ngay khi trang được tải để áp dụng bất kỳ giá trị mặc định nào
-        filterTable();
+        // filterTable();
         var toggleButton = document.getElementById('toggleSearch');
         var searchForm = document.getElementById('searchForm');
 

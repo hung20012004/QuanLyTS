@@ -41,12 +41,12 @@
                                     <?php endforeach; ?>
                                 </select>
                             </div>
+                        </div>
+                        <div class="row mb-3">
                             <div class="col">
                                 <label for="ngay_bat_dau" class="form-label">Ngày Bắt Đầu</label>
                                 <input type="date" class="form-control" id="ngay_bat_dau" name="ngay_bat_dau" value="<?= htmlspecialchars($schedule['ngay_bat_dau']) ?>" required>
                             </div>
-                        </div>
-                        <div class="row mb-3">
                             <div class="col">
                                 <label for="ngay_ket_thuc" class="form-label">Ngày Kết Thúc</label>
                                 <input type="date" class="form-control" id="ngay_ket_thuc" name="ngay_ket_thuc" value="<?= htmlspecialchars($schedule['ngay_ket_thuc']) ?>">
