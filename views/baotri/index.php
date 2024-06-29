@@ -49,7 +49,7 @@
                     <thead class="bg-light text-black text-center">
                         <tr>
                             <th>ID</th>
-                            <th>Tài Sản ID</th>
+                            <th>Vị Trí ID</th>
                             <th>Ngày Bắt Đầu</th>
                             <th>Ngày Kết Thúc</th>
                             <th>Mô Tả</th>
@@ -60,7 +60,7 @@
                         <?php foreach ($schedules as $schedule): ?>
                             <tr>
                                 <td class="text-center"><?= $schedule['schedule_id'] ?></td>
-                                <td><?= htmlspecialchars($schedule['tai_san_id']) ?></td>
+                                <td><?= htmlspecialchars($schedule['ten_vi_tri']) ?></td>
                                 <td><?= htmlspecialchars($schedule['ngay_bat_dau']) ?></td>
                                 <td><?= htmlspecialchars($schedule['ngay_ket_thuc']) ?></td>
                                 <td><?= htmlspecialchars($schedule['mo_ta']) ?></td>

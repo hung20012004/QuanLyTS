@@ -12,6 +12,7 @@ require 'controllers/UserController.php';
 require 'controllers/AuthController.php';
 require 'controllers/TaiSanController.php';
 require 'controllers/KhauHaoController.php';
+require 'controllers/TinhTrangController.php';
 
 
 $controller = new Controller();
@@ -26,6 +27,9 @@ if (!isset($_SESSION['user_id']) && !in_array($action, ['login', 'register'])) {
 }
 
 switch ($model) {
+    case 'tinhtrang' :
+        $controller = new TinhTrangController();
+        break;
     case 'baotri':
         $controller = new BaoTriController();
         break;

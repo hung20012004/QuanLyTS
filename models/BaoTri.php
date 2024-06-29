@@ -4,7 +4,7 @@ class BaoTri {
     private $table_name = "maintenance_schedule ";
 
     public $schedule_id;
-    public $tai_san_id;
+    public $vi_tri_id;
     public $ngay_bat_dau;
     public $ngay_ket_thuc;
     public $mo_ta;
@@ -14,11 +14,11 @@ class BaoTri {
     }
 
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " (tai_san_id, ngay_bat_dau, ngay_ket_thuc, mo_ta) VALUES (:tai_san_id, :ngay_bat_dau, :ngay_ket_thuc, :mo_ta)";
+        $query = "INSERT INTO " . $this->table_name . " (vi_tri_id, ngay_bat_dau, ngay_ket_thuc, mo_ta) VALUES (:vi_tri_id, :ngay_bat_dau, :ngay_ket_thuc, :mo_ta)";
         
         $stmt = $this->conn->prepare($query);
 
-        $stmt->bindParam(':tai_san_id', $this->tai_san_id);
+        $stmt->bindParam(':vi_tri_id', $this->vi_tri_id);
         $stmt->bindParam(':ngay_bat_dau', $this->ngay_bat_dau);
         $stmt->bindParam(':ngay_ket_thuc', $this->ngay_ket_thuc);
         $stmt->bindParam(':mo_ta', $this->mo_ta);
@@ -30,7 +30,8 @@ class BaoTri {
     }
 
     public function read() {
-        $query = "SELECT * FROM " . $this->table_name;
+        $query = "SELECT bt.*, vt.ten_vi_tri FROM " . $this->table_name . " bt 
+                  JOIN vi_tri vt ON vt.vi_tri_id = bt.vi_tri_id";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -44,12 +45,20 @@ class BaoTri {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function readByViTri($vi_tri_id){
+        $query = "SELECT schedule_id FROM " . $this->table_name . " WHERE vi_tri_id = :vi_tri_id";
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':vi_tri_id', $vi_tri_id);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function update() {
-        $query = "UPDATE " . $this->table_name . " SET tai_san_id = :tai_san_id, ngay_bat_dau = :ngay_bat_dau, ngay_ket_thuc = :ngay_ket_thuc, mo_ta = :mo_ta WHERE schedule_id = :schedule_id";
+        $query = "UPDATE " . $this->table_name . " SET vi_tri_id = :vi_tri_id, ngay_bat_dau = :ngay_bat_dau, ngay_ket_thuc = :ngay_ket_thuc, mo_ta = :mo_ta WHERE schedule_id = :schedule_id";
         
         $stmt = $this->conn->prepare($query);
 
-        $stmt->bindParam(':tai_san_id', $this->tai_san_id);
+        $stmt->bindParam(':vi_tri_id', $this->vi_tri_id);
         $stmt->bindParam(':ngay_bat_dau', $this->ngay_bat_dau);
         $stmt->bindParam(':ngay_ket_thuc', $this->ngay_ket_thuc);
         $stmt->bindParam(':mo_ta', $this->mo_ta);

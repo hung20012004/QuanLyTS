@@ -17,7 +17,23 @@ class ViTriChiTiet {
 
     // Đọc tất cả chi tiết vị trí
     public function read() {
-        $query = "SELECT * FROM " . $this->table_name;
+        $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri 
+                 FROM (( " . $this->table_name . "
+                 INNER JOIN chi_tiet_hoa_don_mua ON vi_tri_chi_tiet.chi_tiet_id = chi_tiet_hoa_don_mua.chi_tiet_id )
+                 INNER JOIN tai_san ON chi_tiet_hoa_don_mua.tai_san_id = tai_san.tai_san_id)
+                 INNER JOIN vi_tri ON vi_tri.vi_tri_id = vi_tri_chi_tiet.vi_tri_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    public function readNotKho() {
+        $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri 
+                 FROM (( " . $this->table_name . "
+                 INNER JOIN chi_tiet_hoa_don_mua ON vi_tri_chi_tiet.chi_tiet_id = chi_tiet_hoa_don_mua.chi_tiet_id )
+                 INNER JOIN tai_san ON chi_tiet_hoa_don_mua.tai_san_id = tai_san.tai_san_id)
+                 INNER JOIN vi_tri ON vi_tri.vi_tri_id = vi_tri_chi_tiet.vi_tri_id
+                 WHERE vi_tri_chi_tiet.vi_tri_id > 1";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;

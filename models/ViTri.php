@@ -20,6 +20,13 @@ class ViTri {
         return $stmt;
     }
 
+    public function readNotKho() {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE vi_tri_id > 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
     // Tạo vị trí mới
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " SET ten_vi_tri=:ten_vi_tri";
