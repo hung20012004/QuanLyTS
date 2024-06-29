@@ -42,7 +42,8 @@ class AuthController extends Controller {
             $password = $_POST['password'];
             $authModel = new Auth($this->db);
             $user = $authModel->getUserByEmail($email);
-    
+            // var_dump($user);
+            // exit();
             if ($user && password_verify($password, $user['password'])) {
                 // Đăng nhập thành công
                 session_start();
@@ -136,17 +137,18 @@ class AuthController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = $_POST['email'];
             $ten = $_POST['ten'];
-            $avatarPath = null;
+            $avatarPath = $_SESSION['avatar'];
             $password = null;
             $current_password = $_POST['current_password'];
-            if (!$this->authModel->checkCurrentPassword($id, $current_password)) {
-                $_SESSION['message'] = 'Mật khẩu không chính xác.';
-                $_SESSION['message_type'] = 'danger';
-                header("Location: index.php?model=auth&action=profile");
-                exit();
-            }
+            
             
             if (!empty($_POST['new_password'])) {
+                if (!$this->authModel->checkCurrentPassword($id, $current_password)) {
+                    $_SESSION['message'] = 'Mật khẩu không chính xác.';
+                    $_SESSION['message_type'] = 'danger';
+                    header("Location: index.php?model=auth&action=profile");
+                    exit();
+                }
                 $password = password_hash($_POST['new_password'], PASSWORD_BCRYPT);
             }
     

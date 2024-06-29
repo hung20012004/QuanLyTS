@@ -20,24 +20,46 @@ class UserController extends Controller {
     }
 
     public function create() {
-        if ($_POST) {
-            $this->user->email = $_POST['email'];
-            $this->user->ten = $_POST['ten'];
-            $this->user->password = password_hash($_POST['password'], PASSWORD_BCRYPT);
-            $this->user->role = $_POST['role'];
-            if ($this->user->create()) {
-                $_SESSION['message'] = 'Tạo người dùng mới thành công!';
-                $_SESSION['message_type'] = 'success';
-                header("Location: index.php?model=user");
-            }else {
-                $_SESSION['message'] = 'Tạo mới thất bại!';
-                $_SESSION['message_type'] = 'danger';
+        $ten = '';
+        $email = '';
+        $role = '';
+        $errors = [];
+    
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $ten = $_POST['ten'];
+            $email = $_POST['email'];
+            $role = $_POST['role'];
+            $password = 'Utt@1234';
+    
+            // Kiểm tra email đã tồn tại chưa
+            if ($this->user->emailExists($email)) {
+                $errors[] = 'Email đã tồn tại.';
+            }
+    
+            if (empty($errors)) {
+                try {
+                    $this->user->ten = $ten;
+                    $this->user->email = $email;
+                    $this->user->password = password_hash($password, PASSWORD_BCRYPT);
+                    $this->user->role = $role;
+    
+                    if ($this->user->create()) {
+                        $_SESSION['message'] = 'Tạo người dùng mới thành công!';
+                        $_SESSION['message_type'] = 'success';
+                        header("Location: index.php?model=user&action=index");
+                        exit();
+                    } else {
+                        $errors[] = 'Tạo mới thất bại!';
+                    }
+                } catch (Exception $e) {
+                    $errors[] = 'Có lỗi xảy ra: ' . $e->getMessage();
+                }
             }
         }
+    
         $content = 'views/users/create.php';
         include('views/layouts/base.php');
     }
-
     public function edit($id) {
         if ($_POST) {
             
@@ -46,7 +68,8 @@ class UserController extends Controller {
             $this->user->email = $_POST['email'];
             $this->user->ten = $_POST['ten'];
             if($_POST['password']!=''){
-                $this->user->password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+                $pass='Utt@1234';
+                $this->user->password = password_hash($pass, PASSWORD_BCRYPT);
             }
             $this->user->role = $_POST['role'];
             if ($this->user->update()) {

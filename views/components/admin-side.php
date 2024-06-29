@@ -5,7 +5,7 @@
             </li>
     <li class="nav-item">
                 <a class="nav-link" href="route.php?model=user&action=statistic">
-                <i class="fa-solid fa-user-group"></i>
+                <i class="fa-solid fa-chart-simple"></i>
                     <span>Thống kê</a>
             </li>
 

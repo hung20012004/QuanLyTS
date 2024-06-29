@@ -121,38 +121,42 @@
 
         editBtn.addEventListener('click', function () {
             inputs.forEach(input => {
-                input.disabled = !input.disabled;
+                if (input.id !== 'email') { // Make email field permanently disabled
+                    input.disabled = !input.disabled;
+                }
             });
 
             saveBtn.classList.toggle('d-none');
             cancelBtn.classList.toggle('d-none');
 
-            if (editBtn.textContent === 'Sửa Thông Tin') {
+            if (editBtn.textContent === 'Sửa') {
                 editBtn.textContent = 'Hủy';
             } else {
-                editBtn.textContent = 'Sửa Thông Tin';
+                editBtn.textContent = 'Sửa';
             }
         });
 
         cancelBtn.addEventListener('click', function () {
             inputs.forEach(input => {
-                input.disabled = true;
+                if (input.id !== 'email') { // Make email field permanently disabled
+                    input.disabled = true;
+                }
             });
 
             saveBtn.classList.add('d-none');
             cancelBtn.classList.add('d-none');
-            editBtn.textContent = 'Sửa Thông Tin';
+            editBtn.textContent = 'Sửa';
         });
 
-        editForm.addEventListener('submit', function () {
-            // Validate password if new password is entered
+        editForm.addEventListener('submit', function (event) {
             const newPassword = document.getElementById('new_password').value;
             const confirmPassword = document.getElementById('confirm_password').value;
 
             if (newPassword !== confirmPassword) {
+                event.preventDefault(); // Prevent form submission
                 alert('Mật khẩu xác nhận không khớp!');
-                return false;
             }
         });
+
     });
 </script>

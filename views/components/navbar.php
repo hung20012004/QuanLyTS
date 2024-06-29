@@ -17,6 +17,7 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small"> <?php echo isset($_SESSION['ten']) ? $_SESSION['ten'] : 'Guest'; ?></span>
                                 <?php
+                                    // echo "Debug: " . $_SESSION['avatar'];
                                     $avatar = isset($_SESSION['avatar']) ? $_SESSION['avatar'] : 'uploads\avatars\images.png';
                                 ?>
                                 <img class="img-profile rounded-circle" src="<?php echo $avatar; ?>">
