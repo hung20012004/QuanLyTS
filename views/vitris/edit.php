@@ -65,9 +65,9 @@
                             <?php foreach ($viTriChiTiets as $index => $detail): ?>
                             <tr id="row<?= $index; ?>">
                                 <td>
-                                    <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required <?= !empty($detail['tai_san_id']) ? 'disabled' : '' ?>>
+                                    <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required>
                                         <option value="">Chọn loại tài sản</option>
-                                        <?php foreach ($loaiTaiSan as $loai): ?>
+                                        <?php foreach ($loaiTaiSans as $loai): ?>
                                             <option value="<?= $loai['loai_tai_san_id']; ?>" <?= ($loai['loai_tai_san_id'] == $detail['loai_tai_san_id']) ? 'selected' : ''; ?>>
                                                 <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
                                             </option>
@@ -75,20 +75,20 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <input list="taiSanList" class="form-control select-tai-san" name="ten_tai_san[]" value="<?= htmlspecialchars($detail['ten_tai_san']) ?>" placeholder="Chọn hoặc nhập tên tài sản" required>
+                                    <input list="taiSanList<?= $index; ?>" class="form-control select-tai-san" name="ten_tai_san[]" value="<?= htmlspecialchars($detail['ten_tai_san']) ?>" placeholder="Chọn hoặc nhập tên tài sản" required>
                                     <input type="hidden" name="chi_tiet_id[]" value="<?= $detail['chi_tiet_id'] ?>">
-                                    <input type="hidden" class="tai-san-id" name="tai_san_id[]" value="<?= $detail['tai_san_id'] ?? '' ?>">
-                                    <datalist id="taiSanList">
-                                        <?php foreach ($tai_san_list as $tai_san): ?>
-                                            <option 
-                                                data-loai-tai-san-id="<?= $tai_san['loai_tai_san_id']; ?>"
-                                                data-tai-san-id="<?= $tai_san['tai_san_id']; ?>"
-                                                value="<?= htmlspecialchars($tai_san['ten_tai_san']); ?>">
+                                    <datalist id="taiSanList<?= $index; ?>">
+                                        <?php foreach ($taiSansInStock as $tai_san): 
+                                            if ($tai_san['loai_tai_san_id'] == $detail['loai_tai_san_id']): ?>
+                                            <option value="<?= htmlspecialchars($tai_san['ten_tai_san']); ?>" data-loai-tai-san-id="<?= $tai_san['loai_tai_san_id']; ?>" data-tai-san-id="<?= $tai_san['tai_san_id']; ?>">
+                                                <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
+                                            </option>
+                                            <?php endif; ?>
                                         <?php endforeach; ?>
                                     </datalist>
                                 </td>
+                                <td><input type="date" class="form-control ngay-mua" name="ngay_mua[]" value="<?= $detail['ngay_mua'] ?>" required></td>
                                 <td><input type="number" class="form-control so-luong" name="so_luong[]" value="<?= $detail['so_luong'] ?>" required></td>
-                                <td><input type="date" class="form-control so-luong" name="ngay_mua[]" value="<?= $detail['ngay_mua'] ?>" required></td>
                                 <td>
                                     <button type="button" class="btn btn-danger btn-sm" onclick="xoaDong(this)">Xóa</button>
                                 </td>
@@ -116,15 +116,15 @@
     }
 
     function handleTaiSanSelection() {
-        var datalist = document.getElementById('taiSanList');
+        var datalist = this.list;
         var option = Array.from(datalist.options).find(opt => opt.value === this.value);
         var row = this.closest('tr');
         var loaiTaiSanSelect = row.querySelector('.loai-tai-san');
         var taiSanIdInput = row.querySelector('.tai-san-id');
         
         if (option) {
-            var loaiTaiSanId = option.dataset.loaiTaiSanId;
-            var taiSanId = option.dataset.taiSanId;
+            var loaiTaiSanId = option.getAttribute('data-loai-tai-san-id');
+            var taiSanId = option.getAttribute('data-tai-san-id');
             loaiTaiSanSelect.value = loaiTaiSanId;
             loaiTaiSanSelect.disabled = true;
             taiSanIdInput.value = taiSanId;
@@ -135,30 +135,88 @@
         }
     }
 
-    function updateRowNumbers() {
-        document.querySelectorAll('#tableChiTiet tbody tr').forEach(function(row, index) {
-            row.id = 'row' + index;
-        });
-    }
-
     function themDong() {
         var tbody = document.querySelector("#tableChiTiet tbody");
-        var newRow = tbody.rows[0].cloneNode(true);
         var rowCount = tbody.rows.length;
-        newRow.id = 'row' + rowCount;
-        newRow.querySelectorAll('input').forEach(function(input) {
-            input.value = '';
-        });
-        newRow.querySelectorAll('select').forEach(function(select) {
-            select.selectedIndex = 0;
-            select.disabled = false;
-        });
 
-        var newTaiSanInput = newRow.querySelector('.select-tai-san');
-        newTaiSanInput.addEventListener('input', handleTaiSanSelection);
+        var newRow = document.createElement('tr');
+        newRow.id = 'row' + rowCount;
+
+        var loaiTaiSanCell = document.createElement('td');
+        var loaiTaiSanSelect = document.createElement('select');
+        loaiTaiSanSelect.className = 'form-control loai-tai-san';
+        loaiTaiSanSelect.name = 'loai_tai_san[]';
+        loaiTaiSanSelect.innerHTML = '<option value="">Chọn loại tài sản</option>';
+        // Thêm các tùy chọn loại tài sản
+        <?php foreach ($loaiTaiSans as $loaiTaiSan): ?>
+            loaiTaiSanSelect.innerHTML += '<option value="<?= $loaiTaiSan['loai_tai_san_id']; ?>"><?= htmlspecialchars($loaiTaiSan['ten_loai_tai_san']); ?></option>';
+        <?php endforeach; ?>
+        loaiTaiSanSelect.addEventListener('change', function() {
+            updateTaiSanList(loaiTaiSanSelect);
+        });
+        loaiTaiSanCell.appendChild(loaiTaiSanSelect);
+
+        var taiSanCell = document.createElement('td');
+        var taiSanSelect = document.createElement('select');
+        taiSanSelect.className = 'form-control tai-san';
+        taiSanSelect.name = 'tai_san_id[]';
+        taiSanSelect.innerHTML = '<option value="">Chọn tài sản</option>';
+        taiSanCell.appendChild(taiSanSelect);
+
+        var ngayMuaCell = document.createElement('td');
+        var ngayMuaInput = document.createElement('input');
+        ngayMuaInput.type = 'date';
+        ngayMuaInput.className = 'form-control';
+        ngayMuaInput.name = 'ngay_mua[]';
+        ngayMuaInput.required = true;
+        ngayMuaCell.appendChild(ngayMuaInput);
+
+        var soLuongCell = document.createElement('td');
+        var soLuongInput = document.createElement('input');
+        soLuongInput.type = 'number';
+        soLuongInput.className = 'form-control';
+        soLuongInput.name = 'so_luong[]';
+        soLuongInput.required = true;
+        soLuongCell.appendChild(soLuongInput);
+
+        var hanhDongCell = document.createElement('td');
+        var xoaButton = document.createElement('button');
+        xoaButton.type = 'button';
+        xoaButton.className = 'btn btn-danger btn-sm';
+        xoaButton.textContent = 'Xóa';
+        xoaButton.addEventListener('click', function() {
+            xoaDong(this);
+        });
+        hanhDongCell.appendChild(xoaButton);
+
+        newRow.appendChild(loaiTaiSanCell);
+        newRow.appendChild(taiSanCell);
+        newRow.appendChild(ngayMuaCell);
+        newRow.appendChild(soLuongCell);
+        newRow.appendChild(hanhDongCell);
 
         tbody.appendChild(newRow);
         updateRowNumbers();
+    }
+
+    function updateTaiSanList(select) {
+        var row = select.closest('tr');
+        var loaiTaiSanId = select.value;
+        var taiSanSelect = row.querySelector('.tai-san');
+
+        // Xóa các tùy chọn hiện tại
+        taiSanSelect.innerHTML = '<option value="">Chọn tài sản</option>';
+
+        // Thêm các tùy chọn tài sản mới dựa trên loại tài sản đã chọn
+        var taiSansInStock = <?php echo json_encode($taiSansInStock); ?>;
+        taiSansInStock.forEach(function(taiSan) {
+            if (taiSan.loai_tai_san_id == loaiTaiSanId) {
+                var option = document.createElement('option');
+                option.value = taiSan.tai_san_id;
+                option.text = taiSan.ten_tai_san;
+                taiSanSelect.appendChild(option);
+            }
+        });
     }
 
     function xoaDong(button) {
@@ -171,10 +229,16 @@
         }
     }
 
-    document.getElementById('vitriForm').addEventListener('submit', function(e) {
-        var disabledInputs = this.querySelectorAll('select:disabled, input:disabled');
-        disabledInputs.forEach(function(input) {
-            input.disabled = false;
+    function updateRowNumbers() {
+        document.querySelectorAll('#tableChiTiet tbody tr').forEach(function(row, index) {
+            row.id = 'row' + index;
+        });
+    }
+
+    document.querySelectorAll('.loai-tai-san').forEach(function(select) {
+        select.addEventListener('change', function() {
+            updateTaiSanList(select);
         });
     });
+
 </script>
