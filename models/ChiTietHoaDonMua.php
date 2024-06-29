@@ -1,7 +1,8 @@
 <?php
 // models/ChiTietHoaDonMua.php
 
-class ChiTietHoaDonMua {
+class ChiTietHoaDonMua
+{
     private $conn;
     private $table_name = "chi_tiet_hoa_don_mua";
 
@@ -11,11 +12,13 @@ class ChiTietHoaDonMua {
     public $so_luong;
     public $don_gia;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
-    public function create() {
+    public function create()
+    {
         $query = "INSERT INTO " . $this->table_name . " 
                   SET hoa_don_id=:hoa_don_id, tai_san_id=:tai_san_id, so_luong=:so_luong, don_gia=:don_gia";
 
@@ -31,28 +34,30 @@ class ChiTietHoaDonMua {
         $stmt->bindParam(':so_luong', $this->so_luong);
         $stmt->bindParam(':don_gia', $this->don_gia);
 
-        if($stmt->execute()) {
+        if ($stmt->execute()) {
             return $this->conn->lastInsertId();
         }
         return false;
     }
-    public function readByHoaDonIdAndTaiSanId($hoa_don_id, $tai_san_id) {
+    public function readByHoaDonIdAndTaiSanId($hoa_don_id, $tai_san_id)
+    {
         $query = "SELECT *
                   FROM " . $this->table_name . "
                   WHERE hoa_don_id = :hoa_don_id AND tai_san_id = :tai_san_id
                   LIMIT 1";
-    
+
         $stmt = $this->conn->prepare($query);
-    
+
         $stmt->bindParam(':hoa_don_id', $hoa_don_id);
         $stmt->bindParam(':tai_san_id', $tai_san_id);
-    
+
         $stmt->execute();
-    
+
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    
-    public function readByHoaDonId($hoa_don_id) {
+
+    public function readByHoaDonId($hoa_don_id)
+    {
         $query = "SELECT *
                   FROM " . $this->table_name . " ct
                   INNER JOIN tai_san ts ON ct.tai_san_id = ts.tai_san_id
@@ -66,7 +71,8 @@ class ChiTietHoaDonMua {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function readByChiTietId($chi_tiet_id) {
+    public function readByChiTietId($chi_tiet_id)
+    {
         $query = "SELECT ct.*, ts.ten_tai_san, hd.ngay_mua
                   FROM " . $this->table_name . " ct
                   INNER JOIN tai_san ts ON ct.tai_san_id = ts.tai_san_id
@@ -80,28 +86,30 @@ class ChiTietHoaDonMua {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function update() {
-        try{
-        $query = "UPDATE " . $this->table_name . " 
+    public function update()
+    {
+        try {
+            $query = "UPDATE " . $this->table_name . " 
                   SET so_luong=:so_luong, don_gia=:don_gia 
                   WHERE chi_tiet_id=:chi_tiet_id";
 
-        $stmt = $this->conn->prepare($query);
+            $stmt = $this->conn->prepare($query);
 
-        $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
-        $this->don_gia = htmlspecialchars(strip_tags($this->don_gia));
-        $this->chi_tiet_id = htmlspecialchars(strip_tags($this->chi_tiet_id));
-        $stmt->bindParam(':so_luong', $this->so_luong);
-        $stmt->bindParam(':don_gia', $this->don_gia);
-        $stmt->bindParam(':chi_tiet_id', $this->chi_tiet_id);
+            $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
+            $this->don_gia = htmlspecialchars(strip_tags($this->don_gia));
+            $this->chi_tiet_id = htmlspecialchars(strip_tags($this->chi_tiet_id));
+            $stmt->bindParam(':so_luong', $this->so_luong);
+            $stmt->bindParam(':don_gia', $this->don_gia);
+            $stmt->bindParam(':chi_tiet_id', $this->chi_tiet_id);
 
-        return $stmt->execute();
-        }catch(Exception $e){
+            return $stmt->execute();
+        } catch (Exception $e) {
             $this->create();
         }
     }
 
-    public function delete($chi_tiet_id) {
+    public function delete($chi_tiet_id)
+    {
         $query1 = "DELETE FROM vi_tri_chi_tiet WHERE chi_tiet_id = ? AND vi_tri_id = '1'";
         $stmt1 = $this->conn->prepare($query1);
         $stmt1->bindParam(1, $chi_tiet_id);
@@ -113,24 +121,60 @@ class ChiTietHoaDonMua {
         $stmt2->bindParam(1, $chi_tiet_id);
         $stmt2->execute();
     }
-    public function deleteByHoaDonId($hoa_don_id) {
+    public function deleteByHoaDonId($hoa_don_id)
+    {
         $query = "DELETE FROM " . $this->table_name . " WHERE hoa_don_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $hoa_don_id);
         return $stmt->execute();
     }
     public function getTopAssets($limit = 5)
-{
-    $query = "SELECT ts.ten_tai_san, SUM(cthdm.so_luong) as total_quantity
+    {
+        $query = "SELECT ts.ten_tai_san, SUM(cthdm.so_luong) as total_quantity
               FROM chi_tiet_hoa_don_mua cthdm
               JOIN tai_san ts ON cthdm.tai_san_id = ts.tai_san_id
               GROUP BY cthdm.tai_san_id
               ORDER BY total_quantity DESC
               LIMIT :limit";
-    $stmt = $this->conn->prepare($query);
-    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getChiTietId($taiSanId, $hoaDonId)
+    {
+        $query = "SELECT chi_tiet_id FROM " . $this->table_name . " WHERE tai_san_id = :tai_san_id AND hoa_don_id = :hoa_don_id LIMIT 0,1";
+
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':tai_san_id', $taiSanId);
+        $stmt->bindParam(':hoa_don_id', $hoaDonId);
+
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            return $row['chi_tiet_id'];
+        }
+
+        return null;
+    }
+    public function getQuantityInStock($taiSanId, $hoaDonId) {
+        // Your logic to fetch quantity in stock based on $taiSanId and $hoaDonId
+        // Example SQL query (assuming PDO):
+        $sql = "SELECT so_luong FROM chi_tiet_hoa_don_mua WHERE tai_san_id = :tai_san_id AND hoa_don_id = :hoa_don_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':tai_san_id', $taiSanId, PDO::PARAM_INT);
+        $stmt->bindParam(':hoa_don_id', $hoaDonId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            return $result['so_luong'];
+        } else {
+            return 0; // Or handle no results as needed
+        }
+    }
 }
 ?>

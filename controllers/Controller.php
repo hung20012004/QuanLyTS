@@ -34,5 +34,6 @@ class Controller {
     public function forgot_password_request(){}
     public function reset_password(){}
     public function detail($id){}
+    public function getQuantityInStock(){}
 }
 ?>
