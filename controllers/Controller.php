@@ -25,6 +25,8 @@ class Controller {
     public function show($id) {
         
     }
+    public function viewedit($id) {}
+    public function viewcreate(){}
     public function register() {}
     public function login() {}
     public function logout() {}

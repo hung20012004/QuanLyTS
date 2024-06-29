@@ -34,15 +34,19 @@
                     <form action="index.php?model=baotri&action=edit&id=<?= $schedule['schedule_id'] ?>" method="POST">
                         <div class="row mb-3">
                             <div class="col">
-                                <label for="tai_san_id" class="form-label">Tài Sản ID</label>
-                                <input type="number" class="form-control" id="tai_san_id" name="tai_san_id" value="<?= htmlspecialchars($schedule['tai_san_id']) ?>" required>
+                                <label for="vi_tri_id" class="form-label">Vị Trí ID</label>
+                                <select name="vi_tri_id" id="vi_tri_id" class="form-control" required>
+                                    <?php foreach ($viTris as $viTri): ?>
+                                        <option value="<?= $viTri['vi_tri_id'] ?>" <?= ($schedule['vi_tri_id'] == $viTri['vi_tri_id']) ? 'selected' : '' ?>><?= htmlspecialchars($viTri['ten_vi_tri']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
+                        </div>
+                        <div class="row mb-3">
                             <div class="col">
                                 <label for="ngay_bat_dau" class="form-label">Ngày Bắt Đầu</label>
                                 <input type="date" class="form-control" id="ngay_bat_dau" name="ngay_bat_dau" value="<?= htmlspecialchars($schedule['ngay_bat_dau']) ?>" required>
                             </div>
-                        </div>
-                        <div class="row mb-3">
                             <div class="col">
                                 <label for="ngay_ket_thuc" class="form-label">Ngày Kết Thúc</label>
                                 <input type="date" class="form-control" id="ngay_ket_thuc" name="ngay_ket_thuc" value="<?= htmlspecialchars($schedule['ngay_ket_thuc']) ?>">

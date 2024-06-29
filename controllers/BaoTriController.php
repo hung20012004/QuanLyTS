@@ -9,11 +9,15 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class BaoTriController extends Controller {
     private $db;
     private $schedule;
+    private $viTri;
+    private $viTriChiTiet;
 
     public function __construct() {
         $database = new Database();
         $this->db = $database->getConnection();
         $this->schedule = new BaoTri($this->db);
+        $this->viTri = new ViTri($this->db);
+        $this->viTriChiTiet = new ViTriChiTiet($this->db);
     }
 
     public function index() {
@@ -25,7 +29,7 @@ class BaoTriController extends Controller {
 
     public function create() {
         if ($_POST) {
-            $this->schedule->tai_san_id = $_POST['tai_san_id'];
+            $this->schedule->vi_tri_id = $_POST['vi_tri_id'];
             $this->schedule->ngay_bat_dau = $_POST['ngay_bat_dau'];
             $this->schedule->ngay_ket_thuc = $_POST['ngay_ket_thuc'];
             $this->schedule->mo_ta = $_POST['mo_ta'];
@@ -39,6 +43,8 @@ class BaoTriController extends Controller {
                 $_SESSION['message_type'] = 'danger';
             }
         }
+        $stmtVitri = $this->viTri->readNotKho();
+        $viTris = $stmtVitri->fetchAll(PDO::FETCH_ASSOC);
         $content = 'views/baotri/create.php';
         include('views/layouts/base.php');
     }
@@ -46,7 +52,7 @@ class BaoTriController extends Controller {
     public function edit($id) {
         if ($_POST) {
             $this->schedule->schedule_id = $id;
-            $this->schedule->tai_san_id = $_POST['tai_san_id'];
+            $this->schedule->vi_tri_id = $_POST['vi_tri_id'];
             $this->schedule->ngay_bat_dau = $_POST['ngay_bat_dau'];
             $this->schedule->ngay_ket_thuc = $_POST['ngay_ket_thuc'];
             $this->schedule->mo_ta = $_POST['mo_ta'];
@@ -60,6 +66,8 @@ class BaoTriController extends Controller {
                 $_SESSION['message_type'] = 'danger';
             }
         } else {
+            $stmtVitri = $this->viTri->readNotKho();
+            $viTris = $stmtVitri->fetchAll(PDO::FETCH_ASSOC);
             $schedule = $this->schedule->readById($id);
             $content = 'views/baotri/edit.php';
             include('views/layouts/base.php');

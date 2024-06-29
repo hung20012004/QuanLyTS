@@ -31,9 +31,15 @@
                         </div>
                     <?php endif; ?>
                     <form action="index.php?model=baotri&action=create" method="POST">
-                        <div class="mb-3">
-                            <label for="tai_san_id" class="form-label">Tài Sản ID:</label>
-                            <input type="number" name="tai_san_id" id="tai_san_id" class="form-control" required>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="vi_tri_id" class="form-label">Vị Trí ID</label>
+                                <select name="vi_tri_id" id="vi_tri_id" class="form-control" required>
+                                    <?php foreach ($viTris as $viTri): ?>
+                                        <option value="<?= $viTri['vi_tri_id'] ?>"><?= htmlspecialchars($viTri['ten_vi_tri']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col">
