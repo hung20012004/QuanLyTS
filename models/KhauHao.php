@@ -68,12 +68,10 @@ class KhauHao {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-     public function readKhAll($id) {
+     public function readKhAll() {
         $query = "SELECT * 
-                  FROM " . $this->table_name . " kh
-                  JOIN tai_san ts ON ts.tai_san_id = kh.tai_san_id
-                  WHERE kh.khau_hao_id = ".$id."";
-
+              FROM tai_san ts
+              INNER JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
@@ -144,5 +142,33 @@ class KhauHao {
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function search($tenTaiSan, $loaiTaiSan)
+{
+    // Truy vấn dữ liệu từ CSDL dựa trên tên tài sản và loại tài sản
+    $query = "SELECT * 
+              FROM tai_san ts
+              INNER JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id
+              WHERE ts.ten_tai_san LIKE :tenTaiSan AND lts.ten_loai_tai_san LIKE :loaiTaiSan";
+    
+    $stmt = $this->conn->prepare($query);
+    $tenTaiSan = "%{$tenTaiSan}%";
+    $loaiTaiSan = "%{$loaiTaiSan}%";
+    $stmt->bindParam(':tenTaiSan', $tenTaiSan);
+    $stmt->bindParam(':loaiTaiSan', $loaiTaiSan);
+    $stmt->execute();
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+ public function readloaits()
+ {
+    $query = "SELECT * 
+              FROM loai_tai_san ";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+ }
+ 
 }
 ?>

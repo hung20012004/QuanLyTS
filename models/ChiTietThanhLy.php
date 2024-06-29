@@ -75,7 +75,7 @@ class ChiTietThanhLy {
     public function update() {
         try{
         $query = "UPDATE " . $this->table_name . " 
-                  SET so_luong=:so_luong, gia_thanh_ly=:don_gia 
+                  SET so_luong=:so_luong, gia_thanh_ly=:don_gia, tai_san_id=:tai_san_id 
                   WHERE chi_tiet_id=:chi_tiet_id";
 
         $stmt = $this->conn->prepare($query);
@@ -83,10 +83,11 @@ class ChiTietThanhLy {
         $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
         $this->gia_thanh_ly = htmlspecialchars(strip_tags($this->gia_thanh_ly));
         $this->chi_tiet_id = htmlspecialchars(strip_tags($this->chi_tiet_id));
+        $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
         $stmt->bindParam(':so_luong', $this->so_luong);
         $stmt->bindParam(':don_gia', $this->gia_thanh_ly);
         $stmt->bindParam(':chi_tiet_id', $this->chi_tiet_id);
-
+        $stmt->bindParam(':tai_san_id', $this->tai_san_id);
         return $stmt->execute();
         }catch(Exception $e){
             $this->create();
@@ -94,13 +95,13 @@ class ChiTietThanhLy {
     }
 
     public function getByHoaDonId($hoa_don_id) {
-    $query = "SELECT * FROM " . $this->table_name . " WHERE hoa_don_id = :hoa_don_id";
+    $query = "SELECT * FROM " . $this->table_name . " WHERE hoa_don_id = :hoa_don_id ";
     $stmt = $this->conn->prepare($query);
-    $stmt->bindParam(':hoa_don_id', $hoa_don_id);
+    $stmt->bindParam(':hoa_don_id', $hoa_don_id, PDO::PARAM_INT);
+
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
 
     public function delete($id) {
         $query = "DELETE FROM " . $this->table_name . " WHERE chi_tiet_id = :hoa_don_id";

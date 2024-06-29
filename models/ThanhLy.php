@@ -172,5 +172,87 @@ class ThanhLy {
         $stmt->execute();
         return $stmt;
     }
+
+        public function getTotalRecords() {
+        $query = "SELECT COUNT(*) as total FROM " . $this->table_name;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
+    }
+
+    public function search($searchTerm, $page = 1, $recordsPerPage = 10) {
+        $start = ($page - 1) * $recordsPerPage;
+        $query = "SELECT hm.*, ncc.ten_nha_cung_cap 
+                  FROM " . $this->table_name . " hm
+                  LEFT JOIN nha_cung_cap ncc ON hm.nha_cung_cap_id = ncc.nha_cung_cap_id
+                  WHERE hm.ngay_mua LIKE :search 
+                     OR ncc.ten_nha_cung_cap LIKE :search
+                  ORDER BY hm.ngay_mua DESC
+                  LIMIT :start, :records";
+        
+        $stmt = $this->conn->prepare($query);
+        $searchTerm = "%{$searchTerm}%";
+        $stmt->bindParam(":search", $searchTerm);
+        $stmt->bindParam(":start", $start, PDO::PARAM_INT);
+        $stmt->bindParam(":records", $recordsPerPage, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    
+    public function getTotalInvoices()
+{
+    $query = "SELECT COUNT(*) as total FROM hoa_don_thanh_ly";
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+}
+
+public function getTotalValue()
+{
+    $query = "SELECT SUM(tong_gia_tri) as total FROM hoa_don_thanh_ly";
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+}
+
+public function getMonthlyInvoices()
+{
+    $query = "SELECT DATE_FORMAT(ngay_thanh_ly, '%Y-%m') as month, COUNT(*) as count 
+              FROM hoa_don_thanh_ly 
+              GROUP BY DATE_FORMAT(ngay_thanh_ly, '%Y-%m') 
+              ORDER BY month";
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function getSupplierInvoices()
+{
+    $query = "SELECT ncc.ten_nha_cung_cap, COUNT(*) as count 
+              FROM hoa_don_mua hdm
+              JOIN nha_cung_cap ncc ON hdm.nha_cung_cap_id = ncc.nha_cung_cap_id
+              GROUP BY hdm.nha_cung_cap_id
+              ORDER BY count DESC";
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function getTopAssets($limit = 5)
+{
+    $query = "SELECT ts.ten_tai_san, SUM(cthd.so_luong) as total_quantity
+              FROM chi_tiet_hoa_don_thanh_ly cthd
+              JOIN tai_san ts ON cthd.tai_san_id = ts.tai_san_id
+              GROUP BY cthd.tai_san_id
+              ORDER BY total_quantity DESC
+              LIMIT :limit";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }
 ?>

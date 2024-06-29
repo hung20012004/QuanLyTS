@@ -110,6 +110,9 @@ switch ($action) {
     case 'getQuantityInStock':
         $controller->getQuantityInStock();
         break;
+    case 'search':
+        $controller->search();
+        break;
     // case 'viewcreatekh':
     //     $controller->viewcreatekh($id); 
     //     break;
