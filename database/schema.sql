@@ -101,3 +101,9 @@ CREATE TABLE khau_hao (
     so_tien DECIMAL(15,0) NOT NULL,
     FOREIGN KEY (chi_tiet_id) REFERENCES chi_tiet_hoa_don_mua(chi_tiet_id) ON UPDATE CASCADE
 );
+CREATE TABLE tinh_trang (
+    tinh_trang_id INT AUTO_INCREMENT PRIMARY KEY,
+    schedule_id_id INT,
+    mo_ta_tinh_trang TEXT,
+    FOREIGN KEY (schedule_id) REFERENCES maintenance_schedule(schedule_id)
+);
