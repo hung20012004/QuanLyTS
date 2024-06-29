@@ -2,6 +2,7 @@ USE quanlytaisan;
 
 -- Thêm dữ liệu vào bảng loai_tai_san
 INSERT INTO loai_tai_san (ten_loai_tai_san) VALUES
+('Không xác định')
 ('Máy tính và thiết bị viễn thông'),
 ('Xây dựng, công cụ dụng cụ'),
 ('Đất đai, nhà xưởng'),
@@ -12,9 +13,9 @@ INSERT INTO loai_tai_san (ten_loai_tai_san) VALUES
 
 -- Thêm dữ liệu vào bảng tai_san
 INSERT INTO tai_san (ten_tai_san, mo_ta,  loai_tai_san_id) VALUES
-('Máy tính Dell', 'Máy tính để bàn', 1),
-('Bàn học sinh', 'Bàn học sinh gỗ',  2),
-('Máy chiếu Sony', 'Máy chiếu cao cấp',  3);
+('Máy tính Dell', 'Máy tính để bàn', 2),
+('Bàn học sinh', 'Bàn học sinh gỗ',  3),
+('Máy chiếu Sony', 'Máy chiếu cao cấp',  8);
 
 -- Thêm dữ liệu vào bảng vi_tri
 INSERT INTO vi_tri (ten_vi_tri) VALUES

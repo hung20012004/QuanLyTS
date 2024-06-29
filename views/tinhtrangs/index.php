@@ -66,9 +66,9 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-2">
+                    <!-- <div class="col-md-4 mb-2">
                         <button type="button" id="searchButton" class="btn btn-primary">Tìm</button>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-2">
@@ -148,14 +148,14 @@
                 }
             }
         }
-        document.getElementById('searchButton').addEventListener('click', filterTable);
+        // document.getElementById('searchButton').addEventListener('click', filterTable);
 
-        // document.getElementById('ngayBatDau').addEventListener('change', filterTable);
-        // document.getElementById('ngayKetThuc').addEventListener('change', filterTable);
-        // document.getElementById('ViTriSearch').addEventListener('change', filterTable);
+        document.getElementById('ngayBatDau').addEventListener('change', filterTable);
+        document.getElementById('ngayKetThuc').addEventListener('change', filterTable);
+        document.getElementById('ViTriSearch').addEventListener('change', filterTable);
 
         // Gọi filterTable ngay khi trang được tải để áp dụng bất kỳ giá trị mặc định nào
-        // filterTable();
+        filterTable();
         var toggleButton = document.getElementById('toggleSearch');
         var searchForm = document.getElementById('searchForm');
 
