@@ -98,5 +98,41 @@ class TaiSanController extends Controller {
         $content = 'views/taisans/detail.php';
         include('views/layouts/base.php');
     }
+    public function statistics() {
+        // Example of data retrieval (replace with actual database queries)
+        $totalAssets = $this->taiSan->getTotalAssets();
+        $totalAssetTypes = $this->loaiTaiSan->getTotalAssetTypes();
+        $assetTypes = $this->taiSan->getAssetTypeStatistics();
+        $recentAssets = $this->taiSan->getRecentAssets();
+    
+        // Prepare data for chart.js
+        $chartData = [
+            'labels' => array_column($assetTypes, 'loai_tai_san'),
+            'data' => array_column($assetTypes, 'so_luong'),
+        ];
+    
+        // Prepare data to pass to the view
+        $data = [
+            'totalAssets' => $totalAssets,
+            'totalAssetTypes' => $totalAssetTypes,
+            'assetTypes' => $assetTypes,
+            'recentAssets' => $recentAssets,
+            'chartData' => json_encode($chartData),
+        ];
+        // Load the view
+        $content = 'views/taisans/statistic.php'; // Adjust the path as per your application structure
+        include('views/layouts/base.php'); // Assuming base.php is your main layout template
+    }
+
+    public function search() {
+        if (isset($_GET['tenTaiSan']) && isset($_GET['loaiTaiSan'])) {
+            $tenTaiSan = $_GET['tenTaiSan'];
+            $loaiTaiSan = $_GET['loaiTaiSan'];
+            $searchResults = $this->taiSan->searchTaisan($tenTaiSan, $loaiTaiSan);
+            header('Content-Type: application/json');
+            echo json_encode($searchResults);
+            exit;
+        }
+    }
 }
 ?>

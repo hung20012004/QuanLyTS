@@ -37,9 +37,7 @@ class TaiSan {
     public function read() {
         $query = "SELECT tai_san.*, loai_tai_san.ten_loai_tai_san 
                   FROM " . $this->table_name . "
-                  LEFT JOIN loai_tai_san ON tai_san.loai_tai_san_id = loai_tai_san.loai_tai_san_id
-                  ORDER BY tai_san.ten_tai_san ASC";
-
+                  LEFT JOIN loai_tai_san ON tai_san.loai_tai_san_id = loai_tai_san.loai_tai_san_id";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
@@ -159,6 +157,76 @@ class TaiSan {
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
+    }
+
+    // Get total number of assets
+    public function getTotalAssets() {
+        try {
+            $query = "SELECT COUNT(*) as total FROM " . $this->table_name;
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row['total'];
+        } catch (PDOException $e) {
+            // Handle PDOException (database errors)
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
+    
+    public function getAssetTypeStatistics() {
+        try {
+            $query = "SELECT lt.ten_loai_tai_san as loai_tai_san, COUNT(ts.tai_san_id) as so_luong 
+                      FROM tai_san ts
+                      INNER JOIN loai_tai_san lt ON ts.loai_tai_san_id = lt.loai_tai_san_id
+                      GROUP BY lt.loai_tai_san_id ";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Handle PDOException (database errors)
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
+    
+    public function getRecentAssets() {
+        try {
+            $query = "SELECT ts.ten_tai_san, lt.ten_loai_tai_san, ct.so_luong, hd.ngay_mua 
+                      FROM " . $this->table_name . " ts
+                      JOIN chi_tiet_hoa_don_mua ct ON ct.tai_san_id = ts.tai_san_id 
+                      JOIN hoa_don_mua hd ON hd.hoa_don_id = ct.hoa_don_id
+                      JOIN loai_tai_san lt ON ts.loai_tai_san_id = lt.loai_tai_san_id
+                      WHERE hd.ngay_mua >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                      ORDER BY hd.ngay_mua DESC";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Handle PDOException (database errors)
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }  
+
+    // Phương thức để tìm kiếm tài sản
+    public function searchTaisan($tenTaiSan, $loaiTaiSan) {
+        // Query để lấy dữ liệu từ bảng tài sản với điều kiện tìm kiếm
+        $query = "SELECT * FROM tai_san ts 
+                  JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id 
+                  WHERE ten_tai_san = :tenTaiSan AND ten_loai_tai_san = :loaiTaiSan";
+        $stmt = $this->conn->prepare($query);
+
+        // Bind các tham số và thực hiện truy vấn
+        $stmt->execute([
+            ':tenTaiSan' => '%' . $tenTaiSan . '%',
+            ':loaiTaiSan' => '%' . $loaiTaiSan . '%'
+        ]);
+
+        // Lấy kết quả từ truy vấn
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
     }
 }
 ?>

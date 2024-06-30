@@ -76,7 +76,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control so-luong-kho" name="so_luong[]" value="<?= $detail['so_luong_kho'] ?? 0; ?>" readonly>
+                                        <input type="number" class="form-control so-luong-kho" min="0" name="so_luong[]" value="<?= $detail['so_luong_kho'] ?? 0; ?>" readonly>
                                     </td>
                                     <td>
                                         <input type="number" class="form-control so-luong-chuyen" name="so_luong_chuyen[]" value="<?= $detail['so_luong'] ?? 0; ?>" required min="0">
@@ -131,10 +131,10 @@
             <?php foreach ($taiSans as $taiSan): ?>
             if (taiSanId == <?= $taiSan['tai_san_id'] ?>) {
                 <?php foreach ($purchaseDates[$taiSan['tai_san_id']] ?? [] as $date): ?>
-                var option = document.createElement('option');
-                option.value = "<?= $date['hoa_don_id'] ?>";
-                option.textContent = "<?= date('d/m/Y', strtotime($date['ngay_mua'])) ?>";
-                purchaseDateSelect.appendChild(option);
+                    var option = document.createElement('option');
+                    option.value = "<?= $date['hoa_don_id'] ?>";
+                    option.textContent = "<?= date('d/m/Y', strtotime($date['ngay_mua'])) ?>";
+                    purchaseDateSelect.appendChild(option);
                 <?php endforeach; ?>
             }
             <?php endforeach; ?>

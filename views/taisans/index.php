@@ -8,7 +8,7 @@
             </nav>
         </div>
     </div>
-</div>
+<divv>
 
 <div class="container-fluid">
     <?php if (isset($_SESSION['message'])): ?>
@@ -80,19 +80,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($taiSans as $taiSan): ?> 
+                        <?php foreach ($taiSans as $taisan): ?> 
                             <tr>
-                                <td class="text-center"><?php echo $taiSan['tai_san_id']; ?></td>
-                                <td class="text-center"><?= htmlspecialchars($taiSan['ten_tai_san']) ?></td>
-                                <td class="text-center"><?= htmlspecialchars($taiSan['mo_ta']) ?></td>
-                                <td class="text-center"><?= htmlspecialchars($taiSan['ten_loai_tai_san']) ?></td>
+                                <td class="text-center"><?php echo $taisan['tai_san_id']; ?></td>
+                                <td class="text-center"><?= htmlspecialchars($taisan['ten_tai_san']) ?></td>
+                                <td class="text-center"><?= htmlspecialchars($taisan['mo_ta']) ?></td>
+                                <td class="text-center"><?= htmlspecialchars($taisan['ten_loai_tai_san']) ?></td>
                                 <td class="d-flex justify-content-center">
-                                    <a href="index.php?model=taisan&action=show&id=<?php echo $taiSan['tai_san_id']; ?>"
-                                        class="btn btn-info btn-sm mx-2">Xem</a>
-                                    <a href="index.php?model=taisan&action=edit&id=<?php echo $taiSan['tai_san_id']; ?>"
+                                    <a href="index.php?model=taisan&action=detail&id=<?php echo $taisan['tai_san_id']; ?>"
+                                        class="btn btn-info btn-sm mx-2">Chi tiết</a>
+                                    <a href="index.php?model=taisan&action=edit&id=<?php echo $taisan['tai_san_id']; ?>"
                                         class="btn btn-warning btn-sm mx-2">Sửa</a>
-                                    <a href="index.php?model=taisan&action=delete&id=<?php echo $taiSan['tai_san_id']; ?>"
-                                        class="btn btn-danger btn-sm mx-2" onclick="return confirmDelete(<?php echo $taiSan['tai_san_id']; ?>);">Xóa</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -104,6 +102,13 @@
 </div>
 
 <script>
+    $(document).ready(function () {
+        var table = $('#dataTable').DataTable({
+            "retrive": true,
+            "searching": false // Tắt tính năng search box mặc định
+        });
+        
+    });
     document.addEventListener('DOMContentLoaded', function () {
         function filterTable() {
             var tenTaiSan = document.getElementById('tenTaiSan').value.toLowerCase();
@@ -117,8 +122,8 @@
                 var tenTaiSanCell = cells[1].textContent.trim().toLowerCase();
                 var loaiTaiSanCell = cells[3].textContent.trim().toLowerCase();
 
-                var passTenTaiSan = tenTaiSan == '' || tenTaiSanCell.includes(tenTaiSan);
-                var passLoaiTaiSan = loaiTaiSan == '' || loaiTaiSanCell.includes(loaiTaiSan);
+                var passTenTaiSan = tenTaiSan === '' || tenTaiSanCell.includes(tenTaiSan);
+                var passLoaiTaiSan = loaiTaiSan === '' || loaiTaiSanCell.includes(loaiTaiSan);
 
                 if (passTenTaiSan && passLoaiTaiSan) {
                     rows[i].style.display = '';
@@ -147,23 +152,17 @@
         });
     });
 
-    function confirmDelete(id) {
-        if (confirm('Bạn có chắc muốn xóa tài sản này?')) {
-            fetch('index.php?model=taisan&action=delete&id=' + id)
-                .then(response => response.json())
+    function showDetail(taiSanId) {
+        var detailRow = document.getElementById('detail-' + taiSanId);
+        if (detailRow.style.display === 'none') {
+            fetch('index.php?model=taisan&action=detail&id=' + taiSanId)
+                .then(response => response.text())
                 .then(data => {
-                    if (data.success) {
-                        alert('Xóa tài sản thành công!');
-                        location.reload();
-                    } else {
-                        alert(data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra khi xóa tài sản.');
+                    detailRow.querySelector('.detail-content').innerHTML = data;
+                    detailRow.style.display = 'table-row';
                 });
+        } else {
+            detailRow.style.display = 'none';
         }
-        return false;
     }
 </script>
