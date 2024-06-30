@@ -102,44 +102,21 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-  var table=$('#dataTable').DataTable({
-      dom: 'rtip',
+    document.addEventListener('DOMContentLoaded', function () {
+        var table = $('#dataTable').DataTable({
+            dom: 'rtip',
             language: {
                 "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
             }
-    });
-  });
-    document.addEventListener('DOMContentLoaded', function () {
-        function filterTable() {
-            var tenTaiSan = document.getElementById('tenTaiSan').value.toLowerCase();
-            var loaiTaiSan = document.getElementById('loaiTaiSan').value.toLowerCase();
+        });
 
-            var table = document.getElementById('dataTable');
-            var rows = table.getElementsByTagName('tr');
-
-            for (var i = 1; i < rows.length; i++) {
-                var cells = rows[i].getElementsByTagName('td');
-                var tenTaiSanCell = cells[1].textContent.trim().toLowerCase();
-                var loaiTaiSanCell = cells[3].textContent.trim().toLowerCase();
-
-                var passTenTaiSan = tenTaiSan === '' || tenTaiSanCell.includes(tenTaiSan);
-                var passLoaiTaiSan = loaiTaiSan === '' || loaiTaiSanCell.includes(loaiTaiSan);
-
-                if (passTenTaiSan && passLoaiTaiSan) {
-                    rows[i].style.display = '';
-                } else {
-                    rows[i].style.display = 'none';
-                }
-            }
-        }
-
-        document.getElementById('tenTaiSan').addEventListener('input', filterTable);
-        document.getElementById('loaiTaiSan').addEventListener('change', filterTable);
-
-        // Gọi filterTable ngay khi trang được tải để áp dụng bất kỳ giá trị mặc định nào
-        
-        filterTable();
+        // Thêm sự kiện tìm kiếm cho input
+        $('#tenTaiSan').on('input', function(){
+            table.column(1).search(this.value).draw();
+        });
+        $('#loaiTaiSan').on('change', function(){
+            table.column(3).search(this.value).draw();
+        });
         var toggleButton = document.getElementById('toggleSearch');
         var searchForm = document.getElementById('searchForm');
 
