@@ -34,8 +34,8 @@
                         <div class="mb-3">
                             <label for="tenEmail" class="form-label">Tên và Email:</label>
                             <div class="input-group">
-                                <input type="text" name="ten" id="ten" class="form-control" placeholder="Tên" required>
-                                <input type="email" name="email" id="email" class="form-control" placeholder="Email" required>
+                                <input type="text" name="ten" id="ten" class="form-control" placeholder="Tên" value="<?php echo htmlspecialchars($ten); ?>" required>
+                                <input type="email" name="email" id="email" class="form-control" placeholder="Email" value="<?php echo htmlspecialchars($email); ?>" required>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -43,16 +43,15 @@
                             <div class="input-group">
                                 <input type="password" name="password" id="password" class="form-control" value="Utt@1234" disabled required>
                                 <button type="button" class="btn btn-outline-secondary" id="togglePassword">
-                                <i class="fa-solid fa-eye"></i>
+                                    <i class="fa-solid fa-eye"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="role" class="form-label">Vai trò:</label>
                             <select name="role" id="role" class="form-control" required>
-                                <option>Chọn vai trò</option>
-                                <option value="NhanVien">Nhân viên quản lý tài sản</option>
-                                <option value="KyThuat">Kỹ thuật viên</option>
+                                <option value="NhanVien" <?php echo $role === 'NhanVien' ? 'selected' : ''; ?>>Nhân viên quản lý tài sản</option>
+                                <option value="KyThuat" <?php echo $role === 'KyThuat' ? 'selected' : ''; ?>>Kỹ thuật viên</option>
                             </select>
                         </div>
                 </div>
@@ -77,4 +76,15 @@
             this.querySelector('i').classList.toggle('fa-eye-slash');
         });
     });
+    document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+    const roleSelect = document.getElementById('role');
+
+    form.addEventListener('submit', function(event) {
+        if (roleSelect.value === '') {
+            event.preventDefault();
+            alert('Vui lòng chọn vai trò cho người dùng.');
+        }
+    });
+});
 </script>

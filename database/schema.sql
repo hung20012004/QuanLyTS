@@ -94,14 +94,13 @@ CREATE TABLE maintenance_schedule (
     FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id)
 );
 -- Bảng để lưu thông tin khấu hao của tài sản
--- CREATE TABLE khau_hao (
---     khau_hao_id INT AUTO_INCREMENT PRIMARY KEY,
---     chi_tiet_id INT,
---     thoi_gian_khau_hao INT,
---     so_tien DECIMAL(15,0) NOT NULL,
---     FOREIGN KEY (chi_tiet_id) REFERENCES chi_tiet_hoa_don_mua(chi_tiet_id) ON UPDATE CASCADE
--- );
-
+CREATE TABLE khau_hao (
+    khau_hao_id INT AUTO_INCREMENT PRIMARY KEY,
+    chi_tiet_id INT,
+    thoi_gian_khau_hao INT,
+    so_tien DECIMAL(15,0) NOT NULL,
+    FOREIGN KEY (chi_tiet_id) REFERENCES chi_tiet_hoa_don_mua(chi_tiet_id) ON UPDATE CASCADE
+);
 CREATE TABLE tinh_trang (
     tinh_trang_id INT AUTO_INCREMENT PRIMARY KEY,
     schedule_id INT,
