@@ -52,7 +52,7 @@ class LoaiTaiSan {
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $id);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     // Cập nhật thông tin loại tài sản
@@ -84,6 +84,15 @@ class LoaiTaiSan {
             return true;
         }
         return false;
+    }
+
+    // Get total number of asset types
+    public function getTotalAssetTypes() {
+        $query = "SELECT COUNT(*) as total FROM " . $this->table_name;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
     }
 }
 ?>

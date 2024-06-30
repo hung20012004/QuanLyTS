@@ -9,7 +9,7 @@
                         <a class="collapse-item" href="route.php?model=taisan&action=index">Quản lý</a>
                         <a class="collapse-item" href="route.php?model=khauhao&action=index">Khấu hao</a>
                         <a class="collapse-item" href="route.php?model=loaitaisan&action=index">Phân loại</a>
-                        <a class="collapse-item" href="cards.html">Thống kê</a>
+                        <a class="collapse-item" href="route.php?model=taisan&action=statistic">Thống kê</a>
                     </div>
                 </div>
                 

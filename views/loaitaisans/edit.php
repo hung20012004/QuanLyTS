@@ -30,8 +30,7 @@
                             </ul>
                         </div>
                     <?php endif; ?>
-
-                    <form action="index.php?model=loaitaisan&action=edit&id=<?php echo $loaiTaiSan['loai_tai_san_id']; ?>" method="POST">
+                    <form action="index.php?model=loaitaisan&action=edit&id=<?= $loaiTaiSan['loai_tai_san_id']; ?>" method="POST">
                         <div class="mb-3">
                             <label for="ten_loai_tai_san" class="form-label">Loại Tài Sản:</label>
                             <input type="text" name="ten_loai_tai_san" id="ten_loai_tai_san" class="form-control" value="<?= htmlspecialchars($loaiTaiSan['ten_loai_tai_san']) ?>" required>
