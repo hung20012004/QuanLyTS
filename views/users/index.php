@@ -108,57 +108,78 @@
 
 <script>
     $(document).ready(function() {
-  var table=$('#dataTable').DataTable({
-      dom: 'rtip',
-            language: {
-                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
-            }
-    });
-  });
-document.addEventListener('DOMContentLoaded', function() {
-    function filterTable() {
-        var nameFilter = document.getElementById('tenSearch').value.toLowerCase();
-        var emailFilter = document.getElementById('emailSearch').value.toLowerCase();
-        var roleFilter = document.getElementById('vaitroSearch').value;
+        var table=$('#dataTable').DataTable({
+            dom: 'rtip',
+                    language: {
+                        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
+                    }
+            });
+        $('#tenSearch').on('keyup', function(){
+            table.column(1).search(this.value).draw();
+        });
+        $('#emailSearch').on('keyup', function(){
+            table.column(2).search(this.value).draw();
+        });
+        $('#vaitroSearch').on('change', function(){
+            table.column(3).search(this.value).draw();
+        });
+        var toggleButton = document.getElementById('toggleSearch');
+        var searchForm = document.getElementById('searchForm');
 
-        var table = document.getElementById('dataTable');
-        var rows = table.getElementsByTagName('tr');
-
-        for (var i = 1; i < rows.length; i++) {
-            var cells = rows[i].getElementsByTagName('td');
-            var email = cells[1].textContent.toLowerCase();
-            var name = cells[2].textContent.toLowerCase();
-            var role = cells[3].textContent;
-
-            var roleMatch = roleFilter === '' || 
-                            (roleFilter === 'NhanVien' && role === 'Nhân viên') || 
-                            (roleFilter === 'KyThuat' && role === 'Kỹ thuật viên');
-
-            if (name.includes(nameFilter) && email.includes(emailFilter) && roleMatch) {
-                rows[i].style.display = '';
+        toggleButton.addEventListener('click', function() {
+            if (searchForm.style.display === 'none') {
+                searchForm.style.display = 'block';
+                toggleButton.textContent = 'Ẩn tìm kiếm';
             } else {
-                rows[i].style.display = 'none';
+                searchForm.style.display = 'none';
+                toggleButton.textContent = 'Tìm kiếm';
             }
-        }
-    }
+        });
+  });
+// document.addEventListener('DOMContentLoaded', function() {
+//     function filterTable() {
+//         var nameFilter = document.getElementById('tenSearch').value.toLowerCase();
+//         var emailFilter = document.getElementById('emailSearch').value.toLowerCase();
+//         var roleFilter = document.getElementById('vaitroSearch').value;
 
-    document.getElementById('tenSearch').addEventListener('keyup', filterTable);
-    document.getElementById('emailSearch').addEventListener('keyup', filterTable);
-    document.getElementById('vaitroSearch').addEventListener('change', filterTable);
+//         var table = document.getElementById('dataTable');
+//         var rows = table.getElementsByTagName('tr');
 
-    var toggleButton = document.getElementById('toggleSearch');
-    var searchForm = document.getElementById('searchForm');
+//         for (var i = 1; i < rows.length; i++) {
+//             var cells = rows[i].getElementsByTagName('td');
+//             var email = cells[1].textContent.toLowerCase();
+//             var name = cells[2].textContent.toLowerCase();
+//             var role = cells[3].textContent;
 
-    toggleButton.addEventListener('click', function() {
-        if (searchForm.style.display === 'none') {
-            searchForm.style.display = 'block';
-            toggleButton.textContent = 'Ẩn tìm kiếm';
-        } else {
-            searchForm.style.display = 'none';
-            toggleButton.textContent = 'Tìm kiếm';
-        }
-    });
-});
+//             var roleMatch = roleFilter === '' || 
+//                             (roleFilter === 'NhanVien' && role === 'Nhân viên') || 
+//                             (roleFilter === 'KyThuat' && role === 'Kỹ thuật viên');
+
+//             if (name.includes(nameFilter) && email.includes(emailFilter) && roleMatch) {
+//                 rows[i].style.display = '';
+//             } else {
+//                 rows[i].style.display = 'none';
+//             }
+//         }
+//     }
+
+//     document.getElementById('tenSearch').addEventListener('keyup', filterTable);
+//     document.getElementById('emailSearch').addEventListener('keyup', filterTable);
+//     document.getElementById('vaitroSearch').addEventListener('change', filterTable);
+
+//     var toggleButton = document.getElementById('toggleSearch');
+//         var searchForm = document.getElementById('searchForm');
+
+//         toggleButton.addEventListener('click', function() {
+//             if (searchForm.style.display === 'none') {
+//                 searchForm.style.display = 'block';
+//                 toggleButton.textContent = 'Ẩn tìm kiếm';
+//             } else {
+//                 searchForm.style.display = 'none';
+//                 toggleButton.textContent = 'Tìm kiếm';
+//             }
+//         });
+// });
 
 function confirmDelete() {
     return confirm('Bạn có chắc muốn xóa người dùng này?');

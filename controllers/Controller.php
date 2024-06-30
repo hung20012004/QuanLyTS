@@ -7,9 +7,9 @@ class Controller {
     }
 
     public function index() {
-        $content = 'views/welcome.php';
-        include('views/layouts/base.php');
-        // include('views/welcome.php');
+        // $content = 'views/welcome.php';
+        // include('views/layouts/base.php');
+        include('views/welcome.php');
     }
 
     public function create() {

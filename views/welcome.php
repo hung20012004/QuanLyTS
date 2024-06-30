@@ -7,7 +7,8 @@ if (isset($_SESSION['role'])) {
             $controller->statistics();
             break;
         case 'NhanVien':
-            
+            $controller = new TaiSanController();
+            $controller->statistics();
             break;
         case 'KyThuat':
             
