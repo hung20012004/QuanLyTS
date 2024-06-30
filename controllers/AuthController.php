@@ -164,9 +164,8 @@ class AuthController extends Controller {
                     return;
                 }
             }
-    
+            $email= $_SESSION['email'];
             if ($this->authModel->updateUserProfile($id, $email, $ten, $avatarPath, $password)) {
-                $_SESSION['email'] = $email;
                 $_SESSION['ten'] = $ten;
                 if ($avatarPath) {
                     $_SESSION['avatar'] = $avatarPath;

@@ -11,27 +11,27 @@
 </div>
 
 <div class="container-fluid">
-<?php if (isset($_SESSION['message'])): ?>
-    <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
-        <?= $_SESSION['message']; ?>
-    </div>
-    <?php
-    unset($_SESSION['message']);
-    unset($_SESSION['message_type']);
-    ?>
-    <script>
-        setTimeout(function() {
-            var alert = document.getElementById('alert-message');
-            if (alert) {
-                alert.classList.remove('show');
-                alert.classList.add('fade');
-                setTimeout(function() {
-                    alert.style.display = 'none';
-                }, 150); 
-            }
-        }, 2000); // 2000 milliseconds = 2 seconds
-    </script>
-<?php endif; ?>
+    <?php if (isset($_SESSION['message'])): ?>
+        <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
+            <?= $_SESSION['message']; ?>
+        </div>
+        <?php
+        unset($_SESSION['message']);
+        unset($_SESSION['message_type']);
+        ?>
+        <script>
+            setTimeout(function() {
+                var alert = document.getElementById('alert-message');
+                if (alert) {
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                    setTimeout(function() {
+                        alert.style.display = 'none';
+                    }, 150); 
+                }
+            }, 2000);
+        </script>
+    <?php endif; ?>
 
     <div class="card shadow mb-4">
         <div class="card-header py-2">
@@ -107,55 +107,47 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-  var table=$('#dataTable').DataTable({
-      dom: 'rtip',
-            language: {
-                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
-            }
+$(document).ready(function() {
+    var table = $('#dataTable').DataTable({
+        dom: 'rtip',
+        language: {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
+        }
     });
-  });
-document.addEventListener('DOMContentLoaded', function() {
+
     function filterTable() {
-        var nameFilter = document.getElementById('tenSearch').value.toLowerCase();
-        var emailFilter = document.getElementById('emailSearch').value.toLowerCase();
-        var roleFilter = document.getElementById('vaitroSearch').value;
+        var nameFilter = $('#tenSearch').val().toLowerCase();
+        var emailFilter = $('#emailSearch').val().toLowerCase();
+        var roleFilter = $('#vaitroSearch').val();
 
-        var table = document.getElementById('dataTable');
-        var rows = table.getElementsByTagName('tr');
-
-        for (var i = 1; i < rows.length; i++) {
-            var cells = rows[i].getElementsByTagName('td');
-            var email = cells[1].textContent.toLowerCase();
-            var name = cells[2].textContent.toLowerCase();
-            var role = cells[3].textContent;
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            var email = data[1].toLowerCase();
+            var name = data[2].toLowerCase();
+            var role = data[3];
 
             var roleMatch = roleFilter === '' || 
                             (roleFilter === 'NhanVien' && role === 'Nhân viên') || 
                             (roleFilter === 'KyThuat' && role === 'Kỹ thuật viên');
 
-            if (name.includes(nameFilter) && email.includes(emailFilter) && roleMatch) {
-                rows[i].style.display = '';
-            } else {
-                rows[i].style.display = 'none';
-            }
-        }
+            return name.includes(nameFilter) && email.includes(emailFilter) && roleMatch;
+        });
+
+        table.draw();
+
+        $.fn.dataTable.ext.search.pop();
     }
 
-    document.getElementById('tenSearch').addEventListener('keyup', filterTable);
-    document.getElementById('emailSearch').addEventListener('keyup', filterTable);
-    document.getElementById('vaitroSearch').addEventListener('change', filterTable);
+    $('#tenSearch, #emailSearch').on('keyup', filterTable);
+    $('#vaitroSearch').on('change', filterTable);
 
-    var toggleButton = document.getElementById('toggleSearch');
-    var searchForm = document.getElementById('searchForm');
-
-    toggleButton.addEventListener('click', function() {
-        if (searchForm.style.display === 'none') {
-            searchForm.style.display = 'block';
-            toggleButton.textContent = 'Ẩn tìm kiếm';
+    $('#toggleSearch').on('click', function() {
+        var searchForm = $('#searchForm');
+        if (searchForm.is(':hidden')) {
+            searchForm.show();
+            $(this).text('Ẩn tìm kiếm');
         } else {
-            searchForm.style.display = 'none';
-            toggleButton.textContent = 'Tìm kiếm';
+            searchForm.hide();
+            $(this).text('Tìm kiếm');
         }
     });
 });
