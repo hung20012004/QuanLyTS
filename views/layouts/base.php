@@ -83,10 +83,9 @@
     <script src="./vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="./assets/js/demo/datatables-demo.js"></script>
+    
     <script src="https://kit.fontawesome.com/1b233c9fdd.js" crossorigin="anonymous"></script>
 
-    <!-- <script src="./vendor/chart.js/Chart.min.js"></script> -->
 </body>
 
 </html>

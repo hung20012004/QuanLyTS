@@ -107,6 +107,14 @@
 </div>
 
 <script>
+    $(document).ready(function() {
+  var table=$('#dataTable').DataTable({
+      dom: 'rtip',
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
+            }
+    });
+  });
 document.addEventListener('DOMContentLoaded', function() {
     function filterTable() {
         var nameFilter = document.getElementById('tenSearch').value.toLowerCase();

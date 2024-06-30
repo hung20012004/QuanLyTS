@@ -87,41 +87,34 @@
     </div>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        function filterTable() {
-            var loaiTaiSanFilter = document.getElementById('loaiTaiSanSearch').value.toLowerCase();
-            var table = document.getElementById('dataTable');
-            var rows = table.getElementsByTagName('tr');
-
-            for (var i = 1; i < rows.length; i++) {
-                var cells = rows[i].getElementsByTagName('td');
-                var loaiTaiSan = cells[1].textContent.trim().toLowerCase();
-
-                if (loaiTaiSan.includes(loaiTaiSanFilter)) {
-                    rows[i].style.display = '';
-                } else {
-                    rows[i].style.display = 'none';
-                }
-            }
+document.addEventListener('DOMContentLoaded', function () {
+    var table = $('#dataTable').DataTable({
+        dom: 'rtip',
+        language: {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
         }
-
-        document.getElementById('loaiTaiSanSearch').addEventListener('input', filterTable);
-
-        var toggleButton = document.getElementById('toggleSearch');
-        var searchForm = document.getElementById('searchForm');
-
-        toggleButton.addEventListener('click', function () {
-            if (searchForm.style.display === 'none') {
-                searchForm.style.display = 'block';
-                toggleButton.textContent = 'Ẩn tìm kiếm';
-            } else {
-                searchForm.style.display = 'none';
-                toggleButton.textContent = 'Tìm kiếm';
-            }
-        });
     });
 
-    function confirmDelete() {
-        return confirm('Bạn có chắc muốn xóa loại tài sản này? Hành động này không thể hoàn tác và tất cả các tài sản thuộc loại này sẽ được cập nhật loại tài sản về mặc định.');
-    }
+    // Thêm sự kiện tìm kiếm cho input
+    $('#loaiTaiSanSearch').on('keyup', function () {
+        table.column(1).search(this.value).draw();
+    });
+
+    var toggleButton = document.getElementById('toggleSearch');
+    var searchForm = document.getElementById('searchForm');
+
+    toggleButton.addEventListener('click', function () {
+        if (searchForm.style.display === 'none') {
+            searchForm.style.display = 'block';
+            toggleButton.textContent = 'Ẩn tìm kiếm';
+        } else {
+            searchForm.style.display = 'none';
+            toggleButton.textContent = 'Tìm kiếm';
+        }
+    });
+});
+
+function confirmDelete() {
+    return confirm('Bạn có chắc muốn xóa loại tài sản này? Hành động này không thể hoàn tác và tất cả các tài sản thuộc loại này sẽ được cập nhật loại tài sản về mặc định.');
+}
 </script>

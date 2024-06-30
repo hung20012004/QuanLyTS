@@ -102,13 +102,14 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        var table = $('#dataTable').DataTable({
-            "retrive": true,
-            "searching": false // Tắt tính năng search box mặc định
-        });
-        
+    $(document).ready(function() {
+  var table=$('#dataTable').DataTable({
+      dom: 'rtip',
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
+            }
     });
+  });
     document.addEventListener('DOMContentLoaded', function () {
         function filterTable() {
             var tenTaiSan = document.getElementById('tenTaiSan').value.toLowerCase();
@@ -137,6 +138,7 @@
         document.getElementById('loaiTaiSan').addEventListener('change', filterTable);
 
         // Gọi filterTable ngay khi trang được tải để áp dụng bất kỳ giá trị mặc định nào
+        
         filterTable();
         var toggleButton = document.getElementById('toggleSearch');
         var searchForm = document.getElementById('searchForm');
