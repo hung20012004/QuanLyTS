@@ -74,7 +74,7 @@ class ThanhLyController {
                 $ngay_mua = $ngaymuas[$i];
 
                 // Kiểm tra số lượng tài sản
-                $sql = "SELECT vtct.so_luong
+                $sql = "SELECT vtct.so_luong, vtct.vi_tri_chi_tiet_id
                         FROM vi_tri vt
                         JOIN vi_tri_chi_tiet vtct ON vt.vi_tri_id = vtct.vi_tri_id
                         JOIN chi_tiet_hoa_don_mua cthd ON vtct.chi_tiet_id = cthd.chi_tiet_id
@@ -83,7 +83,10 @@ class ThanhLyController {
                         WHERE vt.vi_tri_id = 1 AND cthd.tai_san_id = ? AND hdm.ngay_mua = ? ";
                 $stmt = $this->db->prepare($sql);
                 $stmt->execute([$tai_san_id, $ngay_mua]);
-                $current_so_luong = $stmt->fetchColumn();
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                 $current_so_luong = $result['so_luong'];
+                $vi_tri_chi_tiet_id = $result['vi_tri_chi_tiet_id'];
+
 
                 if ($current_so_luong < $so_luong) {
                     // Thông báo lỗi và hủy bỏ phiên giao dịch
@@ -108,11 +111,12 @@ class ThanhLyController {
                 $stmt->execute(['so_luong' => $so_luong, 'tai_san_id' => $tai_san_id , 'ngay_mua' => $ngay_mua ]);
 
                 // Thêm chi tiết hóa đơn thanh lý
-                $stmt = $this->db->prepare("INSERT INTO chi_tiet_hoa_don_thanh_ly (hoa_don_id, tai_san_id, so_luong, gia_thanh_ly) VALUES (:hoa_don_thanh_ly_id, :tai_san_id, :so_luong, :gia_thanh_ly)");
+                $stmt = $this->db->prepare("INSERT INTO chi_tiet_hoa_don_thanh_ly (hoa_don_id, tai_san_id, so_luong, gia_thanh_ly, vi_tri_chi_tiet_id) VALUES (:hoa_don_thanh_ly_id, :tai_san_id, :so_luong, :gia_thanh_ly, :vi_tri_chi_tiet_id)");
                 $stmt->bindParam(':hoa_don_thanh_ly_id', $hoa_don_thanh_ly_id);
                 $stmt->bindParam(':tai_san_id', $tai_san_id);
                 $stmt->bindParam(':so_luong', $so_luong);
                 $stmt->bindParam(':gia_thanh_ly', $gia_thanh_ly);
+                $stmt->bindParam(':vi_tri_chi_tiet_id', $vi_tri_chi_tiet_id);
                 $stmt->execute();
             }
 
