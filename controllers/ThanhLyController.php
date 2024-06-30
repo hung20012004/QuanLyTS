@@ -41,6 +41,7 @@ class ThanhLyController {
     public function create()
     {
         try {
+            
             $this->db->beginTransaction();
             $tong_cong = 0;
 
@@ -65,21 +66,23 @@ class ThanhLyController {
             $tai_san_ids = $_POST['tai_san_id'];
             $so_luongs = $_POST['so_luong'];
             $gia_thanh_lys = $_POST['gia_thanh_ly'];
-
+            $ngaymuas = $_POST['ngay_mua'];
             for ($i = 0; $i < count($tai_san_ids); $i++) {
                 $tai_san_id = $tai_san_ids[$i];
                 $so_luong = $so_luongs[$i];
                 $gia_thanh_ly = $gia_thanh_lys[$i];
+                $ngay_mua = $ngaymuas[$i];
 
                 // Kiểm tra số lượng tài sản
                 $sql = "SELECT vtct.so_luong
                         FROM vi_tri vt
                         JOIN vi_tri_chi_tiet vtct ON vt.vi_tri_id = vtct.vi_tri_id
                         JOIN chi_tiet_hoa_don_mua cthd ON vtct.chi_tiet_id = cthd.chi_tiet_id
+                        JOIN hoa_don_mua hdm ON hdm.hoa_don_id = cthd.hoa_don_id
                         JOIN tai_san ts ON ts.tai_san_id = cthd.tai_san_id
-                        WHERE vt.vi_tri_id = 1 AND cthd.tai_san_id = ?";
+                        WHERE vt.vi_tri_id = 1 AND cthd.tai_san_id = ? AND hdm.ngay_mua = ? ";
                 $stmt = $this->db->prepare($sql);
-                $stmt->execute([$tai_san_id]);
+                $stmt->execute([$tai_san_id, $ngay_mua]);
                 $current_so_luong = $stmt->fetchColumn();
 
                 if ($current_so_luong < $so_luong) {
@@ -99,10 +102,10 @@ class ThanhLyController {
                             FROM vi_tri vt
                             JOIN vi_tri_chi_tiet vtct ON vt.vi_tri_id = vtct.vi_tri_id
                             JOIN chi_tiet_hoa_don_mua cthd ON vtct.chi_tiet_id = cthd.chi_tiet_id
-                            WHERE vt.vi_tri_id = 1 AND cthd.tai_san_id = :tai_san_id
-                        )";
+                            JOIN hoa_don_mua hdm ON hdm.hoa_don_id = cthd.hoa_don_id
+                            WHERE vt.vi_tri_id = 1 AND cthd.tai_san_id = :tai_san_id AND hdm.ngay_mua= :ngay_mua)";
                 $stmt = $this->db->prepare($sql);
-                $stmt->execute(['so_luong' => $so_luong, 'tai_san_id' => $tai_san_id]);
+                $stmt->execute(['so_luong' => $so_luong, 'tai_san_id' => $tai_san_id , 'ngay_mua' => $ngay_mua ]);
 
                 // Thêm chi tiết hóa đơn thanh lý
                 $stmt = $this->db->prepare("INSERT INTO chi_tiet_hoa_don_thanh_ly (hoa_don_id, tai_san_id, so_luong, gia_thanh_ly) VALUES (:hoa_don_thanh_ly_id, :tai_san_id, :so_luong, :gia_thanh_ly)");
@@ -138,17 +141,17 @@ class ThanhLyController {
     $tl = $this->thanhly->viewedit($id);
     $dstl = $tl->fetchAll(PDO::FETCH_ASSOC);
 
-    // Chuẩn bị dữ liệu cho các tài sản đã thanh lý
-    $taisansData = [];
-    foreach ($dstl as $taisan) {
-        $taisansData[] = [
-            'id' => $taisan['tai_san_id'],
-            'name' => $taisan['ten_tai_san'],
-            'quantity' => $taisan['so_luong'],
-            'price' => $taisan['gia_thanh_ly'],
-            'total' => $taisan['so_luong'] * $taisan['gia_thanh_ly']
-        ];
-    }
+    // // Chuẩn bị dữ liệu cho các tài sản đã thanh lý
+    // $taisansData = [];
+    // foreach ($dstl as $taisan) {
+    //     $taisansData[] = [
+    //         'id' => $taisan['tai_san_id'],
+    //         'name' => $taisan['ten_tai_san'],
+    //         'quantity' => $taisan['so_luong'],
+    //         'price' => $taisan['gia_thanh_ly'],
+    //         'total' => $taisan['so_luong'] * $taisan['gia_thanh_ly']
+    //     ];
+    // }
 
     // Đưa dữ liệu vào view để hiển thị và chỉnh sửa
     $content = 'views/thanhly/edit.php';
@@ -157,8 +160,14 @@ class ThanhLyController {
 
 
      public function show($id) {
-        $tl = $this->thanhly->viewedit($id);
-        $dstl = $tl->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->db->prepare(
+                "SELECT *
+                FROM hoa_don_thanh_ly hd
+                JOIN chi_tiet_hoa_don_thanh_ly cthd ON hd.hoa_don_id= cthd.hoa_don_id
+                JOIN tai_san ts ON ts.tai_san_id= cthd.tai_san_id
+                WHERE hd.hoa_don_id = ?");
+        $stmt->execute([$id]);
+        $dstl = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $content = 'views/thanhly/show.php';
         include('views/layouts/base.php');
     }
@@ -177,13 +186,14 @@ public function edit($id) {
 
             // Lấy danh sách chi tiết hiện tại trong DB
             $currentDetails = $this->chitietThanhLy->getByHoaDonId($id);
-            $soluonghientai = $currentDetails['so_luong'];
+            // $soluonghientai = $currentDetails['so_luong']
 
             // Duyệt qua các chi tiết từ form
             foreach ($_POST['chi_tiet_id'] as $index => $chi_tiet_id) {
                 $so_luong = $_POST['so_luong'][$index];
                 $gia_thanh_ly = $_POST['gia_thanh_ly'][$index];
                 $taisan = $_POST['tai_san_id'][$index];
+                $ngaymua = $_POST['ngay_mua'][$index];
                 // Tìm chi tiết hóa đơn trong danh sách hiện tại
                 $found = false;
                 foreach ($currentDetails as $detail) {
@@ -194,7 +204,7 @@ public function edit($id) {
                         $this->chitietThanhLy->gia_thanh_ly = $gia_thanh_ly;
                         $this->chitietThanhLy->tai_san_id = $taisan;
                         $this->chitietThanhLy->update();
-                        $this->updateQuantity($id,$so_luong- $detail['so_luong'],$taisan);
+                        $this->updateQuantity($id,$so_luong- $detail['so_luong'],$taisan, $ngaymua);
                         // Xóa chi tiết khỏi danh sách hiện tại để loại bỏ sau khi cập nhật
                         unset($currentDetails[array_search($detail, $currentDetails)]);
                         $found = true;
@@ -208,15 +218,15 @@ public function edit($id) {
                     $this->chitietThanhLy->tai_san_id = $taisan;
                     $this->chitietThanhLy->so_luong = $so_luong;
                     $this->chitietThanhLy->gia_thanh_ly = $gia_thanh_ly;
-                    $this->chitietThanhLy->create();
-                    $this->updateQuantity($id,$so_luong, $taisan);
+                    $this->chitietThanhLy->create_for_update($id, $ngaymua);
+                    $this->updateQuantity($id,$so_luong, $taisan, $ngaymua);
                 }
             }
 
             // Xóa các chi tiết không còn trong danh sách mới
             foreach ($currentDetails as $detail) {
                 $this->chitietThanhLy->delete($detail['chi_tiet_id']);
-                 $this->updateQuantity($id,-$detail['so_luong'] , $$detail['tai_san_id']);
+                 $this->updateQuantity($id,-$detail['so_luong'] , $detail['tai_san_id'],$detail['ngay_mua'] );
             }
 
             // Commit giao dịch
@@ -237,7 +247,7 @@ public function edit($id) {
         }
     }
 }
-public function updateQuantity($id, $so_luong_change, $tai_san_id) {
+public function updateQuantity($id, $so_luong_change, $tai_san_id, $ngay_mua) {
    
         // $stmt1 = $this->db->prepare("SELECT vtct.chi_tiet_id, vtct.so_luong 
         //         FROM vi_tri vt
@@ -301,8 +311,9 @@ public function updateQuantity($id, $so_luong_change, $tai_san_id) {
     $updateStmt = $this->db->prepare("UPDATE vi_tri_chi_tiet vtct 
                     JOIN chi_tiet_hoa_don_mua cthd ON vtct.chi_tiet_id= cthd.chi_tiet_id
                     JOIN vi_tri vt ON vt.vi_tri_id = vtct.vi_tri_id
-                    SET vtct.so_luong = ? WHERE tai_san_id = ? AND vt.vi_tri_id = 1");
-    $updateStmt->execute([$newQuantity, $tai_san_id]);
+                    JOIN hoa_don_mua hdm ON cthd.hoa_don_id = hdm.hoa_don_id
+                    SET vtct.so_luong = ? WHERE tai_san_id = ? AND vt.vi_tri_id = 1 AND ngay_mua = ? ");
+    $updateStmt->execute([$newQuantity, $tai_san_id, $ngay_mua]);
 }
     
     
@@ -438,6 +449,29 @@ public function statistics()
         $content = 'views/thanhly/statistics_thanhly.php';
         include('views/layouts/base.php');
     }
+
+   public function getNgayMua()
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+
+        $thanhLyModel = new ThanhLy($db);
+
+        // Kiểm tra xem có tồn tại tham số tài sản ID từ yêu cầu GET không
+        if (isset($_GET['tai_san_id'])) {
+            $taiSanId = $_GET['tai_san_id'];
+
+            // Gọi phương thức từ model để lấy danh sách ngày mua
+            $ngayMua = $thanhLyModel->getNgayMuaByTaiSanId($taiSanId);
+
+            // Trả về dữ liệu dưới dạng JSON
+            echo json_encode($ngayMua);
+        } else {
+            echo json_encode([]); // Trả về mảng rỗng nếu không có dữ liệu
+        }
+    }
+
+
 }
 ?>
 

@@ -65,6 +65,12 @@ switch ($model) {
         break;
 }
 
+if ($model === 'thanhly' && $action === 'getNgayMua') {
+    $controller->getNgayMua();
+    exit; // Kết thúc xử lý yêu cầu AJAX
+}
+
+
 switch ($action) {
     case 'create':
         $controller->create();

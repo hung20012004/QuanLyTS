@@ -141,23 +141,23 @@ class ThanhLy {
 
     public function viewedit($id)
     {
-        $query = "SELECT 
-        ".$this->table_name.".hoa_don_id, 
-        ".$this->table_name.".ngay_thanh_ly, 
-        ".$this->table_name.".tong_gia_tri,
-        ".$this->details_table_name.".chi_tiet_id,
-        ".$this->details_table_name.".tai_san_id,
-        ".$this->details_table_name.".so_luong,
-        ".$this->details_table_name.".gia_thanh_ly,
-        ".$this->asset_table_name.".tai_san_id,
-        ".$this->asset_table_name.".ten_tai_san
-        FROM " . $this->table_name . "
-                  INNER JOIN " . $this->details_table_name . " ON ".$this->table_name.".hoa_don_id = ".$this->details_table_name.".hoa_don_id
-                  INNER JOIN " . $this->asset_table_name . "  ON ".$this->details_table_name.".tai_san_id =".$this->asset_table_name.".tai_san_id
-                  WHERE ".$this->table_name.".hoa_don_id = :id";
+        $query = "SELECT DISTINCT hdtl.hoa_don_id, hdtl.ngay_thanh_ly, 
+        hdtl.tong_gia_tri,
+        cttl.chi_tiet_id,
+        cttl.tai_san_id,
+        cttl.so_luong,
+        cttl.gia_thanh_ly,
+        hdm.ngay_mua,
+        ts.ten_tai_san
+        FROM  hoa_don_thanh_ly hdtl
+        INNER JOIN chi_tiet_hoa_don_thanh_ly cttl ON cttl.hoa_don_id = hdtl.hoa_don_id
+        INNER JOIN vi_tri_chi_tiet vtct ON vtct.vi_tri_chi_tiet_id  = cttl.vi_tri_chi_tiet_id
+        INNER JOIN chi_tiet_hoa_don_mua cthdm ON vtct.chi_tiet_id = cthdm.chi_tiet_id
+        INNER JOIN hoa_don_mua hdm ON hdm.hoa_don_id  = cthdm.hoa_don_id
+        INNER JOIN tai_san ts ON cttl.tai_san_id  = ts.tai_san_id
+        WHERE hdtl.hoa_don_id = ? AND vtct.vi_tri_id = 1 ";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
+        $stmt->execute([$id]);
         return $stmt;
     }
     
@@ -254,5 +254,28 @@ public function getTopAssets($limit = 5)
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+public function getNgayMuaByTaiSanId($taiSanId) {
+        try {
+            $query = "SELECT hdm.ngay_mua FROM hoa_don_mua hdm JOIN chi_tiet_hoa_don_mua cthd
+            ON hdm.hoa_don_id = cthd.hoa_don_id
+            WHERE tai_san_id = :tai_san_id 
+            ORDER BY ngay_mua DESC";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':tai_san_id', $taiSanId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $dates = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $dates[] = $row['ngay_mua'];
+            }
+            
+            return $dates;
+        } catch (PDOException $e) {
+            // Handle database errors here
+            error_log('Error fetching ngay mua: ' . $e->getMessage());
+            return [];
+        }
+    }
+
 }
 ?>

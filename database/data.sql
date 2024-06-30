@@ -177,8 +177,8 @@ INSERT INTO hoa_don_thanh_ly (ngay_thanh_ly, tong_gia_tri) VALUES
 ('2023-03-15', 5000000);
 
 -- Thêm dữ liệu vào bảng chi_tiet_hoa_don_thanh_ly
-INSERT INTO chi_tiet_hoa_don_thanh_ly (hoa_don_id, tai_san_id, so_luong, gia_thanh_ly) VALUES
-(1, 1, 2, 2500000);
+INSERT INTO chi_tiet_hoa_don_thanh_ly (hoa_don_id, tai_san_id, so_luong, gia_thanh_ly, vi_tri_chi_tiet_id) VALUES
+(1, 1, 2, 2500000,1);
 
 -- Thêm dữ liệu vào bảng maintenance_schedule
 -- INSERT INTO maintenance_schedule (tai_san_id, ngay_bat_dau, ngay_ket_thuc, mo_ta) VALUES
