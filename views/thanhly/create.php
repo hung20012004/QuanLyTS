@@ -52,6 +52,7 @@
                         <thead>
                             <tr>
                                 <th>Tài Sản</th>
+                                <th>Ngày Mua</th>
                                 <th>Số Lượng</th>
                                 <th>Đơn Giá</th>
                                 <th>Thành Tiền</th>
@@ -60,8 +61,8 @@
                         </thead>
                         <tbody>
                                 <tr id="row<?= $index ?>">
-                                    <td>
-                                        <select class="form-control" name="tai_san_id[]" required>
+                                    <td class="col-md-3">
+                                        <select class="form-control tai_san" name="tai_san_id[]" required>
                                             <option value="">Chọn tài sản</option>
                                             <?php foreach ($taisans as $ts): ?>
                                                 <option value="<?= $ts['tai_san_id']; ?>"  style="text-align: center;">
@@ -69,12 +70,17 @@
                                                 </option>
                                             <?php endforeach; ?>
                                             <!-- <input type="hidden" class="form-control" name="tai_san_id[]" value="<?= isset($detail['tai_san_id']) ? htmlspecialchars($detail['tai_san_id']) : 0 ?>" required> -->
-                                            <!-- <input type="hidden" class="form-control" name="chi_tiet_id[]" value="" required> -->
+                                            <input type="hidden" class="form-control" name="vi_tri_chi_tiet_id[]" value="" required>
                                         </select>
                                     </td>
-                                    <td><input type="number" class="form-control so-luong" name="so_luong[]" value="" required onchange="tinhThanhTien(this)" oninput="tinhThanhTien(this)" style="text-align: center;"></td>
-                                    <td><input type="number" step="0.01" class="form-control don-gia" name="gia_thanh_ly[]" value="" required onchange="tinhThanhTien(this)" oninput="tinhThanhTien(this)" style="text-align: center;"></td>
-                                    <td><input type="text" class="form-control thanh-tien" name="thanh_tien[]" value="" readonly style="text-align: center;"></td>
+                                    <td class="col-md-2">
+                                    <select class="form-control ngay_mua_select" name="ngay_mua[]">
+                                        <option value="">Chọn ngày mua</option>
+                                    </select>
+                                    </td>
+                                    <td class="col-md-1"><input type="number" class="form-control so-luong" name="so_luong[]" value="" required onchange="tinhThanhTien(this)" oninput="tinhThanhTien(this)" style="text-align: center;"></td>
+                                    <td class="col-md-2"><input type="number" step="0.01" class="form-control don-gia" name="gia_thanh_ly[]" value="" required onchange="tinhThanhTien(this)" oninput="tinhThanhTien(this)" style="text-align: center;"></td>
+                                    <td class="col-md-2"><input type="text" class="form-control thanh-tien" name="thanh_tien[]" value="" readonly style="text-align: center;"></td>
                                     <td>
                                         <button type="button" class="btn btn-primary btn-sm" onclick="editRow(this)">Sửa</button>
                                         <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">Xóa</button>
@@ -88,7 +94,7 @@
                  <div class="form-row">
                     <div class="form-group col-md-5"></div>
                     <div class="form-group col-md-4 ">
-                        <label for="ngayThanhLy">Ngày Mua</label>
+                        <label for="ngayThanhLy">Ngày Thanh Lý</label>
                         <input type="date" class="form-control" id="ngayThanhLy" name="ngay_thanh_ly" value="<?= $ds['ngay_thanh_ly'] ?>" style="text-align: center;" required>
                     </div>
                         <div class="form-group col-md-3">
@@ -109,6 +115,38 @@
 </div>
 
 <script>
+  $(document).ready(function() {
+    // Bắt sự kiện khi thay đổi giá trị của dropdown tài sản
+    $(document).on('change', '.tai_san', function() {
+        var taiSanId = $(this).val();
+        var row = $(this).closest('tr');
+        var ngayMuaSelect = row.find('.ngay_mua_select');
+
+        // Xóa các tùy chọn cũ
+        ngayMuaSelect.empty();
+        ngayMuaSelect.append('<option value="">Chọn ngày mua</option>');
+
+        if (taiSanId) {
+            $.ajax({
+                url: 'index.php?model=thanhly&action=getNgayMua',
+                type: 'GET',
+                data: { tai_san_id: taiSanId },
+                success: function(response) {
+                    var dates = JSON.parse(response);
+                    dates.forEach(function(date) {
+                        ngayMuaSelect.append('<option value="' + date + '">' + date + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr);
+                }
+            });
+        }
+    });
+
+    // Các hàm tính toán khác
+});
+
 function tinhThanhTien(input) {
     var row = input.closest('tr');
     var soLuong = parseFloat(row.querySelector('.so-luong').value) || 0;
@@ -157,3 +195,6 @@ function deleteRow(button) {
 }
 
 </script>
+
+
+
