@@ -28,11 +28,14 @@
             <?php
         if (isset($_SESSION['role'])) {
             switch ($_SESSION['role']) {
-                case 'Admin':
-                    include 'views/components/admin-side.php';
+                case 'QuanLy':
+                    include 'views/components/quanly-side.php';
                     break;
                 case 'NhanVien':
                     include 'views/components/nhanvien-side.php';
+                    break;
+                case 'NhanVienQuanLy':
+                    include 'views/components/nvql-side.php';
                     break;
                 case 'KyThuat':
                     include 'views/components/kythuat-side.php';
