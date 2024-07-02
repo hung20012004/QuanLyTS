@@ -50,8 +50,9 @@
                         <div class="mb-3">
                             <label for="role" class="form-label">Vai trò:</label>
                             <select name="role" id="role" class="form-control" required>
-                                <option value="NhanVien" <?php echo $role === 'NhanVien' ? 'selected' : ''; ?>>Nhân viên quản lý tài sản</option>
+                                <option value="NhanVien" <?php echo $role === 'NhanVien' ? 'selected' : ''; ?>>Nhân viên</option>
                                 <option value="KyThuat" <?php echo $role === 'KyThuat' ? 'selected' : ''; ?>>Kỹ thuật viên</option>
+                                <option value="NhanVienQuanLy" <?php echo $role === 'NhanVienQuanLy' ? 'selected' : ''; ?>>Nhân viên quản lý tài sản</option>
                             </select>
                         </div>
                 </div>

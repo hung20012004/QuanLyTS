@@ -35,9 +35,10 @@ class TaiSan {
     }
 
     public function read() {
-        $query = "SELECT tai_san.*, loai_tai_san.ten_loai_tai_san 
-                  FROM " . $this->table_name . "
-                  LEFT JOIN loai_tai_san ON tai_san.loai_tai_san_id = loai_tai_san.loai_tai_san_id";
+        $query = "SELECT ts.*, lts.ten_loai_tai_san
+                  FROM " . $this->table_name . " ts 
+                  INNER JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id";
+                  
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
@@ -45,9 +46,10 @@ class TaiSan {
     }
 
     public function readById($id) {
-        $query = "SELECT ts.*, lts.ten_loai_tai_san 
-                  FROM " . $this->table_name . " ts
-                  LEFT JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id
+        $query = "SELECT ts.*, lts.ten_loai_tai_san, vt.so_luong 
+                  FROM " . $this->table_name . " ts 
+                  JOIN vi_tri_chi_tiet vt ON vt.tai_san_id = ts.tai_san_id 
+                  JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id 
                   WHERE ts.tai_san_id = ?";
 
         $stmt = $this->conn->prepare($query);
@@ -58,12 +60,10 @@ class TaiSan {
     }
 
     public function readAllInStock(){
-        $query = "SELECT ts.*, lts.ten_loai_tai_san, ct.chi_tiet_id, hd.ngay_mua, vt.so_luong
+        $query = "SELECT ts.*, lts.ten_loai_tai_san, vt.so_luong
                   FROM " . $this->table_name . " ts 
-                  JOIN chi_tiet_hoa_don_mua ct ON ct.tai_san_id = ts.tai_san_id 
-                  JOIN vi_tri_chi_tiet vt ON vt.chi_tiet_id = ct.chi_tiet_id 
+                  JOIN vi_tri_chi_tiet vt ON vt.tai_san_id = ts.tai_san_id 
                   JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id 
-                  JOIN hoa_don_mua hd ON hd.hoa_don_id = ct.hoa_don_id
                   WHERE vt.vi_tri_id = 1 ";
 
         $stmt = $this->conn->prepare($query);
@@ -97,10 +97,13 @@ class TaiSan {
     }
 
     public function delete($id) {
-        $query = "DELETE FROM " . $this->table_name . " WHERE tai_san_id = ?";
+        $query = "DELETE FROM " . $this->table_name . " WHERE tai_san_id = :id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $id);
-        return $stmt->execute();
+        $stmt->bindParam(':id', $id);
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
     }
 
     public function createOrUpdate($data) {

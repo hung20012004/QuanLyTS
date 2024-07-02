@@ -2,7 +2,7 @@ USE quanlytaisan;
 
 -- Thêm dữ liệu vào bảng loai_tai_san
 INSERT INTO loai_tai_san (ten_loai_tai_san) VALUES
-('Không xác định')
+('Không xác định'),
 ('Máy tính và thiết bị viễn thông'),
 ('Xây dựng, công cụ dụng cụ'),
 ('Đất đai, nhà xưởng'),
@@ -98,87 +98,87 @@ INSERT INTO vi_tri (ten_vi_tri) VALUES
 ('Phòng in ấn'),
 ('Phòng thí nghiệm lượng tử');
 
--- Thêm dữ liệu vào bảng nha_cung_cap
-INSERT INTO nha_cung_cap (ten_nha_cung_cap,trang_thai) VALUES
-('Công ty TNHH ABC', 1),
-('Công ty CP XYZ', 1);
+-- -- Thêm dữ liệu vào bảng nha_cung_cap
+-- INSERT INTO nha_cung_cap (ten_nha_cung_cap,trang_thai) VALUES
+-- ('Công ty TNHH ABC', 1),
+-- ('Công ty CP XYZ', 1);
 
 -- Thêm dữ liệu vào bảng hoa_don_mua
-INSERT INTO hoa_don_mua (ngay_mua, tong_gia_tri, nha_cung_cap_id) VALUES
-('2023-01-15', 15000000, 1),
-('2023-02-20', 20000000, 2);
+-- INSERT INTO hoa_don_mua (ngay_mua, tong_gia_tri, nha_cung_cap_id) VALUES
+-- ('2023-01-15', 15000000, 1),
+-- ('2023-02-20', 20000000, 2);
 
--- Thêm dữ liệu vào bảng chi_tiet_hoa_don_mua
-INSERT INTO chi_tiet_hoa_don_mua (hoa_don_id, tai_san_id, so_luong, don_gia) VALUES
-(1, 1, 2, 15000000),  -- Máy tính để bàn HP
-(1, 2, 3, 12000000),  -- Bảng thông báo điện tử
-(1, 3, 1, 5000000),   -- Xe ô tô Toyota Camry
-(1, 4, 1, 10000000),  -- Máy phát điện công suất lớn
-(1, 5, 2, 8000000),   -- Máy chiếu Epson
-(1, 6, 5, 3000000),   -- Bàn ghế học tập
-(1, 7, 4, 7000000),   -- Điều hòa không khí Daikin
-(1, 8, 3, 9000000),   -- Thiết bị phòng thí nghiệm hóa học
-(1, 9, 2, 6000000),   -- Máy in Laser HP
-(1, 10, 1, 4000000),  -- Bộ bàn ghế phòng họp
-(1, 11, 10, 2000000), -- Đồ nội thất phòng ngủ sinh viên
-(1, 12, 3, 3000000),  -- Phần mềm giảng dạy Matlab
-(1, 13, 2, 5000000),  -- Tủ lạnh đựng mẫu sinh học
-(1, 14, 6, 1500000),  -- Linh kiện máy tính
-(1, 15, 1, 10000000), -- Máy quay phim Sony
-(1, 16, 8, 500000),   -- Thiết bị thể dục thể thao
-(1, 17, 2, 7000000),  -- Máy chiếu 3D
-(1, 18, 4, 3000000),  -- Bộ bài mô hình cơ khí
-(1, 19, 5, 2000000),  -- Đèn chiếu sáng hành lang
-(1, 20, 3, 4000000),  -- Bàn ghế làm việc cho giảng viên
-(1, 21, 2, 6000000),  -- Thiết bị phòng chống cháy nổ
-(1, 22, 5, 2500000),  -- Thiết bị cắt sắt thép
-(1, 23, 3, 3500000),  -- Máy mài mòn
-(1, 24, 4, 4500000),  -- Bài đại học làm công cụ dạy học
-(1, 25, 1, 8000000),  -- Máy tính xách tay MacBook Pro
-(1, 26, 2, 6000000),  -- Máy phát điện dự phòng
-(1, 27, 1, 5000000),  -- Đèn chiếu sáng sân khấu
-(1, 28, 3, 3000000),  -- Máy lạnh trung tâm
-(1, 29, 4, 7000000),  -- Phòng thí nghiệm điện tử
-(1, 30, 5, 1500000),  -- Xe đạp đưa đón sinh viên
-(1, 31, 6, 2500000),  -- Thiết bị phòng thí nghiệm sinh học
-(1, 32, 7, 3500000),  -- Máy chấm công vân tay
-(1, 33, 8, 4500000),  -- Máy bơm nước công nghiệp
-(1, 34, 9, 5500000),  -- Thiết bị học tập cho sinh viên khuyết tật
-(1, 35, 10, 6500000), -- Máy chiếu PowerPoint
-(1, 36, 1, 7500000),  -- Máy in 3D
-(1, 37, 2, 8500000),  -- Máy hàn điện tử
-(1, 38, 3, 9500000),  -- Thiết bị điều khiển tự động
-(1, 39, 4, 10500000), -- Bộ ghế sofa phòng chờ
-(1, 40, 5, 11500000), -- Máy sấy khô hóa chất
-(1, 41, 6, 12500000), -- Máy khoan đa năng
-(1, 42, 7, 13500000), -- Đồ dùng nội thất phòng giảng đường
-(1, 43, 8, 14500000), -- Máy phát sóng Wi-Fi
-(1, 44, 9, 15500000), -- Máy cắt CNC
-(1, 45, 10, 16500000),-- Thiết bị kiểm tra độ chính xác
-(1, 46, 1, 17500000), -- Máy quét mã vạch
-(1, 47, 2, 18500000), -- Máy pha cafe tự động
-(1, 48, 3, 19500000), -- Bảng phấn viết bút lông
-(1, 49, 4, 20500000), -- Máy nghiền đá
-(1, 50, 5, 21500000), -- Máy chiếu laser
-(1, 51, 6, 22500000), -- Máy xén kim loại CNC
-(1, 52, 7, 23500000), -- Thiết bị kiểm tra an toàn điện
-(1, 53, 8, 24500000), -- Máy làm mát công nghiệp
-(1, 54, 9, 25500000), -- Máy in offset
-(1, 55, 10, 26500000);-- Thiết bị đo lường định lượng
+-- -- Thêm dữ liệu vào bảng chi_tiet_hoa_don_mua
+-- INSERT INTO chi_tiet_hoa_don_mua (hoa_don_id, tai_san_id, so_luong, don_gia) VALUES
+-- (1, 1, 2, 15000000),  -- Máy tính để bàn HP
+-- (1, 2, 3, 12000000),  -- Bảng thông báo điện tử
+-- (1, 3, 1, 5000000),   -- Xe ô tô Toyota Camry
+-- (1, 4, 1, 10000000),  -- Máy phát điện công suất lớn
+-- (1, 5, 2, 8000000),   -- Máy chiếu Epson
+-- (1, 6, 5, 3000000),   -- Bàn ghế học tập
+-- (1, 7, 4, 7000000),   -- Điều hòa không khí Daikin
+-- (1, 8, 3, 9000000),   -- Thiết bị phòng thí nghiệm hóa học
+-- (1, 9, 2, 6000000),   -- Máy in Laser HP
+-- (1, 10, 1, 4000000),  -- Bộ bàn ghế phòng họp
+-- (1, 11, 10, 2000000), -- Đồ nội thất phòng ngủ sinh viên
+-- (1, 12, 3, 3000000),  -- Phần mềm giảng dạy Matlab
+-- (1, 13, 2, 5000000),  -- Tủ lạnh đựng mẫu sinh học
+-- (1, 14, 6, 1500000),  -- Linh kiện máy tính
+-- (1, 15, 1, 10000000), -- Máy quay phim Sony
+-- (1, 16, 8, 500000),   -- Thiết bị thể dục thể thao
+-- (1, 17, 2, 7000000),  -- Máy chiếu 3D
+-- (1, 18, 4, 3000000),  -- Bộ bài mô hình cơ khí
+-- (1, 19, 5, 2000000),  -- Đèn chiếu sáng hành lang
+-- (1, 20, 3, 4000000),  -- Bàn ghế làm việc cho giảng viên
+-- (1, 21, 2, 6000000),  -- Thiết bị phòng chống cháy nổ
+-- (1, 22, 5, 2500000),  -- Thiết bị cắt sắt thép
+-- (1, 23, 3, 3500000),  -- Máy mài mòn
+-- (1, 24, 4, 4500000),  -- Bài đại học làm công cụ dạy học
+-- (1, 25, 1, 8000000),  -- Máy tính xách tay MacBook Pro
+-- (1, 26, 2, 6000000),  -- Máy phát điện dự phòng
+-- (1, 27, 1, 5000000),  -- Đèn chiếu sáng sân khấu
+-- (1, 28, 3, 3000000),  -- Máy lạnh trung tâm
+-- (1, 29, 4, 7000000),  -- Phòng thí nghiệm điện tử
+-- (1, 30, 5, 1500000),  -- Xe đạp đưa đón sinh viên
+-- (1, 31, 6, 2500000),  -- Thiết bị phòng thí nghiệm sinh học
+-- (1, 32, 7, 3500000),  -- Máy chấm công vân tay
+-- (1, 33, 8, 4500000),  -- Máy bơm nước công nghiệp
+-- (1, 34, 9, 5500000),  -- Thiết bị học tập cho sinh viên khuyết tật
+-- (1, 35, 10, 6500000), -- Máy chiếu PowerPoint
+-- (1, 36, 1, 7500000),  -- Máy in 3D
+-- (1, 37, 2, 8500000),  -- Máy hàn điện tử
+-- (1, 38, 3, 9500000),  -- Thiết bị điều khiển tự động
+-- (1, 39, 4, 10500000), -- Bộ ghế sofa phòng chờ
+-- (1, 40, 5, 11500000), -- Máy sấy khô hóa chất
+-- (1, 41, 6, 12500000), -- Máy khoan đa năng
+-- (1, 42, 7, 13500000), -- Đồ dùng nội thất phòng giảng đường
+-- (1, 43, 8, 14500000), -- Máy phát sóng Wi-Fi
+-- (1, 44, 9, 15500000), -- Máy cắt CNC
+-- (1, 45, 10, 16500000),-- Thiết bị kiểm tra độ chính xác
+-- (1, 46, 1, 17500000), -- Máy quét mã vạch
+-- (1, 47, 2, 18500000), -- Máy pha cafe tự động
+-- (1, 48, 3, 19500000), -- Bảng phấn viết bút lông
+-- (1, 49, 4, 20500000), -- Máy nghiền đá
+-- (1, 50, 5, 21500000), -- Máy chiếu laser
+-- (1, 51, 6, 22500000), -- Máy xén kim loại CNC
+-- (1, 52, 7, 23500000), -- Thiết bị kiểm tra an toàn điện
+-- (1, 53, 8, 24500000), -- Máy làm mát công nghiệp
+-- (1, 54, 9, 25500000), -- Máy in offset
+-- (1, 55, 10, 26500000);-- Thiết bị đo lường định lượng
 
 -- Thêm dữ liệu vào bảng vi_tri_chi_tiet
-INSERT INTO vi_tri_chi_tiet (chi_tiet_id, vi_tri_id, so_luong) VALUES
+INSERT INTO vi_tri_chi_tiet (tai_san_id, vi_tri_id, so_luong) VALUES
 (1, 1, 5),
 (2, 2, 30),
 (3, 3, 2);
 
 -- Thêm dữ liệu vào bảng hoa_don_thanh_ly
-INSERT INTO hoa_don_thanh_ly (ngay_thanh_ly, tong_gia_tri) VALUES
-('2023-03-15', 5000000);
+-- INSERT INTO hoa_don_thanh_ly (ngay_thanh_ly, tong_gia_tri) VALUES
+-- ('2023-03-15', 5000000);
 
--- Thêm dữ liệu vào bảng chi_tiet_hoa_don_thanh_ly
-INSERT INTO chi_tiet_hoa_don_thanh_ly (hoa_don_id, tai_san_id, so_luong, gia_thanh_ly, vi_tri_chi_tiet_id) VALUES
-(1, 1, 2, 2500000,1);
+-- -- Thêm dữ liệu vào bảng chi_tiet_hoa_don_thanh_ly
+-- INSERT INTO chi_tiet_hoa_don_thanh_ly (hoa_don_id, tai_san_id, so_luong, gia_thanh_ly, vi_tri_chi_tiet_id) VALUES
+-- (1, 1, 2, 2500000,1);
 
 -- Thêm dữ liệu vào bảng maintenance_schedule
 -- INSERT INTO maintenance_schedule (tai_san_id, ngay_bat_dau, ngay_ket_thuc, mo_ta) VALUES

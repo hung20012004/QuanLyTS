@@ -93,7 +93,7 @@ class ThanhLyController {
                     $_SESSION['message'] = "Số lượng tài sản không đủ để thanh lý.";
                     $_SESSION['message_type'] = "danger";
                     $this->db->rollBack();
-                    header("Location: index.php?model=thanhly&action=create");
+                    header("Location: index.php?model=thanhly&action=viewcreate");
                     return;
                 }
 

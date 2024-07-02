@@ -37,11 +37,22 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">Quản Lý Vị Trí</h5>
                 <div>
+                    <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a>
                     <a href="index.php?model=vitri&action=create" class="btn btn-primary">Thêm Mới</a>
                 </div>
             </div>
         </div>
         <div class="card-body">
+            <form id="searchForm" class="mb-3 " style="display: none;">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <div class="d-flex align-items-center">
+                            <label for="tenViTri" class="mr-2 mb-0" style="white-space: nowrap;">Tên vị trí:</label>
+                            <input type="text" id="tenViTri" class="form-control" placeholder="Nhập tên vị trí">
+                        </div>
+                    </div>
+                </div>
+            </form>
             <div class="table-responsive">
                 <table id="dataTable" class="table table-bordered" width="100%" cellspacing="0">
                     <thead class="bg-light text-black text-center">
@@ -77,13 +88,29 @@
 </div>
 <script>
     $(document).ready(function() {
-  var table=$('#dataTable').DataTable({
-      dom: 'rtip',
-            language: {
-                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
+        var table=$('#dataTable').DataTable({
+            dom: 'rtip',
+                    language: {
+                        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
+                    }
+        });
+    // Thêm sự kiện tìm kiếm cho input
+        $('#tenViTri').on('input', function(){
+            table.column(1).search(this.value).draw();
+        });
+        var toggleButton = document.getElementById('toggleSearch');
+        var searchForm = document.getElementById('searchForm');
+
+        toggleButton.addEventListener('click', function () {
+            if (searchForm.style.display === 'none') {
+                searchForm.style.display = 'block';
+                toggleButton.textContent = 'Ẩn tìm kiếm';
+            } else {
+                searchForm.style.display = 'none';
+                toggleButton.textContent = 'Tìm kiếm';
             }
+        });
     });
-  });
     document.addEventListener('DOMContentLoaded', function () {
         function confirmDelete() {
             return confirm('Bạn có chắc muốn xóa vị trí này?');

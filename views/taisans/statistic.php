@@ -151,9 +151,10 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             maintainAspectRatio: false,
             responsive: true,
+            labels:{display:false},
             plugins: {
-            legend: {
-                position: 'top',
+                legend: {
+                    position: 'top',
             },},
             tooltips: {
                 backgroundColor: "rgb(255,255,255)",

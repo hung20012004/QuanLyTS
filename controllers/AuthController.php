@@ -42,8 +42,6 @@ class AuthController extends Controller {
             $password = $_POST['password'];
             $authModel = new Auth($this->db);
             $user = $authModel->getUserByEmail($email);
-            // var_dump($user);
-            // exit();
             if ($user && password_verify($password, $user['password'])) {
                 // Đăng nhập thành công
                 session_start();
@@ -53,6 +51,8 @@ class AuthController extends Controller {
                 $_SESSION['ten'] = $user['ten'];
                 $_SESSION['avatar'] = $user['avatar'];
                 // $_SESSION['password'] = $user['password'];
+                // var_dump($_SESSION);
+                // exit();
                 header('Location: dashboard.php');
                 exit();
             } else {
@@ -164,9 +164,8 @@ class AuthController extends Controller {
                     return;
                 }
             }
-    
+            $email= $_SESSION['email'];
             if ($this->authModel->updateUserProfile($id, $email, $ten, $avatarPath, $password)) {
-                $_SESSION['email'] = $email;
                 $_SESSION['ten'] = $ten;
                 if ($avatarPath) {
                     $_SESSION['avatar'] = $avatarPath;

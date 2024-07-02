@@ -206,7 +206,6 @@ class ViTriController {
                 $_SESSION['message_type'] = 'danger';
             }
         }
-
         $content = 'views/vitris/edit.php';
         include('views/layouts/base.php');
     }
