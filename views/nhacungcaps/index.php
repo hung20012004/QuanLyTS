@@ -93,26 +93,9 @@
                 "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
             }
     });
-  });
-    document.addEventListener('DOMContentLoaded', function () {
-        function filterTable() {
-            var nhaCungCapFilter = document.getElementById('nhaCungCapSearch').value.toLowerCase();
-            var table = document.getElementById('dataTable');
-            var rows = table.getElementsByTagName('tr');
-
-            for (var i = 1; i < rows.length; i++) {
-                var cells = rows[i].getElementsByTagName('td');
-                var nhaCungCap = cells[1].textContent.trim().toLowerCase();
-
-                if (nhaCungCap.includes(nhaCungCapFilter)) {
-                    rows[i].style.display = '';
-                } else {
-                    rows[i].style.display = 'none';
-                }
-            }
-        }
-
-        document.getElementById('nhaCungCapSearch').addEventListener('input', filterTable);
+    $('#nhaCungCapSearch').on('input', function(){
+            table.column(1).search(this.value).draw();
+        });
 
         var toggleButton = document.getElementById('toggleSearch');
         var searchForm = document.getElementById('searchForm');

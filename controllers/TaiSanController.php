@@ -17,10 +17,9 @@ class TaiSanController extends Controller {
 
     public function index() {
         $taiSans = $this->taiSan->read();
-        $loaiTS=new LoaiTaiSan($this->db);
-        $loaiTaiSans=$loaiTS->read();
+        $loaiTaiSans=$this->loaiTaiSan->read();
         $content = 'views/taisans/index.php';
-        
+
         include('views/layouts/base.php');
     }
 
@@ -39,6 +38,7 @@ class TaiSanController extends Controller {
                 $_SESSION['message_type'] = 'danger';
             }
         }
+        $loaiTaiSans=$this->loaiTaiSan->read();
         $content = 'views/taisans/create.php';
         include('views/layouts/base.php');
     }
@@ -98,6 +98,18 @@ class TaiSanController extends Controller {
         $content = 'views/taisans/detail.php';
         include('views/layouts/base.php');
     }
+
+    public function delete($id) {
+        if ($this->taiSan->delete($id)) {
+            $_SESSION['message'] = 'Xóa thành công!';
+            $_SESSION['message_type'] = 'success';
+        } else {
+            $_SESSION['message'] = 'Xóa thất bại';
+            $_SESSION['message_type'] = 'danger';
+        }
+        header("Location: index.php?model=taisan");
+    }
+
     public function statistics() {
         // Example of data retrieval (replace with actual database queries)
         $totalAssets = $this->taiSan->getTotalAssets();

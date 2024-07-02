@@ -3,7 +3,7 @@ session_start();
 
 require 'controllers/Controller.php';
 require 'controllers/BaoTriController.php';
-require 'controllers/HoaDonMuaController.php';
+require 'controllers/PhieuNhapController.php';
 require 'controllers/LoaiTaiSanController.php';
 require 'controllers/NhaCungCapController.php';
 require 'controllers/ThanhLyController.php';
@@ -33,8 +33,8 @@ switch ($model) {
     case 'baotri':
         $controller = new BaoTriController();
         break;
-    case 'hoadonmua':
-        $controller = new HoaDonMuaController();
+    case 'phieunhap':
+        $controller = new PhieuNhapController();
         break;
     case 'thanhly':
         $controller = new ThanhLyController();
@@ -64,13 +64,6 @@ switch ($model) {
         $controller = new Controller();
         break;
 }
-
-if ($model === 'thanhly' && $action === 'getNgayMua') {
-    $controller->getNgayMua();
-    exit; // Kết thúc xử lý yêu cầu AJAX
-}
-
-
 switch ($action) {
     case 'create':
         $controller->create();

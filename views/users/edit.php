@@ -17,7 +17,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Sửa Người Dùng</h5>
+                        <h5 class="card-title mb-0">Sửa thông tin người dùng</h5>
                     </div>
                 </div>
                 <div class="card-body">
@@ -52,15 +52,16 @@
                         </div>
                         <div class="mb-3">
                             <label for="role" class="form-label">Vai Trò:</label>
-                            <select name="role" id="role" class="form-control" required>
-                                <option value="NhanVien" <?= ($user['role'] === 'NhanVien') ? 'selected' : '' ?>>Nhân Viên Quản Lý Tài Sản</option>
+                            <select name="role" id="role" class="form-control"  required>
+                                <option value="NhanVien" <?= ($user['role'] === 'NhanVien') ? 'selected' : '' ?>>Nhân Viên</option>
                                 <option value="KyThuat" <?= ($user['role'] === 'KyThuat') ? 'selected' : '' ?>>Kỹ Thuật Viên</option>
+                                <option value="NhanVienQuanLy" <?= ($user['role'] === 'NhanVienQuanLy') ? 'selected' : '' ?>>Nhân viên quản lý tài sản</option>
                             </select>
                         </div>
                 </div>
                 <div class="card-footer d-flex justify-content-between">
                     <a href="index.php?model=user&action=index" class="btn btn-secondary">Hủy</a>
-                    <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                 </div>
                 </form>
             </div>
