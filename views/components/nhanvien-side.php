@@ -7,7 +7,6 @@
     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="route.php?model=taisan&action=index">Danh sách tài sản</a>
-            <a class="collapse-item" href="route.php?model=taisan&action=statistic">Thống kê</a>
         </div>
     </div>
 
@@ -20,9 +19,9 @@
     </a>
     <div id="collapseThree" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="route.php?model=hoadonmua&action=statistic">Yêu cầu bàn giao tài sản</a>
-            <a class="collapse-item" href="route.php?model=hoadonmua&action=statistic">Yêu cầu trả tài sản</a>
-            <a class="collapse-item" href="route.php?model=hoadonmua&action=statistic">Yêu cầu sửa chữa</a>
+            <a class="collapse-item" href="route.php?model=phieubangiao&action=index">Yêu cầu bàn giao tài sản</a>
+            <a class="collapse-item" href="route.php?model=phieutra&action=index">Yêu cầu trả tài sản</a>
+            <a class="collapse-item" href="route.php?model=phieusua&action=index">Yêu cầu sửa chữa</a>
         </div>
     </div>
 </li>
