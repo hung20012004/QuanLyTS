@@ -116,9 +116,12 @@ switch ($action) {
     case 'search':
         $controller->search();
         break;
-    // case 'viewcreatekh':
-    //     $controller->viewcreatekh($id); 
-    //     break;
+    case 'xet_duyet':
+        $controller->xet_duyet($id);
+        break;
+    case 'getByLoai':
+        $controller->getByLoai(); 
+        break;
     default:
         $controller->index();
         break;

@@ -231,5 +231,13 @@ class TaiSan {
 
         return $results;
     }
+    public function readByLoaiId($loai_id) {
+        $query = "SELECT tai_san_id, ten_tai_san FROM " . $this->table_name . " WHERE loai_tai_san_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $loai_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }
 ?>

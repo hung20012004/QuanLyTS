@@ -34,7 +34,7 @@
                 case 'NhanVien':
                     include 'views/components/nhanvien-side.php';
                     break;
-                case 'NhanVienQuanly':
+                case 'NhanVienQuanLy':
                     include 'views/components/nvql-side.php';
                     break;
                 case 'KyThuat':
