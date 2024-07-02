@@ -91,6 +91,8 @@
                                         class="btn btn-info btn-sm mx-2">Chi tiết</a>
                                     <a href="index.php?model=taisan&action=edit&id=<?php echo $taisan['tai_san_id']; ?>"
                                         class="btn btn-warning btn-sm mx-2">Sửa</a>
+                                    <a href="index.php?model=taisan&action=delete&id=<?php echo $taisan['tai_san_id']; ?>"
+                                        class="btn btn-danger btn-sm mx-2" onclick="return confirmDelete(<?php echo $taisan['tai_san_id']; ?>);">Xóa</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -143,5 +145,25 @@
         } else {
             detailRow.style.display = 'none';
         }
+    }
+
+    function confirmDelete(id) {
+        if (confirm('Bạn có chắc muốn xóa tài sản này?')) {
+            fetch('index.php?model=taisan&action=delete&id=' + id)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Xóa tài sản thành công!');
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa tài sản.');
+                });
+        }
+        return false;
     }
 </script>
