@@ -36,7 +36,7 @@ class ChiTietPhieuNhap
         }
         return false;
     }
-    public function readByHoaDonIdAndTaiSanId($phieu_nhap_tai_san_id, $tai_san_id)
+    public function readByPhieuNhapIdAndTaiSanId($phieu_nhap_tai_san_id, $tai_san_id)
     {
         $query = "SELECT *
                   FROM " . $this->table_name . "
@@ -53,7 +53,7 @@ class ChiTietPhieuNhap
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function readByHoaDonId($phieu_nhap_tai_san_id)
+    public function readByPhieuNhapId($phieu_nhap_tai_san_id)
     {
         $query = "SELECT *
                   FROM " . $this->table_name . " ct
@@ -115,7 +115,7 @@ class ChiTietPhieuNhap
         $stmt2->bindParam(1, $chi_tiet_id);
         $stmt2->execute();
     }
-    public function deleteByHoaDonId($phieu_nhap_tai_san_id)
+    public function deleteByPhieuNhapId($phieu_nhap_tai_san_id)
     {
         $query = "DELETE FROM " . $this->table_name . " WHERE phieu_nhap_tai_san_id = ?";
         $stmt = $this->conn->prepare($query);
@@ -135,14 +135,14 @@ class ChiTietPhieuNhap
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function getChiTietId($taiSanId, $hoaDonId)
+    public function getChiTietId($taiSanId, $PhieuNhapId)
     {
         $query = "SELECT chi_tiet_id FROM " . $this->table_name . " WHERE tai_san_id = :tai_san_id AND phieu_nhap_tai_san_id = :phieu_nhap_tai_san_id LIMIT 0,1";
 
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':tai_san_id', $taiSanId);
-        $stmt->bindParam(':phieu_nhap_tai_san_id', $hoaDonId);
+        $stmt->bindParam(':phieu_nhap_tai_san_id', $PhieuNhapId);
 
         $stmt->execute();
 
@@ -154,13 +154,13 @@ class ChiTietPhieuNhap
 
         return null;
     }
-    public function getQuantityInStock($taiSanId, $hoaDonId) {
-        // Your logic to fetch quantity in stock based on $taiSanId and $hoaDonId
+    public function getQuantityInStock($taiSanId, $PhieuNhapId) {
+        // Your logic to fetch quantity in stock based on $taiSanId and $PhieuNhapId
         // Example SQL query (assuming PDO):
         $sql = "SELECT so_luong FROM chi_tiet_phieu_nhap_tai_san_mua WHERE tai_san_id = :tai_san_id AND phieu_nhap_tai_san_id = :phieu_nhap_tai_san_id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':tai_san_id', $taiSanId, PDO::PARAM_INT);
-        $stmt->bindParam(':phieu_nhap_tai_san_id', $hoaDonId, PDO::PARAM_INT);
+        $stmt->bindParam(':phieu_nhap_tai_san_id', $PhieuNhapId, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -170,5 +170,20 @@ class ChiTietPhieuNhap
             return 0; // Or handle no results as needed
         }
     }
+    
+    public function readDetailedByPhieuNhapId($phieuNhapId)
+{
+    $query = "SELECT ct.*, ts.ten_tai_san, lts.ten_loai_tai_san, lts.loai_tai_san_id 
+              FROM chi_tiet_phieu_nhap ct
+              JOIN tai_san ts ON ct.tai_san_id = ts.tai_san_id
+              JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id
+              WHERE ct.phieu_nhap_tai_san_id = :phieu_nhap_id";
+    
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':phieu_nhap_id', $phieuNhapId);
+    $stmt->execute();
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }
 ?>

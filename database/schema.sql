@@ -3,7 +3,7 @@ CREATE TABLE `users` (
     email VARCHAR(50) NOT NULL UNIQUE,
     ten VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role ENUM('NhanVien','QuanLy','KyThuat','NhanVienQuanly') NOT NULL,
+    role ENUM('NhanVien','QuanLy','KyThuat','NhanVienQuanLy') NOT NULL,
     khoa ENUM('HTTT','CNTT','KT','Co khi','Cong trinh','Moi truong-ATGT'),
     chuc_vu ENUM('Truong khoa','Truong phong','Giang vien','Nhan vien hanh chinh'), 
     avatar VARCHAR(255)
@@ -46,7 +46,7 @@ CREATE TABLE phieu_nhap_tai_san (
     ngay_tao DATE NOT NULL,
     ngay_xac_nhan DATE,
     ghi_chu TEXT,
-    trang_thai ENUM('DaGui','DangChoPheDuyet','DaPheDuyet','Huy') NOT NULL,
+    trang_thai ENUM('KhongDuyet','DangChoPheDuyet','DaPheDuyet','Huy') NOT NULL,
     FOREIGN KEY (user_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
 );
 

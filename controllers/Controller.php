@@ -40,5 +40,7 @@ class Controller {
     public function viewcreatekh($id){}
     public function search() {}
     public function getQuantityInStock(){}
+    public function getByLoai(){}
+    public function xet_duyet($id){}
 }
 ?>

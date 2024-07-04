@@ -5,6 +5,8 @@ class PhieuNhap {
 
     public $phieu_nhap_tai_san_id;
     public $ngay_nhap;
+    public $ngay_xac_nhan;
+    public $ghi_chu;
     public $user_id;
     public $trang_thai;
 
@@ -49,15 +51,19 @@ class PhieuNhap {
 
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
-                  SET ngay_nhap=:ngay_nhap, user_id=:user_id, trang_thai=:trang_thai";
+                  SET ngay_nhap=:ngay_nhap, ngay_xac_nhan=:ngay_xac_nhan, ghi_chu=:ghi_chu, user_id=:user_id, trang_thai=:trang_thai";
 
         $stmt = $this->conn->prepare($query);
 
         $this->ngay_nhap = htmlspecialchars(strip_tags($this->ngay_nhap));
+        $this->ngay_xac_nhan = htmlspecialchars(strip_tags($this->ngay_xac_nhan));
+        $this->ghi_chu = htmlspecialchars(strip_tags($this->ghi_chu));
         $this->user_id = htmlspecialchars(strip_tags($this->user_id));
         $this->trang_thai = htmlspecialchars(strip_tags($this->trang_thai));
 
         $stmt->bindParam(':ngay_nhap', $this->ngay_nhap);
+        $stmt->bindParam(':ngay_xac_nhan', $this->ngay_xac_nhan);
+        $stmt->bindParam(':ghi_chu', $this->ghi_chu);
         $stmt->bindParam(':user_id', $this->user_id);
         $stmt->bindParam(':trang_thai', $this->trang_thai);
 
@@ -69,65 +75,47 @@ class PhieuNhap {
 
     public function update() {
         $query = "UPDATE " . $this->table_name . " 
-                  SET ngay_nhap=:ngay_nhap, user_id=:user_id, trang_thai=:trang_thai 
+                  SET ngay_nhap=:ngay_nhap, ngay_xac_nhan=:ngay_xac_nhan, ghi_chu=:ghi_chu, trang_thai=:trang_thai 
                   WHERE phieu_nhap_tai_san_id=:phieu_nhap_tai_san_id";
 
         $stmt = $this->conn->prepare($query);
 
         $this->ngay_nhap = htmlspecialchars(strip_tags($this->ngay_nhap));
-        $this->user_id = htmlspecialchars(strip_tags($this->user_id));
+        $this->ngay_xac_nhan = htmlspecialchars(strip_tags($this->ngay_xac_nhan));
+        $this->ghi_chu = htmlspecialchars(strip_tags($this->ghi_chu));
         $this->trang_thai = htmlspecialchars(strip_tags($this->trang_thai));
         $this->phieu_nhap_tai_san_id = htmlspecialchars(strip_tags($this->phieu_nhap_tai_san_id));
 
         $stmt->bindParam(':ngay_nhap', $this->ngay_nhap);
-        $stmt->bindParam(':user_id', $this->user_id);
+        $stmt->bindParam(':ngay_xac_nhan', $this->ngay_xac_nhan);
+        $stmt->bindParam(':ghi_chu', $this->ghi_chu);
         $stmt->bindParam(':trang_thai', $this->trang_thai);
         $stmt->bindParam(':phieu_nhap_tai_san_id', $this->phieu_nhap_tai_san_id);
 
         return $stmt->execute();
     }
+    public function updateStatus() {
+        $query = "UPDATE " . $this->table_name . " 
+                  SET ngay_xac_nhan=:ngay_xac_nhan, trang_thai=:trang_thai 
+                  WHERE phieu_nhap_tai_san_id=:phieu_nhap_tai_san_id";
 
+        $stmt = $this->conn->prepare($query);
+
+        $this->ngay_xac_nhan = htmlspecialchars(strip_tags($this->ngay_xac_nhan));
+        $this->trang_thai = htmlspecialchars(strip_tags($this->trang_thai));
+        $this->phieu_nhap_tai_san_id = htmlspecialchars(strip_tags($this->phieu_nhap_tai_san_id));
+
+        $stmt->bindParam(':ngay_xac_nhan', $this->ngay_xac_nhan);
+        $stmt->bindParam(':trang_thai', $this->trang_thai);
+        $stmt->bindParam(':phieu_nhap_tai_san_id', $this->phieu_nhap_tai_san_id);
+
+        return $stmt->execute();
+    }
     public function delete($id) {
-        // Bắt đầu transaction
-        $this->conn->beginTransaction();
-    
-        try {
-            // Truy vấn chi tiết hóa đơn
-            $chiTietQuery = "SELECT chi_tiet_id FROM chi_tiet_phieu_nhap_tai_san WHERE phieu_nhap_tai_san_id = ?";
-            $stmt = $this->conn->prepare($chiTietQuery);
-            $stmt->bindParam(1, $id);
-            $stmt->execute();
-            $chiTietHoaDon = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-            // Xóa vị trí chi tiết có vi_tri_id = 1 và chi_tiet_id tương ứng
-            $deleteViTriChiTietQuery = "DELETE FROM vi_tri_chi_tiet WHERE vi_tri_id = 1 AND chi_tiet_id = ?";
-            $stmtDeleteViTriChiTiet = $this->conn->prepare($deleteViTriChiTietQuery);
-    
-            foreach ($chiTietHoaDon as $chiTiet) {
-                $stmtDeleteViTriChiTiet->bindParam(1, $chiTiet['chi_tiet_id']);
-                $stmtDeleteViTriChiTiet->execute();
-            }
-    
-            // Xóa chi tiết hóa đơn
-            $deleteChiTietQuery = "DELETE FROM chi_tiet_phieu_nhap_tai_san WHERE phieu_nhap_tai_san_id = ?";
-            $stmtDeleteChiTiet = $this->conn->prepare($deleteChiTietQuery);
-            $stmtDeleteChiTiet->bindParam(1, $id);
-            $stmtDeleteChiTiet->execute();
-    
-            // Xóa hóa đơn
             $deleteHoaDonQuery = "DELETE FROM " . $this->table_name . " WHERE phieu_nhap_tai_san_id = ?";
             $stmtDeleteHoaDon = $this->conn->prepare($deleteHoaDonQuery);
             $stmtDeleteHoaDon->bindParam(1, $id);
-            $stmtDeleteHoaDon->execute();
-    
-            // Commit transaction
-            $this->conn->commit();
-            return true;
-        } catch (Exception $e) {
-            // Rollback transaction nếu có lỗi
-            $this->conn->rollBack();
-            return false;
-        }
+            $stmtDeleteHoaDon->execute();    
     }
 
     public function getTotalRecords() {

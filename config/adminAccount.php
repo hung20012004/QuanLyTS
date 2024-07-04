@@ -10,7 +10,7 @@ $email = 'admin@gmail.com';
 $ten = 'admin';
 $password = 'admin'; // Đây là mật khẩu gốc, bạn cần mã hóa trước khi lưu vào database
 $hashed_password = password_hash($password, PASSWORD_BCRYPT); // Mã hóa mật khẩu
-$role = 'Admin';
+$role = 'QuanLy';
 
 // Câu lệnh SQL INSERT
 $sql = "INSERT INTO users (email, ten, password, role) VALUES (:email, :ten, :password, :role)";

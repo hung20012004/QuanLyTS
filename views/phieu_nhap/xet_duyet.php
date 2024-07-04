@@ -4,7 +4,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.php?model=phieunhap&action=index">Phiếu nhập</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Chi tiết</li>
+                    <li class="breadcrumb-item active" aria-current="page">Xét duyệt</li>
                 </ol>
             </nav>
         </div>
@@ -14,7 +14,7 @@
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Phiếu nhập tài sản</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Xét duyệt phiếu nhập tài sản</h6>
         </div>
         <div class="card-body">
             <form method="POST"
@@ -25,8 +25,8 @@
                 <div class="form-group row">
                     <label for="nguoiNhap" class="col-sm-2 col-form-label">Người tạo phiếu:</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="nguoiNhap"
-                            value="<?= htmlspecialchars($_SESSION['ten']); ?>" readonly>
+                        <input type="text" class="form-control" id="nguoiNhap" value="<?= $phieuNhap['user_name'] ?>"
+                            readonly>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -91,19 +91,29 @@
                     </tbody>
                 </table>
 
-                <div class="form-group mt-3">   
+                <div class="form-group mt-3">
                     <label for="ghiChu">Ghi chú:</label>
-                    <textarea class="form-control" id="ghiChu" name="ghi_chu"readonly
+                    <textarea class="form-control" id="ghiChu" name="ghi_chu" readonly
                         rows="3"><?= htmlspecialchars($phieuNhap['ghi_chu']) ?></textarea>
                 </div>
-
-                <div class="form-group row">
-                    <div class="col-sm-10">
-                        <button hidden type="submit" class="btn btn-primary">Cập nhật</button>
-                        <a href="index.php?model=phieunhap&action=index" class="btn btn-secondary">Quay lại</a>
+            </form>
+            <div class="form-group row">
+                    <div class="col-sm-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="index.php?model=phieunhap&action=index" class="btn btn-secondary">Quay lại</a>
+                            <form
+                                action="index.php?model=phieunhap&action=xet_duyet&id=<?php echo $phieuNhap['phieu_nhap_tai_san_id']; ?>"
+                                method="POST" class="d-flex">
+                                <button type="submit" name="action" value="approve" class="btn btn-success mr-2"
+                                    onclick="return confirm('Bạn có chắc muốn phê duyệt phiếu nhập này?')">Phê
+                                    duyệt</button>
+                                <button type="submit" name="action" value="reject" class="btn btn-danger"
+                                    onclick="return confirm('Bạn có chắc muốn không phê duyệt phiếu nhập này?')">Không
+                                    phê duyệt</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </form>
         </div>
     </div>
 </div>
@@ -122,9 +132,9 @@
         <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required>
             <option value="">Chọn loại tài sản</option>
             <?php foreach ($loai_tai_san_list as $loai): ?>
-                        <option value="<?= $loai['loai_tai_san_id']; ?>">
-                            <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
-                        </option>
+                            <option value="<?= $loai['loai_tai_san_id']; ?>">
+                                <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
+                            </option>
             <?php endforeach; ?>
         </select>
     `;
@@ -132,9 +142,9 @@
         <select class="form-control select-tai-san" name="tai_san_id[]" required>
                                     <option value="">Chọn tài sản</option>
                                     <?php foreach ($tai_san_list as $tai_san): ?>
-                                                <option value="<?= $tai_san['tai_san_id']; ?>" data-loai="<?= $tai_san['loai_tai_san_id']; ?>" style="display: none;">
-                                                    <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
-                                                </option>
+                                                    <option value="<?= $tai_san['tai_san_id']; ?>" data-loai="<?= $tai_san['loai_tai_san_id']; ?>" style="display: none;">
+                                                        <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
+                                                    </option>
                                     <?php endforeach; ?>
                                 </select>
     `;
