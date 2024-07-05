@@ -47,7 +47,6 @@
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Ngày nhập</th>
                                     <th>Vị trí</th>
                                     <th>Số lượng trong kho</th>
                                     <th>Nguyên giá</th>
@@ -58,7 +57,7 @@
                             <tbody>
                                 <?php foreach ($details as $detail): ?>
                                     <tr>
-                                        <td><?= htmlspecialchars($detail['ngay_mua']) ?></td>
+                                        <!-- <td><?= htmlspecialchars($detail['ngay_mua']) ?></td> -->
                                         <td><?= htmlspecialchars($detail['ten_vi_tri']) ?></td>
                                         <td><?= htmlspecialchars($detail['so_luong_vi_tri']) ?></td>
                                         <td><?= htmlspecialchars(number_format($detail['don_gia'], 0, ',', '.')) ?> VNĐ</td>

@@ -121,12 +121,12 @@ class KhauHaoController extends Controller
     $stmtTaiSan->execute([$id]);
     $taiSan = $stmtTaiSan->fetch(PDO::FETCH_ASSOC);
 
-    // Truy vấn dữ liệu chi tiết từ bảng chi tiết hóa đơn mua
+   // Truy vấn dữ liệu chi tiết từ bảng chi tiết hóa đơn mua
     $query = "SELECT cthd.chi_tiet_id, cthd.so_luong, cthd.don_gia, 
                      hd.ngay_mua, vt.ten_vi_tri, vtct.so_luong as so_luong_vi_tri,
                      COALESCE(kh.thoi_gian_khau_hao, 0) as thoi_gian_khau_hao
               FROM chi_tiet_hoa_don_mua cthd
-              INNER JOIN hoa_don_mua hd ON hd.hoa_don_id = cthd.hoa_don_id
+            --   INNER JOIN hoa_don_mua hd ON hd.hoa_don_id = cthd.hoa_don_id
               LEFT JOIN vi_tri_chi_tiet vtct ON vtct.chi_tiet_id = cthd.chi_tiet_id
               LEFT JOIN vi_tri vt ON vt.vi_tri_id = vtct.vi_tri_id
               LEFT JOIN khau_hao kh ON kh.chi_tiet_id = cthd.chi_tiet_id

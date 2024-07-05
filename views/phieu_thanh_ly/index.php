@@ -3,7 +3,7 @@
         <div class="col">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=phieunhap&action=index">Phiếu nhập</a></li>
+                    <li class="breadcrumb-item"><a href="index.php?model=phieuthanhly&action=index">Phiếu Thanh Lý</a></li>
                 </ol>
             </nav>
         </div>
@@ -37,12 +37,12 @@
     <div class="card shadow mb-4">
         <div class="card-header py-2">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Quản lý phiếu nhập</h5>
+                <h5 class="card-title mb-0">Quản lý phiếu thanh lý</h5>
                 <div>
                     <?php if ($_SESSION['role'] == 'NhanVienQuanLy'): ?>
                         <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a>
-                        <a href="index.php?model=phieunhap&action=create" class="btn btn-primary">Thêm mới</a>
-                        <a href="index.php?model=phieunhap&action=export" class="btn btn-success">Xuất excel</a>
+                        <a href="index.php?model=phieuthanhly&action=create" class="btn btn-primary">Thêm mới</a>
+                        <a href="index.php?model=phieuthanhly&action=export" class="btn btn-success">Xuất excel</a>
                     <?php elseif ($_SESSION['role'] == 'QuanLy'): ?>
                         <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a>
                     <?php endif; ?>
@@ -50,8 +50,8 @@
             </div>
         </div>
         <div class="card-body">
-            <form id="searchForm" class="mb-3" style="display: none;">
-                <div class="row">
+             <!-- <form id="searchForm" class="mb-3" style="display: none;">
+               <div class="row">
                     <div class="col-md-4 mb-2">
                         <div class="d-flex align-items-center">
                             <label for="ngayBatDau" class="mr-2 mb-0" style="white-space: nowrap;">Từ
@@ -64,9 +64,20 @@
                             <label for="ngayKetThuc" class="mr-2 mb-0" style="white-space: nowrap;">Đến ngày:</label>
                             <input type="date" id="ngayKetThuc" class="form-control" placeholder="Đến ngày">
                         </div>
+                    </div> -->
+                    <div id="searchForm">
+                    <form action="index.php?model=phieuthanhly&action=search" method="post" class="mb-3">
+                        <div class="form-row ml-3">
+                            <label for="" >Ngày tạo phiếu</label>
+                            <div class="d-flex align-items-center ml-3">
+                            <input type="date" class="form-control" name="ngay_tk" placeholder="Ngày tạo phiếu">
+                            <input type="submit" class="btn btn-success ml-3" name="btn_tim_kiem" value="Tìm kiếm">
+                            </div>
+                        </div>
+                    </form>
                     </div>
-                </div>
-            </form>
+                <!-- </div>
+            </form> -->
             <div class="table-responsive">
                 <table id="dataTable" class="table table-bordered" width="100%" cellspacing="0">
                     <thead class="bg-light text-black text-center">
@@ -75,15 +86,15 @@
                             <th>Ngày tạo phiếu</th>
                             <th>Ngày phê duyệt</th>
                             <th>Trạng thái</th>
-                            <th>Thao tác</th>FF
+                            <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($phieuNhap as $phieu): ?>
+                        <?php foreach ($phieuThanhLy as $phieu): ?>
                             <?php if ($phieu['user_id'] == $_SESSION['user_id']): ?>
                                 <tr>
-                                    <td class="text-center"><?php echo $phieu['phieu_nhap_tai_san_id']; ?></td>
-                                    <td class="text-center"><?= date('d-m-Y', strtotime($phieu['ngay_nhap'])) ?></td>
+                                    <td class="text-center"><?php echo $phieu['phieu_thanh_ly_id']; ?></td>
+                                     <td class="text-center"><?= date('d-m-Y', strtotime($phieu['ngay_tao'])) ?></td>
                                     <td class="text-center">
                                         <?= $phieu['trang_thai'] != 'DangChoPheDuyet' ? (!empty($phieu['ngay_xac_nhan']) ? date('d-m-Y', strtotime($phieu['ngay_xac_nhan'])) : '') : ''; ?>
                                     </td>
@@ -91,18 +102,18 @@
                                     <?= $phieu['trang_thai'] == 'DangChoPheDuyet' ? 'Đang chờ phê duyệt' : ($phieu['trang_thai'] == 'KhongDuyet' ? 'Không phê duyệt' : 'Đã phê duyệt'); ?>
                                     </td>
                                     <td class="d-flex justify-content-center">
-                                        <a href="index.php?model=phieunhap&action=show&id=<?php echo $phieu['phieu_nhap_tai_san_id']; ?>"
+                                        <a href="index.php?model=phieuthanhly&action=show&id=<?php echo $phieu['phieu_thanh_ly_id']; ?>"
                                             class="btn btn-info btn-sm mx-2">Xem</a>
                                         <?php if ($phieu['trang_thai'] == 'DangChoPheDuyet'): ?>
-                                            <a href="index.php?model=phieunhap&action=edit&id=<?php echo $phieu['phieu_nhap_tai_san_id']; ?>"
+                                            <a href="index.php?model=phieuthanhly&action=edit&id=<?php echo $phieu['phieu_thanh_ly_id']; ?>"
                                                 class="btn btn-warning btn-sm mx-2">Sửa</a>
                                             <?php if ($_SESSION['role'] == 'NhanVienQuanLy'): ?>
-                                                <a href="index.php?model=phieunhap&action=delete&id=<?= $phieu['phieu_nhap_tai_san_id']; ?>" onclick="return confirmDelete();"
+                                                <a href="index.php?model=phieuthanhly&action=delete&id=<?= $phieu['phieu_thanh_ly_id']; ?>" onclick="return confirmDelete();"
                                                     class="btn btn-danger btn-sm mx-2">Xóa</a>
                                             <?php endif; ?>
                                         <?php endif; ?>
                                         <?php if ($_SESSION['role'] == 'QuanLy'): ?>
-                                            <a href="index.php?model=phieunhap&action=xet_duyet&id=<?php echo $phieu['phieu_nhap_tai_san_id']; ?>"
+                                            <a href="index.php?model=phieuthanhly&action=xet_duyet&id=<?php echo $phieu['phieu_thanh_ly_id']; ?>"
                                             class="btn btn-sm mx-2 btn-primary">Xét duyệt</a>
                                         <?php endif; ?>
                                     </td>
@@ -127,34 +138,34 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-        function filterTable() {
-            var ngayBatDau = document.getElementById('ngayBatDau').value;
-            var ngayKetThuc = document.getElementById('ngayKetThuc').value;
+        // function filterTable() {
+        //     var ngayBatDau = document.getElementById('ngayBatDau').value;
+        //     var ngayKetThuc = document.getElementById('ngayKetThuc').value;
 
-            var table = document.getElementById('dataTable');
-            var rows = table.getElementsByTagName('tr');
+        //     var table = document.getElementById('dataTable');
+        //     var rows = table.getElementsByTagName('tr');
 
-            for (var i = 1; i < rows.length; i++) {
-                var cells = rows[i].getElementsByTagName('td');
-                var ngayNhap = cells[1].textContent.trim();
-                var ngayXacNhan = cells[2].textContent.trim();
+        //     for (var i = 1; i < rows.length; i++) {
+        //         var cells = rows[i].getElementsByTagName('td');
+        //         var ngayNhap = cells[1].textContent.trim();
+        //         var ngayXacNhan = cells[2].textContent.trim();
 
-                // Kiểm tra điều kiện lọc
-                var passNgay = (!ngayBatDau || ngayNhap >= ngayBatDau) && (!ngayKetThuc || ngayNhap <= ngayKetThuc) && (!ngayKetThuc || ngayXacNhan <= ngayKetThuc);
+        //         // Kiểm tra điều kiện lọc
+        //         var passNgay = (!ngayBatDau || ngayNhap >= ngayBatDau) && (!ngayKetThuc || ngayNhap <= ngayKetThuc) && (!ngayKetThuc || ngayXacNhan <= ngayKetThuc);
 
-                if (passNgay) {
-                    rows[i].style.display = '';
-                } else {
-                    rows[i].style.display = 'none';
-                }
-            }
-        }
+        //         if (passNgay) {
+        //             rows[i].style.display = '';
+        //         } else {
+        //             rows[i].style.display = 'none';
+        //         }
+        //     }
+        // }
 
-        document.getElementById('ngayBatDau').addEventListener('change', filterTable);
-        document.getElementById('ngayKetThuc').addEventListener('change', filterTable);
+        // document.getElementById('ngayBatDau').addEventListener('change', filterTable);
+        // document.getElementById('ngayKetThuc').addEventListener('change', filterTable);
 
-        // Gọi filterTable ngay khi trang được tải để áp dụng bất kỳ giá trị mặc định nào
-        filterTable();
+        // // Gọi filterTable ngay khi trang được tải để áp dụng bất kỳ giá trị mặc định nào
+        // filterTable();
 
         var toggleButton = document.getElementById('toggleSearch');
         var searchForm = document.getElementById('searchForm');

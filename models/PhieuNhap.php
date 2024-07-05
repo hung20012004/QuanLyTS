@@ -18,7 +18,7 @@ class PhieuNhap {
         $query = "SELECT pn.*, u.ten AS user_name 
                   FROM " . $this->table_name . " pn
                   LEFT JOIN users u ON pn.user_id = u.user_id
-                  ORDER BY pn.ngay_nhap DESC";
+                  ORDER BY pn.ngay_tao DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

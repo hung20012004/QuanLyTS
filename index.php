@@ -13,6 +13,7 @@ require 'controllers/AuthController.php';
 require 'controllers/TaiSanController.php';
 require 'controllers/KhauHaoController.php';
 require 'controllers/TinhTrangController.php';
+require 'controllers/PhieuThanhLyController.php';
 
 
 $controller = new Controller();
@@ -59,6 +60,9 @@ switch ($model) {
         break;
     case 'khauhao':
         $controller = new KhauHaoController();
+        break;
+    case 'phieuthanhly':
+        $controller = new PhieuThanhLyController();
         break;
     default:
         $controller = new Controller();

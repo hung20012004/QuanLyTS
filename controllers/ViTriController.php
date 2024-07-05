@@ -4,8 +4,8 @@ include_once 'models/ViTri.php';
 include_once 'models/ViTriChiTiet.php';
 include_once 'models/TaiSan.php';
 include_once 'models/LoaiTaiSan.php';
-include_once 'models/HoaDonMua.php';
-include_once 'models/ChiTietHoaDonMua.php';
+// include_once 'models/HoaDonMua.php';
+// include_once 'models/ChiTietHoaDonMua.php';
 
 class ViTriController {
     private $db;
@@ -23,8 +23,8 @@ class ViTriController {
         $this->viTriChiTiet = new ViTriChiTiet($this->db);
         $this->taiSan = new TaiSan($this->db);
         $this->loaiTaiSan = new LoaiTaiSan($this->db);
-        $this->hoaDonMua = new HoaDonMua($this->db);
-        $this->chiTietHoaDon = new ChiTietHoaDonMua($this->db);
+        // $this->hoaDonMua = new HoaDonMua($this->db);
+        // $this->chiTietHoaDon = new ChiTietHoaDonMua($this->db);
     }
 
     public function index() {
