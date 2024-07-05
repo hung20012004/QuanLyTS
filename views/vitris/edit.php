@@ -58,7 +58,10 @@
                                         <select class="form-control select-tai-san" name="tai_san_id[]" required>
                                             <option value="">Chọn tài sản</option>
                                             <?php foreach ($taiSans as $taiSan): ?>
-                                                <option value="<?= $taiSan['tai_san_id']; ?>" <?= ($taiSan['tai_san_id'] == $detail['tai_san_id']) ? 'selected' : ''; ?> data-loai-tai-san="<?= htmlspecialchars($taiSan['ten_loai_tai_san']); ?>" data-loai-tai-san-id="<?= $taiSan['loai_tai_san_id']; ?>">
+                                                <option value="<?= $taiSan['tai_san_id']; ?>" 
+                                                        <?= ($taiSan['tai_san_id'] == $detail['tai_san_id']) ? 'selected' : ''; ?> 
+                                                        data-loai-tai-san="<?= htmlspecialchars($taiSan['ten_loai_tai_san']); ?>" 
+                                                        data-loai-tai-san-id="<?= $taiSan['loai_tai_san_id']; ?>">
                                                     <?= htmlspecialchars($taiSan['ten_tai_san']); ?>
                                                 </option>
                                             <?php endforeach; ?>
@@ -93,75 +96,84 @@
 function initializeTaiSanListeners() {
     document.querySelectorAll('.select-tai-san').forEach(function(select) {
         select.addEventListener('change', function() {
-            var selectedOption = select.options[select.selectedIndex];
-            var loaiTaiSan = selectedOption.getAttribute('data-loai-tai-san');
-            var loaiTaiSanId = selectedOption.getAttribute('data-loai-tai-san-id');
-            var row = select.closest('tr');
+            var selectedOption = this.options[this.selectedIndex];
+            var row = this.closest('tr');
             var loaiTaiSanInput = row.querySelector('input[name="loai_tai_san[]"]');
             var loaiTaiSanIdInput = row.querySelector('input[name="loai_tai_san_id[]"]');
 
-            loaiTaiSanInput.value = loaiTaiSan;
-            loaiTaiSanIdInput.value = loaiTaiSanId;
+            if (selectedOption) {
+                loaiTaiSanInput.value = selectedOption.getAttribute('data-loai-tai-san');
+                loaiTaiSanIdInput.value = selectedOption.getAttribute('data-loai-tai-san-id');
+            } else {
+                loaiTaiSanInput.value = '';
+                loaiTaiSanIdInput.value = '';
+            }
 
-            // Disable the loại tài sản input
-            loaiTaiSanInput.disabled = true;
-
-            fetchQuantityInStock(select.value, row.querySelector('.select-purchase-date').value);
+            // Cập nhật số lượng trong kho
+            fetchQuantityInStock(this.value);
         });
     });
 }
 
-function fetchQuantityInStock(taiSanId, hoaDonId) {
-    if (taiSanId && hoaDonId) {
+function fetchQuantityInStock(taiSanId) {
+    if (taiSanId) {
         $.ajax({
             url: 'index.php?model=vitri&action=getQuantityInStock',
             method: 'POST',
-            data: { tai_san_id: taiSanId, hoa_don_id: hoaDonId },
+            data: { tai_san_id: taiSanId},
             dataType: 'json',
             success: function(response) {
-                var row = document.querySelector('select[name="tai_san_id[]"][value="' + taiSanId + '"]').closest('tr');
+                // Find the select element with the matching selected value
+                var selectElement = document.querySelector('select[name="tai_san_id[]"] option[value="' + taiSanId + '"]:checked').closest('select');
+                
+                // Get the closest row and find the so-luong-kho input within it
+                var row = selectElement.closest('tr');
                 var soLuongKhoInput = row.querySelector('.so-luong-kho');
+                
                 soLuongKhoInput.value = response.quantity;
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX error: " + status + ": " + error);
             }
         });
     }
 }
 
-// function themDong() {
-//     var table = document.getElementById('tableChiTiet').getElementsByTagName('tbody')[0];
-//     var rowCount = table.rows.length;
-//     var row = table.insertRow(rowCount);
-//     row.id = 'row' + rowCount;
+function themDong() {
+    var table = document.getElementById('tableChiTiet').getElementsByTagName('tbody')[0];
+    var rowCount = table.rows.length;
+    var row = table.insertRow(rowCount);
+    row.id = 'row' + rowCount;
 
-//     var loaiTaiSanCell = row.insertCell(0);
-//     var taiSanCell = row.insertCell(1);
-//     var soLuongKhoCell = row.insertCell(2);
-//     var soLuongChuyenCell = row.insertCell(3);
-//     var hanhDongCell = row.insertCell(4);
+    var loaiTaiSanCell = row.insertCell(0);
+    var taiSanCell = row.insertCell(1);
+    var soLuongKhoCell = row.insertCell(2);
+    var soLuongChuyenCell = row.insertCell(3);
+    var hanhDongCell = row.insertCell(4);
 
-//     loaiTaiSanCell.innerHTML = '<input type="text" class="form-control" name="loai_tai_san[]" readonly>' +
-//         '<input type="hidden" name="loai_tai_san_id[]">';
+    loaiTaiSanCell.innerHTML = '<input type="text" class="form-control" name="loai_tai_san[]" readonly>' +
+        '<input type="hidden" name="loai_tai_san_id[]">';
 
-//     taiSanCell.innerHTML = '<select class="form-control select-tai-san" name="tai_san_id[]" required>' +
-//         '<option value="">Chọn tài sản</option>' +
-//         
-//         '</select>';
+    taiSanCell.innerHTML = '<select class="form-control select-tai-san" name="tai_san_id[]" required>' +
+        '<option value="">Chọn tài sản</option>' +
+        <?php foreach ($taiSans as $taiSan): ?>
+        '<option value="<?= $taiSan['tai_san_id']; ?>" data-loai-tai-san="<?= htmlspecialchars($taiSan['ten_loai_tai_san']); ?>" data-loai-tai-san-id="<?= $taiSan['loai_tai_san_id']; ?>"><?= htmlspecialchars($taiSan['ten_tai_san']); ?></option>' +
+        <?php endforeach; ?>
+        '</select>';
 
-//     soLuongKhoCell.innerHTML = '<input type="number" class="form-control so-luong-kho" name="so_luong_kho[]" readonly>';
+    soLuongKhoCell.innerHTML = '<input type="number" class="form-control so-luong-kho" name="so_luong_kho[]" readonly>';
 
-//     soLuongChuyenCell.innerHTML = '<input type="number" class="form-control so-luong-chuyen" name="so_luong_chuyen[]" required min="0">';
+    soLuongChuyenCell.innerHTML = '<input type="number" class="form-control so-luong-chuyen" name="so_luong_chuyen[]" required min="0">';
 
-//     hanhDongCell.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="xoaDong(this)">Xóa</button>';
+    hanhDongCell.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="xoaDong(this)">Xóa</button>';
 
-//     initializeTaiSanListeners();
-// }
+    initializeTaiSanListeners()
+}
 
 function xoaDong(button) {
     var row = button.closest('tr');
     row.parentNode.removeChild(row);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    initializeTaiSanListeners();
-});
+document.addEventListener('DOMContentLoaded', initializeTaiSanListeners);
 </script>
