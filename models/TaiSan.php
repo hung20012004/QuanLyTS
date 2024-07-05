@@ -46,10 +46,9 @@ class TaiSan {
     }
 
     public function readById($id) {
-        $query = "SELECT ts.*, lts.ten_loai_tai_san, vt.so_luong 
+        $query = "SELECT ts.*, lts.ten_loai_tai_san 
                   FROM " . $this->table_name . " ts 
-                  JOIN vi_tri_chi_tiet vt ON vt.tai_san_id = ts.tai_san_id 
-                  JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id 
+                  INNER JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id 
                   WHERE ts.tai_san_id = ?";
 
         $stmt = $this->conn->prepare($query);
