@@ -4,8 +4,6 @@ include_once 'models/ViTri.php';
 include_once 'models/ViTriChiTiet.php';
 include_once 'models/TaiSan.php';
 include_once 'models/LoaiTaiSan.php';
-include_once 'models/HoaDonMua.php';
-include_once 'models/ChiTietHoaDonMua.php';
 
 class ViTriController {
     private $db;

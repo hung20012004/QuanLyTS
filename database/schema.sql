@@ -43,11 +43,14 @@ CREATE TABLE vi_tri_chi_tiet (
 CREATE TABLE phieu_nhap_tai_san (
     phieu_nhap_tai_san_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
+    user_duyet_id INT,
     ngay_tao DATE NOT NULL,
     ngay_xac_nhan DATE,
+    ngay_nhap DATE,
     ghi_chu TEXT,
-    trang_thai ENUM('KhongDuyet','DangChoPheDuyet','DaPheDuyet','Huy') NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
+    trang_thai ENUM('KhongDuyet','DangChoPheDuyet','DaPheDuyet','DaNhap') NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
+    FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
 );
 
 CREATE TABLE chi_tiet_phieu_nhap_tai_san (
@@ -64,12 +67,14 @@ CREATE TABLE phieu_ban_giao (
     phieu_ban_giao_id INT AUTO_INCREMENT PRIMARY KEY,
     user_ban_giao_id INT,
     user_nhan_id INT,
+    user_duyet_id INT,
     vi_tri_id INT,
     ngay_ban_giao DATE NOT NULL,
     trang_thai ENUM('DaGui','DangChoPheDuyet','DaPheDuyet','Huy') NOT NULL,
     FOREIGN KEY (user_ban_giao_id) REFERENCES `users`(user_id) ON DELETE CASCADE,
     FOREIGN KEY (user_nhan_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
-    FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id)
+    FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id),
+    FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
 );
 
 CREATE TABLE phieu_ban_giao_chi_tiet (
@@ -87,10 +92,12 @@ CREATE TABLE phieu_tra (
     phieu_tra_id INT AUTO_INCREMENT PRIMARY KEY,
     user_ban_giao_id INT,
     user_nhan_id INT,
+    user_duyet_id INT,
     ngay_ban_giao DATE NOT NULL,
     trang_thai ENUM('DaGui','DangChoPheDuyet','DaPheDuyet','Huy') NOT NULL,
     FOREIGN KEY (user_ban_giao_id) REFERENCES `users`(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_nhan_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
+    FOREIGN KEY (user_nhan_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
+    FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
 );
 
 CREATE TABLE phieu_tra_chi_tiet (

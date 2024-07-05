@@ -114,17 +114,6 @@ class TaiSan {
         // Kiểm tra xem tài sản đã tồn tại chưa
     }
 
-    private function readByNameAndType($ten_tai_san, $loai_tai_san_id) {
-        $query = "SELECT * FROM " . $this->table_name . " 
-                  WHERE ten_tai_san = :ten_tai_san AND loai_tai_san_id = :loai_tai_san_id";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':ten_tai_san', $ten_tai_san);
-        $stmt->bindParam(':loai_tai_san_id', $loai_tai_san_id);
-        $stmt->execute();
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
     public function checkExists($ten_tai_san, $loai_tai_san_id) {
         $query = "SELECT COUNT(*) FROM " . $this->table_name . " 
                   WHERE ten_tai_san = :ten_tai_san AND loai_tai_san_id = :loai_tai_san_id";
@@ -176,7 +165,6 @@ class TaiSan {
             return false;
         }
     }
-    
     public function getAssetTypeStatistics() {
         try {
             $query = "SELECT lt.ten_loai_tai_san as loai_tai_san, COUNT(ts.tai_san_id) as so_luong 
@@ -239,5 +227,15 @@ class TaiSan {
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
     }
+    public function readOne($taiSanId)
+    {
+        $query = "SELECT * FROM tai_san WHERE tai_san_id = :tai_san_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':tai_san_id', $taiSanId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+
 }
 ?>
