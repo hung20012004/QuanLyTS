@@ -27,9 +27,9 @@
                 </div>
                 <?php if ($phieuNhap['trang_thai'] != 'DangXetDuyet'): ?>
                 <div class="form-group row">
-                    <label for="nguoiTao" class="col-sm-2 col-form-label">Người phê duyệt phiếu:</label>
+                    <label for="nguoiDuyet" class="col-sm-2 col-form-label">Người phê duyệt phiếu:</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="nguoiTao"
+                        <input type="text" class="form-control" id="nguoiDuyet"
                             value="<?= htmlspecialchars($phieuNhap['user_duyet_id']); ?>" readonly>
                     </div>
                 </div>
