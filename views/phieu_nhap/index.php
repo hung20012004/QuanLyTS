@@ -74,6 +74,7 @@
                             <th>Mã số phiếu</th>
                             <th>Ngày tạo phiếu</th>
                             <th>Ngày phê duyệt</th>
+                            <th>Ngày nhập tài sản</th>
                             <th>Trạng thái</th>
                             <th>Thao tác</th>FF
                         </tr>
@@ -83,12 +84,17 @@
                             <?php if ($phieu['user_id'] == $_SESSION['user_id']): ?>
                                 <tr>
                                     <td class="text-center"><?php echo $phieu['phieu_nhap_tai_san_id']; ?></td>
-                                    <td class="text-center"><?= date('d-m-Y', strtotime($phieu['ngay_nhap'])) ?></td>
+                                    <td class="text-center"><?= date('d-m-Y', strtotime($phieu['ngay_tao'])) ?></td>
                                     <td class="text-center">
-                                        <?= $phieu['trang_thai'] != 'DangChoPheDuyet' ? (!empty($phieu['ngay_xac_nhan']) ? date('d-m-Y', strtotime($phieu['ngay_xac_nhan'])) : '') : ''; ?>
+                                        <?php if (in_array($phieu['trang_thai'], ['DaPheDuyet', 'DaNhap','KhongDuyet'])): ?>
+                                            <?= !empty($phieu['ngay_xac_nhan']) ? date('d-m-Y', strtotime($phieu['ngay_xac_nhan'])) : ''; ?>
+                                        <?php endif; ?>
                                     </td>
                                     <td class="text-center">
-                                    <?= $phieu['trang_thai'] == 'DangChoPheDuyet' ? 'Đang chờ phê duyệt' : ($phieu['trang_thai'] == 'KhongDuyet' ? 'Không phê duyệt' : 'Đã phê duyệt'); ?>
+                                        <?= $phieu['trang_thai'] == 'DaNhap' ? (!empty($phieu['ngay_nhap']) ? date('d-m-Y', strtotime($phieu['ngay_nhap'])) : '') : ''; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?= $phieu['trang_thai'] == 'DangChoPheDuyet' ? 'Đang chờ phê duyệt' : ($phieu['trang_thai'] == 'KhongDuyet' ? 'Không phê duyệt' : ($phieu['trang_thai'] == 'DaNhap' ? 'Đã nhập tài sản' : 'Đã phê duyệt')); ?>
                                     </td>
                                     <td class="d-flex justify-content-center">
                                         <a href="index.php?model=phieunhap&action=show&id=<?php echo $phieu['phieu_nhap_tai_san_id']; ?>"
@@ -97,13 +103,19 @@
                                             <a href="index.php?model=phieunhap&action=edit&id=<?php echo $phieu['phieu_nhap_tai_san_id']; ?>"
                                                 class="btn btn-warning btn-sm mx-2">Sửa</a>
                                             <?php if ($_SESSION['role'] == 'NhanVienQuanLy'): ?>
-                                                <a href="index.php?model=phieunhap&action=delete&id=<?= $phieu['phieu_nhap_tai_san_id']; ?>" onclick="return confirmDelete();"
-                                                    class="btn btn-danger btn-sm mx-2">Xóa</a>
+                                                <a href="index.php?model=phieunhap&action=delete&id=<?= $phieu['phieu_nhap_tai_san_id']; ?>"
+                                                    onclick="return confirmDelete();" class="btn btn-danger btn-sm mx-2">Xóa</a>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                        <?php if ($phieu['trang_thai'] == 'DaPheDuyet'): ?>
+                                            <?php if ($_SESSION['role'] == 'NhanVienQuanLy'): ?>
+                                                <a href="index.php?model=phieunhap&action=nhap_tai_san&id=<?php echo $phieu['phieu_nhap_tai_san_id']; ?>"
+                                                    class="btn btn-success btn-sm mx-2">Nhập tài sản</a>
                                             <?php endif; ?>
                                         <?php endif; ?>
                                         <?php if ($_SESSION['role'] == 'QuanLy'): ?>
                                             <a href="index.php?model=phieunhap&action=xet_duyet&id=<?php echo $phieu['phieu_nhap_tai_san_id']; ?>"
-                                            class="btn btn-sm mx-2 btn-primary">Xét duyệt</a>
+                                                class="btn btn-sm mx-2 btn-primary">Xét duyệt</a>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

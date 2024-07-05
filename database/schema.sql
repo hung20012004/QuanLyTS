@@ -39,16 +39,19 @@
 --     FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id)
 -- );
 
--- -- Phiếu nhập
--- CREATE TABLE phieu_nhap_tai_san (
---     phieu_nhap_tai_san_id INT AUTO_INCREMENT PRIMARY KEY,
---     user_id INT,
---     ngay_tao DATE NOT NULL,
---     ngay_xac_nhan DATE,
---     ghi_chu TEXT,
---     trang_thai ENUM('KhongDuyet','DangChoPheDuyet','DaPheDuyet','Huy') NOT NULL,
---     FOREIGN KEY (user_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
--- );
+-- Phiếu nhập
+CREATE TABLE phieu_nhap_tai_san (
+    phieu_nhap_tai_san_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    user_duyet_id INT,
+    ngay_tao DATE NOT NULL,
+    ngay_xac_nhan DATE,
+    ngay_nhap DATE,
+    ghi_chu TEXT,
+    trang_thai ENUM('KhongDuyet','DangChoPheDuyet','DaPheDuyet','DaNhap') NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
+    FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
+);
 
 -- CREATE TABLE chi_tiet_phieu_nhap_tai_san (
 --     chi_tiet_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -59,18 +62,25 @@
 --     FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE
 -- );
 
--- -- Phiếu bàn giao
--- CREATE TABLE phieu_ban_giao (
---     phieu_ban_giao_id INT AUTO_INCREMENT PRIMARY KEY,
---     user_ban_giao_id INT,
---     user_nhan_id INT,
---     vi_tri_id INT,
---     ngay_ban_giao DATE NOT NULL,
---     trang_thai ENUM('DaGui','DangChoPheDuyet','DaPheDuyet','Huy') NOT NULL,
---     FOREIGN KEY (user_ban_giao_id) REFERENCES `users`(user_id) ON DELETE CASCADE,
---     FOREIGN KEY (user_nhan_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
---     FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id)
--- );
+-- Phiếu bàn giao
+CREATE TABLE phieu_ban_giao (
+    phieu_ban_giao_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_ban_giao_id INT,
+    user_nhan_id INT,
+    user_duyet_id INT,
+    vi_tri_id INT,
+
+    ngay_gui DATE,
+    ngay_kiem_tra DATE,
+    ngay_duyet DATE,
+    ngay_ban_giao DATE,
+
+    trang_thai ENUM('DaGui','DaKiemTra','DangChoPheDuyet','DaPheDuyet','DaGiao','KhongDuyet') NOT NULL,
+    FOREIGN KEY (user_ban_giao_id) REFERENCES `users`(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_nhan_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
+    FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id),
+    FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
+);
 
 -- CREATE TABLE phieu_ban_giao_chi_tiet (
 --     phieu_ban_giao_chi_tiet_id INT PRIMARY KEY AUTO_INCREMENT,    
@@ -82,16 +92,21 @@
 --     FOREIGN KEY (phieu_ban_giao_id) REFERENCES phieu_ban_giao(phieu_ban_giao_id)
 -- );
 
--- -- Phiếu trả
--- CREATE TABLE phieu_tra (
---     phieu_tra_id INT AUTO_INCREMENT PRIMARY KEY,
---     user_ban_giao_id INT,
---     user_nhan_id INT,
---     ngay_ban_giao DATE NOT NULL,
---     trang_thai ENUM('DaGui','DangChoPheDuyet','DaPheDuyet','Huy') NOT NULL,
---     FOREIGN KEY (user_ban_giao_id) REFERENCES `users`(user_id) ON DELETE CASCADE,
---     FOREIGN KEY (user_nhan_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
--- );
+-- Phiếu trả
+CREATE TABLE phieu_tra (
+    phieu_tra_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_tra_id INT,
+    user_nhan_id INT,
+    user_duyet_id INT,
+    ngay_gui DATE,
+    ngay_kiem_tra DATE,
+    ngay_duyet DATE,
+    ngay_tra DATE,
+    trang_thai ENUM('DaGui','DaKiemTra','DangChoPheDuyet','DaPheDuyet','DaTra','KhongDuyet') NOT NULL,
+    FOREIGN KEY (user_ban_giao_id) REFERENCES `users`(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_nhan_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
+    FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
+);
 
 -- CREATE TABLE phieu_tra_chi_tiet (
 --     phieu_tra_chi_tiet_id INT PRIMARY KEY AUTO_INCREMENT,    
@@ -107,20 +122,21 @@
 CREATE TABLE phieu_thanh_ly (
     phieu_thanh_ly_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
+    user_duyet_id INT,
     ngay_tao DATE NOT NULL,
     ngay_xac_nhan DATE,
-    ghi_chu TEXT,
-    nguoi_duyet_id INT NULL,
-    -- ngay_thanh_ly DATE NOT NULL,
-    trang_thai ENUM('KhongDuyet','DangChoPheDuyet','DaPheDuyet','Huy') NOT NULL,
+    ngay_thanh_ly DATE,
+    tong_gia_tri DECIMAL(15,0) NOT NULL,
+    trang_thai ENUM('KhongDuyet','DangChoPheDuyet','DaPheDuyet','DaNhap') NOT NULL,
     FOREIGN KEY (user_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
-    FOREIGN KEY (nguoi_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
+    FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
 );
 
 CREATE TABLE chi_tiet_phieu_thanh_ly (
     chi_tiet_id INT AUTO_INCREMENT PRIMARY KEY,
     phieu_thanh_ly_id INT,
     tai_san_id INT,
+    tinh_trang ENUM('Moi','Tot','Kha','TrungBinh','Kem','Hong') NOT NULL,
     so_luong INT NOT NULL,
     FOREIGN KEY (phieu_thanh_ly_id) REFERENCES phieu_thanh_ly(phieu_thanh_ly_id) ON DELETE CASCADE,
     FOREIGN KEY (tai_san_id) REFERENCES tai_san(tai_san_id) ON UPDATE CASCADE

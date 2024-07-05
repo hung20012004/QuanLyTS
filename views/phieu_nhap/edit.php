@@ -32,15 +32,8 @@
                 <div class="form-group row">
                     <label for="ngayNhap" class="col-sm-2 col-form-label">Ngày tạo phiếu:</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="ngayNhap" name="ngay_nhap"
-                            value="<?= $phieuNhap['ngay_nhap'] ?>" readonly>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="ngayXacNhan" class="col-sm-2 col-form-label">Ngày phê duyệt:</label>
-                    <div class="col-sm-10">
-                        <input type="date" class="form-control" id="ngayXacNhan" name="ngay_xac_nhan"
-                            value="<?= $phieuNhap['ngay_xac_nhan'] ?>" readonly>
+                        <input type="date" class="form-control" id="ngayNhap" name="ngay_tao"
+                            value="<?= $phieuNhap['ngay_tao'] ?>" readonly>
                     </div>
                 </div>
 

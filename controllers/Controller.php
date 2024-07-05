@@ -42,5 +42,6 @@ class Controller {
     public function getQuantityInStock(){}
     public function getByLoai(){}
     public function xet_duyet($id){}
+    public function nhap_tai_san($id){}
 }
 ?>

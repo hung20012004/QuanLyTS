@@ -32,10 +32,19 @@
                 <div class="form-group row">
                     <label for="ngayNhap" class="col-sm-2 col-form-label">Ngày tạo phiếu:</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="ngayNhap" name="ngay_nhap"
-                            value="<?= $phieuNhap['ngay_nhap'] ?>" readonly>
+                        <input type="date" class="form-control" id="ngayNhap" name="ngay_tao"
+                            value="<?= $phieuNhap['ngay_tao'] ?>" readonly>
                     </div>
                 </div>
+                <?php if ($phieuNhap['trang_thai'] != 'DangXetDuyet'): ?>
+                <div class="form-group row">
+                    <label for="nguoiTao" class="col-sm-2 col-form-label">Người phê duyệt phiếu:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="nguoiTao"
+                            value="<?= htmlspecialchars($phieuNhap['user_duyet_id']); ?>" readonly>
+                    </div>
+                </div>
+                <?php endif; ?>
                 <div class="form-group row">
                     <label for="ngayXacNhan" class="col-sm-2 col-form-label">Ngày phê duyệt:</label>
                     <div class="col-sm-10">

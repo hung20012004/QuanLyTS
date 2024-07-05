@@ -185,5 +185,6 @@ class ChiTietPhieuNhap
     
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 }
 ?>
