@@ -41,26 +41,81 @@ class ViTriChiTiet {
 
     // Tạo chi tiết vị trí mới
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " SET vi_tri_id=:vi_tri_id, tai_san_id=:tai_san_id, so_luong=:so_luong";
-
+        $query = "SELECT so_luong FROM " . $this->table_name . " WHERE tai_san_id = :tai_san_id AND vi_tri_id = :vi_tri_id";
         $stmt = $this->conn->prepare($query);
-        
-        // sanitize
-        $this->vi_tri_id = htmlspecialchars(strip_tags($this->vi_tri_id));
-        $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
-        $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
-
-        // bind values
-        $stmt->bindParam(':vi_tri_id', $this->vi_tri_id);
         $stmt->bindParam(':tai_san_id', $this->tai_san_id);
-        $stmt->bindParam(':so_luong', $this->so_luong);
-        
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
-    }
+        $stmt->bindParam(':vi_tri_id', $this->vi_tri_id);
+        $stmt->execute();
 
+        if ($stmt->rowCount() == 0) {
+            $query = "INSERT INTO " . $this->table_name . " SET vi_tri_id=:vi_tri_id, tai_san_id=:tai_san_id, so_luong=:so_luong";
+
+            $stmt = $this->conn->prepare($query);
+            
+            // sanitize
+            $this->vi_tri_id = htmlspecialchars(strip_tags($this->vi_tri_id));
+            $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
+            $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
+
+            // bind values
+            $stmt->bindParam(':vi_tri_id', $this->vi_tri_id);
+            $stmt->bindParam(':tai_san_id', $this->tai_san_id);
+            $stmt->bindParam(':so_luong', $this->so_luong);
+            
+            if ($stmt->execute()) {
+                return true;
+            }
+            return false;
+        }
+    }
+    
+    public function createOrUpdate($tai_san_id, $vi_tri_id, $so_luong) {
+        try {
+            $this->conn->beginTransaction();
+
+            // Check if the record exists
+            $query = "SELECT so_luong FROM " . $this->table_name . " WHERE tai_san_id = :tai_san_id AND vi_tri_id = :vi_tri_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':tai_san_id', $tai_san_id);
+            $stmt->bindParam(':vi_tri_id', $vi_tri_id);
+            $stmt->execute();
+
+            if ($stmt->rowCount() > 0) {
+                // Record exists, update it
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $new_so_luong = $row['so_luong'] + $so_luong;
+
+                // Ensure the new quantity is not negative
+                if ($new_so_luong < 0) {
+                    throw new Exception("Insufficient quantity in inventory for the update.");
+                }
+
+                $query = "UPDATE " . $this->table_name . " SET so_luong = :so_luong WHERE tai_san_id = :tai_san_id AND vi_tri_id = :vi_tri_id";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bindParam(':so_luong', $new_so_luong);
+                $stmt->bindParam(':tai_san_id', $tai_san_id);
+                $stmt->bindParam(':vi_tri_id', $vi_tri_id);
+            } else {
+                // Record does not exist, create it
+                $query = "INSERT INTO " . $this->table_name . " (tai_san_id, vi_tri_id, so_luong) VALUES (:tai_san_id, :vi_tri_id, :so_luong)";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bindParam(':tai_san_id', $tai_san_id);
+                $stmt->bindParam(':vi_tri_id', $vi_tri_id);
+                $stmt->bindParam(':so_luong', $so_luong);
+            }
+
+            if ($stmt->execute()) {
+                $this->conn->commit();
+                return true;
+            } else {
+                $this->conn->rollBack();
+                return false;
+            }
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            throw $e;
+        }
+    }
     // Đọc thông tin chi tiết vị trí theo ID
     public function readById($id) {
         $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri, loai_tai_san.ten_loai_tai_san 
@@ -165,5 +220,24 @@ class ViTriChiTiet {
         }
         return false;
     }
+    public function readByTaiSanAndViTri($taiSanId, $viTriId)
+{
+    $query = "SELECT * FROM vi_tri_chi_tiet WHERE tai_san_id = :tai_san_id AND vi_tri_id = :vi_tri_id";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':tai_san_id', $taiSanId, PDO::PARAM_INT);
+    $stmt->bindParam(':vi_tri_id', $viTriId, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+public function updateQuantity($viTriChiTietId, $newQuantity)
+{
+    $query = "UPDATE vi_tri_chi_tiet SET so_luong = :so_luong WHERE vi_tri_chi_tiet_id = :vi_tri_chi_tiet_id";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':so_luong', $newQuantity, PDO::PARAM_INT);
+    $stmt->bindParam(':vi_tri_chi_tiet_id', $viTriChiTietId, PDO::PARAM_INT);
+    return $stmt->execute();
+}
+
 }
 ?>

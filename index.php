@@ -122,6 +122,9 @@ switch ($action) {
     case 'getByLoai':
         $controller->getByLoai(); 
         break;
+    case 'nhap_tai_san':
+        $controller->nhap_tai_san($id);
+        break;
     default:
         $controller->index();
         break;

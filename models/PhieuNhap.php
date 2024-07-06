@@ -4,9 +4,11 @@ class PhieuNhap {
     private $table_name = "phieu_nhap_tai_san";
 
     public $phieu_nhap_tai_san_id;
+    public $ngay_tao;
     public $ngay_nhap;
     public $ngay_xac_nhan;
     public $ghi_chu;
+    public $user_duyet_id;
     public $user_id;
     public $trang_thai;
 
@@ -18,7 +20,7 @@ class PhieuNhap {
         $query = "SELECT pn.*, u.ten AS user_name 
                   FROM " . $this->table_name . " pn
                   LEFT JOIN users u ON pn.user_id = u.user_id
-                  ORDER BY pn.ngay_nhap DESC";
+                  ORDER BY pn.ngay_tao DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -29,7 +31,7 @@ class PhieuNhap {
         $query = "SELECT pn.*, u.ten AS user_name 
                   FROM " . $this->table_name . " pn
                   LEFT JOIN users u ON pn.user_id = u.user_id
-                  ORDER BY pn.ngay_nhap DESC
+                  ORDER BY pn.ngay_tao DESC
                   LIMIT :start, :records";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":start", $start, PDO::PARAM_INT);
@@ -51,22 +53,22 @@ class PhieuNhap {
 
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
-                  SET ngay_nhap=:ngay_nhap, ngay_xac_nhan=:ngay_xac_nhan, ghi_chu=:ghi_chu, user_id=:user_id, trang_thai=:trang_thai";
+                  SET ngay_tao=:ngay_tao, ghi_chu=:ghi_chu,user_duyet_id=:user_id, user_id=:user_id, trang_thai=:trang_thai";
 
         $stmt = $this->conn->prepare($query);
 
-        $this->ngay_nhap = htmlspecialchars(strip_tags($this->ngay_nhap));
-        $this->ngay_xac_nhan = htmlspecialchars(strip_tags($this->ngay_xac_nhan));
+        $this->ngay_tao = htmlspecialchars(strip_tags($this->ngay_tao));
         $this->ghi_chu = htmlspecialchars(strip_tags($this->ghi_chu));
         $this->user_id = htmlspecialchars(strip_tags($this->user_id));
         $this->trang_thai = htmlspecialchars(strip_tags($this->trang_thai));
+        $this->user_duyet_id = 1;
 
-        $stmt->bindParam(':ngay_nhap', $this->ngay_nhap);
-        $stmt->bindParam(':ngay_xac_nhan', $this->ngay_xac_nhan);
+        $stmt->bindParam(':ngay_tao', $this->ngay_tao);
         $stmt->bindParam(':ghi_chu', $this->ghi_chu);
         $stmt->bindParam(':user_id', $this->user_id);
         $stmt->bindParam(':trang_thai', $this->trang_thai);
 
+        $stmt->bindParam(':user_duyet_id', $this->user_duyet_id);
         if ($stmt->execute()) {
             return $this->conn->lastInsertId();
         }
@@ -75,18 +77,16 @@ class PhieuNhap {
 
     public function update() {
         $query = "UPDATE " . $this->table_name . " 
-                  SET ngay_nhap=:ngay_nhap, ngay_xac_nhan=:ngay_xac_nhan, ghi_chu=:ghi_chu, trang_thai=:trang_thai 
+                  SET  ngay_xac_nhan=:ngay_xac_nhan, ghi_chu=:ghi_chu, trang_thai=:trang_thai 
                   WHERE phieu_nhap_tai_san_id=:phieu_nhap_tai_san_id";
 
         $stmt = $this->conn->prepare($query);
 
-        $this->ngay_nhap = htmlspecialchars(strip_tags($this->ngay_nhap));
         $this->ngay_xac_nhan = htmlspecialchars(strip_tags($this->ngay_xac_nhan));
         $this->ghi_chu = htmlspecialchars(strip_tags($this->ghi_chu));
         $this->trang_thai = htmlspecialchars(strip_tags($this->trang_thai));
         $this->phieu_nhap_tai_san_id = htmlspecialchars(strip_tags($this->phieu_nhap_tai_san_id));
 
-        $stmt->bindParam(':ngay_nhap', $this->ngay_nhap);
         $stmt->bindParam(':ngay_xac_nhan', $this->ngay_xac_nhan);
         $stmt->bindParam(':ghi_chu', $this->ghi_chu);
         $stmt->bindParam(':trang_thai', $this->trang_thai);
@@ -131,9 +131,9 @@ class PhieuNhap {
         $query = "SELECT pn.*, u.ten AS user_name 
                   FROM " . $this->table_name . " pn
                   LEFT JOIN users u ON pn.user_id = u.user_id
-                  WHERE pn.ngay_nhap LIKE :search 
+                  WHERE pn.ngay_tao LIKE :search 
                      OR u.ten LIKE :search
-                  ORDER BY pn.ngay_nhap DESC
+                  ORDER BY pn.ngay_tao DESC
                   LIMIT :start, :records";
         
         $stmt = $this->conn->prepare($query);
@@ -150,8 +150,8 @@ class PhieuNhap {
         $query = "SELECT pn.*, u.ten AS user_name 
                   FROM " . $this->table_name . " pn
                   LEFT JOIN users u ON pn.user_id = u.user_id
-                  WHERE pn.ngay_nhap BETWEEN :start_date AND :end_date
-                  ORDER BY pn.ngay_nhap ASC";
+                  WHERE pn.ngay_tao BETWEEN :start_date AND :end_date
+                  ORDER BY pn.ngay_tao ASC";
         
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":start_date", $startDate);

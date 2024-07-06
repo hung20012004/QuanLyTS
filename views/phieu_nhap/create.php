@@ -15,16 +15,10 @@
                 <div class="form-group row">
                     <label for="ngayNhap" class="col-sm-2 col-form-label">Ngày tạo phiếu:</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="ngayNhap" name="ngay_nhap" value="<?= date('Y-m-d'); ?>" required>
+                        <input type="date" class="form-control" id="ngayNhap" name="ngay_tao" value="<?= date('Y-m-d'); ?>" readonly>
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label for="ngayXacNhan" class="col-sm-2 col-form-label">Ngày phê duyệt:</label>
-                    <div class="col-sm-10">
-                        <input type="date" class="form-control" id="ngayXacNhan" name="ngay_xac_nhan">
-                    </div>
-                </div>
-                
+
                 <h5 class="mt-4">Chi tiết phiếu nhập</h5>
                 <table id="chiTietTable" class="table table-bordered">
                     <thead>
@@ -58,7 +52,7 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="number" class="form-control" name="so_luong[]" required min="1">
+                                <input type="number" class="form-control" name="so_luong[]" value="1" required min="1">
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>
@@ -94,11 +88,14 @@ function addTaiSan() {
 
     cell1.innerHTML = document.querySelector('.loai-tai-san').outerHTML;
     cell2.innerHTML = document.querySelector('.select-tai-san').outerHTML;
-    cell3.innerHTML = '<input type="number" class="form-control" name="so_luong[]" required min="1">';
+    cell3.innerHTML = '<input type="number" class="form-control" name="so_luong[]" value="1" required min="1">';
     cell4.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>';
 
     newRow.querySelector('.loai-tai-san').addEventListener('change', function() {
         updateTaiSanOptions(this);
+    });
+    newRow.querySelector('.select-tai-san').addEventListener('change', function() {
+        mergeDuplicateRows();
     });
 }
 
@@ -126,10 +123,42 @@ function updateTaiSanOptions(selectLoai) {
     selectTaiSan.value = ""; // Reset selection
 }
 
+function mergeDuplicateRows() {
+    var table = document.getElementById('chiTietTable');
+    var rows = table.getElementsByTagName('tr');
+    var rowsToDelete = [];
+
+    for (var i = 1; i < rows.length; i++) {
+        for (var j = i + 1; j < rows.length; j++) {
+            var loaiTaiSan1 = rows[i].querySelector('.loai-tai-san').value;
+            var taiSan1 = rows[i].querySelector('.select-tai-san').value;
+            var loaiTaiSan2 = rows[j].querySelector('.loai-tai-san').value;
+            var taiSan2 = rows[j].querySelector('.select-tai-san').value;
+
+            if (loaiTaiSan1 === loaiTaiSan2 && taiSan1 === taiSan2) {
+                var soLuong1 = parseInt(rows[i].querySelector('input[name="so_luong[]"]').value);
+                var soLuong2 = parseInt(rows[j].querySelector('input[name="so_luong[]"]').value);
+                rows[i].querySelector('input[name="so_luong[]"]').value = soLuong1 + soLuong2;
+                rowsToDelete.push(rows[j]);
+            }
+        }
+    }
+
+    for (var i = rowsToDelete.length - 1; i >= 0; i--) {
+        rowsToDelete[i].parentNode.removeChild(rowsToDelete[i]);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.loai-tai-san').forEach(function(select) {
         select.addEventListener('change', function() {
             updateTaiSanOptions(this);
+        });
+    });
+    
+    document.querySelectorAll('.select-tai-san').forEach(function(select) {
+        select.addEventListener('change', function() {
+            mergeDuplicateRows();
         });
     });
 });
