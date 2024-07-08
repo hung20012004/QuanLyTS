@@ -7,6 +7,7 @@ class ViTri {
 
     public $vi_tri_id;
     public $ten_vi_tri;
+    public $khoa;
 
     public function __construct($db) {
         $this->conn = $db;
@@ -139,6 +140,13 @@ class ViTri {
         $query = "SELECT * FROM vi_tri WHERE vi_tri_id = :vi_tri_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':vi_tri_id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function readByKhoa($ten_khoa) {
+        $query = "SELECT * FROM vi_tri WHERE khoa = :khoa";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':khoa', $ten_khoa);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }

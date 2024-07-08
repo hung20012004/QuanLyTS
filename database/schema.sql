@@ -69,6 +69,7 @@ CREATE TABLE phieu_ban_giao (
     user_nhan_id INT,
     user_duyet_id INT,
     vi_tri_id INT,
+    ghi_chu VARCHAR,
 
     ngay_gui DATE,
     ngay_kiem_tra DATE,
