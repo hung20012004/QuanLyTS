@@ -1,25 +1,41 @@
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Tạo phiếu nhập tài sản</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Tạo phiếu bàn giao tài sản</h6>
         </div>
         <div class="card-body">
-            <form method="POST" action="index.php?model=phieunhap&action=create" id="phieuNhapForm">
-                <!-- Các trường thông tin chung của phiếu nhập -->
+            <form method="POST" action="index.php?model=phieubangiao&action=create" id="phieuBanGiaoForm">
+                <!-- Các trường thông tin chung của phiếu bàn giao -->
                 <div class="form-group row">
-                    <label for="nguoiNhap" class="col-sm-2 col-form-label">Người tạo phiếu:</label>
+                    <label for="nguoiNhan" class="col-sm-2 col-form-label">Người tạo yêu cầu:</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="nguoiNhap" name="nguoi_nhap" value="<?= htmlspecialchars($_SESSION['ten']); ?>" readonly>
+                        <input type="text" class="form-control" id="nguoiNhan" name="nguoi_nhan" value="<?= $user_nhan['ten']; ?>" readonly>
+                        <input type="hidden" name="user_nhan_id" value="<?= $user_nhan['user_id']; ?>">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="ngayNhap" class="col-sm-2 col-form-label">Ngày tạo phiếu:</label>
+                    <label for="ngayTao" class="col-sm-2 col-form-label">Ngày tạo phiếu:</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="ngayNhap" name="ngay_tao" value="<?= date('Y-m-d'); ?>" readonly>
+                        <input type="date" class="form-control" id="ngayTao" name="ngay_tao" value="<?= date('Y-m-d'); ?>" readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="viTri" class="col-sm-2 col-form-label">Vị trí:</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="viTri" name="vi_tri_id" required>
+                            <option value="">Chọn vị trí</option>
+                            <?php foreach ($vi_tri_list as $vi_tri): ?>
+                                <?php if ($vi_tri['khoa'] === $user_nhan['khoa']): ?>
+                                    <option value="<?= $vi_tri['vi_tri_id']; ?>">
+                                        <?= htmlspecialchars($vi_tri['ten_vi_tri']); ?>
+                                    </option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </div>
 
-                <h5 class="mt-4">Chi tiết phiếu nhập</h5>
+                <h5 class="mt-4">Yêu cầu cung cấp các tài sản:</h5>
                 <table id="chiTietTable" class="table table-bordered">
                     <thead>
                         <tr>
@@ -54,6 +70,7 @@
                             <td>
                                 <input type="number" class="form-control" name="so_luong[]" value="1" required min="1">
                             </td>
+                           
                             <td>
                                 <button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>
                             </td>
@@ -67,7 +84,7 @@
                     <textarea class="form-control" id="ghiChu" name="ghi_chu" rows="3"></textarea>
                 </div>
 
-                <div class="form-group row">
+                <div class="form-group row mt-3">
                     <div class="col-sm-10">
                         <button type="submit" class="btn btn-primary">Lưu và gửi</button>
                     </div>
@@ -85,11 +102,13 @@ function addTaiSan() {
     var cell2 = newRow.insertCell(1);
     var cell3 = newRow.insertCell(2);
     var cell4 = newRow.insertCell(3);
+    var cell5 = newRow.insertCell(4);
 
     cell1.innerHTML = document.querySelector('.loai-tai-san').outerHTML;
     cell2.innerHTML = document.querySelector('.select-tai-san').outerHTML;
     cell3.innerHTML = '<input type="number" class="form-control" name="so_luong[]" value="1" required min="1">';
-    cell4.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>';
+    cell4.innerHTML = document.querySelector('select[name="tinh_trang[]"]').outerHTML;
+    cell5.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>';
 
     newRow.querySelector('.loai-tai-san').addEventListener('change', function() {
         updateTaiSanOptions(this);

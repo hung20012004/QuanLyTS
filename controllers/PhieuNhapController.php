@@ -76,7 +76,6 @@ private function showCreateForm()
     {
         $this->phieuNhapModel->user_id = $_SESSION['user_id'];
         $this->phieuNhapModel->ngay_tao = $_POST['ngay_tao'];
-        $this->phieuNhapModel->ngay_xac_nhan = $_POST['ngay_xac_nhan'];
         $this->phieuNhapModel->ghi_chu = $_POST['ghi_chu'];
         $this->phieuNhapModel->trang_thai = 'DangChoPheDuyet';
         return $this->phieuNhapModel->create();

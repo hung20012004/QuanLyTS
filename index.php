@@ -4,14 +4,13 @@ session_start();
 require 'controllers/Controller.php';
 require 'controllers/BaoTriController.php';
 require 'controllers/PhieuNhapController.php';
+require 'controllers/PhieuBanGiaoController.php';
 require 'controllers/LoaiTaiSanController.php';
-require 'controllers/NhaCungCapController.php';
 require 'controllers/ThanhLyController.php';
 require 'controllers/ViTriController.php';
 require 'controllers/UserController.php';
 require 'controllers/AuthController.php';
 require 'controllers/TaiSanController.php';
-require 'controllers/KhauHaoController.php';
 require 'controllers/TinhTrangController.php';
 require 'controllers/PhieuThanhLyController.php';
 
@@ -28,9 +27,6 @@ if (!isset($_SESSION['user_id']) && !in_array($action, ['login', 'register'])) {
 }
 
 switch ($model) {
-    case 'tinhtrang' :
-        $controller = new TinhTrangController();
-        break;
     case 'baotri':
         $controller = new BaoTriController();
         break;
@@ -52,18 +48,15 @@ switch ($model) {
     case 'auth':
         $controller = new AuthController();
         break;
-    case 'nhacungcap':
-        $controller = new NhaCungCapController();
-        break;
     case 'loaitaisan':
         $controller = new LoaiTaiSanController();
         break;
     case 'khauhao':
         $controller = new KhauHaoController();
         break;
-    case 'phieuthanhly':
-        $controller = new PhieuThanhLyController();
-        break;
+    case 'phieubangiao':
+        $controller = new PhieuBanGiaoController();
+        break;       
     default:
         $controller = new Controller();
         break;

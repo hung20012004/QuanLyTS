@@ -71,9 +71,9 @@ class TaiSanController extends Controller {
         $content = 'views/taisans/edit.php';
         include('views/layouts/base.php');
     }
+
     public function detail($id)
     {
-        $viTriId = 1; // ID của vị trí chi tiết
 
         // Lấy thông tin tài sản
         $queryTaiSan = "SELECT * 
@@ -85,14 +85,14 @@ class TaiSanController extends Controller {
         $taiSan = $stmtTaiSan->fetch(PDO::FETCH_ASSOC);
 
         // Truy vấn dữ liệu chi tiết
-        $query = "SELECT hoa_don_mua.ngay_mua, vi_tri_chi_tiet.so_luong 
-        FROM vi_tri_chi_tiet 
-        INNER JOIN chi_tiet_hoa_don_mua ON vi_tri_chi_tiet.chi_tiet_id = chi_tiet_hoa_don_mua.chi_tiet_id
-        INNER JOIN hoa_don_mua ON hoa_don_mua.hoa_don_id = chi_tiet_hoa_don_mua.hoa_don_id
-        WHERE chi_tiet_hoa_don_mua.tai_san_id = ? AND vi_tri_id = ?";
+        $query = "SELECT ct.so_luong, vt.ten_vi_tri 
+        FROM tai_san ts 
+        INNER JOIN vi_tri_chi_tiet ct ON ts.tai_san_id = ct.tai_san_id 
+        INNER JOIN vi_tri vt ON ct.vi_tri_id = vt.vi_tri_id 
+        WHERE ts.tai_san_id = ?";
 
         $stmt = $this->db->prepare($query);
-        $stmt->execute([$id, $viTriId]);
+        $stmt->execute([$id]);
         $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $content = 'views/taisans/detail.php';

@@ -30,7 +30,6 @@
                             </ul>
                         </div>
                     <?php endif; ?>
-
                     <form action="index.php?model=taisan&action=edit&id=<?php echo $taiSan['tai_san_id']; ?>" method="POST">
                         <div class="mb-3">
                             <label for="ten_tai_san" class="form-label">Tên Tài Sản:</label>
@@ -49,13 +48,13 @@
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                        </div>
+                        </div>    
+                    </form>   
                 </div>
                 <div class="card-footer d-flex justify-content-between">
                     <a href="index.php?model=taisan&action=index" class="btn btn-secondary">Hủy</a>
                     <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
                 </div>
-                </form>
             </div>
         </div>
     </div>
