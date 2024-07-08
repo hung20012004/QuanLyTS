@@ -9,6 +9,8 @@ class PhieuBanGiao
     public $user_nhan_id;
     public $user_duyet_id;
     public $vi_tri_id;
+    public $ghi_chu ;
+
     public $ngay_gui;
     public $ngay_kiem_tra;
     public $ngay_duyet;

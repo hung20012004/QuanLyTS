@@ -42,7 +42,6 @@
                             <th>Loại tài sản</th>
                             <th>Tên tài sản</th>
                             <th>Số lượng</th>
-                            <th>Tình trạng</th>
                             <th>Hành động</th>
                         </tr>
                     </thead>
@@ -71,16 +70,7 @@
                             <td>
                                 <input type="number" class="form-control" name="so_luong[]" value="1" required min="1">
                             </td>
-                            <td>
-                                <select class="form-control" name="tinh_trang[]" required>
-                                    <option value="Moi">Mới</option>
-                                    <option value="Tot">Tốt</option>
-                                    <option value="Kha">Khá</option>
-                                    <option value="TrungBinh">Trung bình</option>
-                                    <option value="Kem">Kém</option>
-                                    <option value="Hong">Hỏng</option>
-                                </select>
-                            </td>
+                           
                             <td>
                                 <button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>
                             </td>

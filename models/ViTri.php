@@ -148,8 +148,9 @@ class ViTri {
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':khoa', $ten_khoa);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); 
     }
+    
     public function getViTriChiTiets($id) {
         $query = "SELECT vct.vi_tri_id, vct.so_luong, v.ten_vi_tri,
                          cthdm.tai_san_id, cthdm.so_luong as so_luong_kho, cthdm.hoa_don_id,
