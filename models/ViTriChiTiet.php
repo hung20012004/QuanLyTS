@@ -17,10 +17,10 @@ class ViTriChiTiet {
 
     // Đọc tất cả chi tiết vị trí
     public function read() {
-        $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri 
+        $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri, loai_tai_san.ten_loai_tai_san 
                  FROM (( " . $this->table_name . "
-                 INNER JOIN chi_tiet_hoa_don_mua ON vi_tri_chi_tiet.tai_san_id = chi_tiet_hoa_don_mua.tai_san_id )
-                 INNER JOIN tai_san ON chi_tiet_hoa_don_mua.tai_san_id = tai_san.tai_san_id)
+                 INNER JOIN tai_san ON vi_tri_chi_tiet.tai_san_id = tai_san.tai_san_id)
+                 INNER JOIN loai_tai_san ON loai_tai_san.loai_tai_san_id = tai_san.loai_tai_san_id )
                  INNER JOIN vi_tri ON vi_tri.vi_tri_id = vi_tri_chi_tiet.vi_tri_id";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -28,10 +28,10 @@ class ViTriChiTiet {
     }
 
     public function readNotKho() {
-        $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri 
+        $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri, loai_tai_san.ten_loai_tai_san 
                  FROM (( " . $this->table_name . "
-                 INNER JOIN chi_tiet_hoa_don_mua ON vi_tri_chi_tiet.tai_san_id = chi_tiet_hoa_don_mua.tai_san_id )
-                 INNER JOIN tai_san ON chi_tiet_hoa_don_mua.tai_san_id = tai_san.tai_san_id)
+                 INNER JOIN tai_san ON vi_tri_chi_tiet.tai_san_id = tai_san.tai_san_id)
+                 INNER JOIN loai_tai_san ON loai_tai_san.loai_tai_san_id = tai_san.loai_tai_san_id )
                  INNER JOIN vi_tri ON vi_tri.vi_tri_id = vi_tri_chi_tiet.vi_tri_id
                  WHERE vi_tri_chi_tiet.vi_tri_id > 1";
         $stmt = $this->conn->prepare($query);
@@ -118,7 +118,12 @@ class ViTriChiTiet {
     }
     // Đọc thông tin chi tiết vị trí theo ID
     public function readById($id) {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE vi_tri_chi_tiet_id = ?";
+        $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri, loai_tai_san.ten_loai_tai_san 
+                 FROM " . $this->table_name . " 
+                 INNER JOIN tai_san ON vi_tri_chi_tiet.tai_san_id = tai_san.tai_san_id)
+                 INNER JOIN loai_tai_san ON loai_tai_san.loai_tai_san_id = tai_san.loai_tai_san_id )
+                 INNER JOIN vi_tri ON vi_tri.vi_tri_id = vi_tri_chi_tiet.vi_tri_id
+                 WHERE vi_tri_chi_tiet_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $id);
         $stmt->execute();
@@ -127,11 +132,11 @@ class ViTriChiTiet {
 
     // Đọc thông tin chi tiết vị trí theo ID vị trí
     public function readByViTriId($vi_tri_id) {
-        $query = "SELECT vi_tri_chi_tiet.*, tai_san.*, hoa_don_mua.ngay_mua
+        $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri, loai_tai_san.ten_loai_tai_san , loai_tai_san.loai_tai_san_id 
                  FROM (( " . $this->table_name . "
-                 INNER JOIN chi_tiet_hoa_don_mua ON vi_tri_chi_tiet.tai_san_id = chi_tiet_hoa_don_mua.tai_san_id )
-                 INNER JOIN tai_san ON chi_tiet_hoa_don_mua.tai_san_id = tai_san.tai_san_id)
-                 INNER JOIN hoa_don_mua ON chi_tiet_hoa_don_mua.hoa_don_id = hoa_don_mua.hoa_don_id
+                 INNER JOIN tai_san ON vi_tri_chi_tiet.tai_san_id = tai_san.tai_san_id)
+                 INNER JOIN loai_tai_san ON loai_tai_san.loai_tai_san_id = tai_san.loai_tai_san_id )
+                 INNER JOIN vi_tri ON vi_tri.vi_tri_id = vi_tri_chi_tiet.vi_tri_id
                  WHERE vi_tri_chi_tiet.vi_tri_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $vi_tri_id);

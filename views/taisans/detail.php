@@ -16,7 +16,7 @@
             <h5 class="mb-3">Chi tiết tài sản</h5>
             <div class="card">
                 <div class="card-header">
-                    <h6 class="mb-0"><?= htmlspecialchars($taiSan['ten_tai_san']) ?></h6>
+                    <h6 class="mb-0"><strong><?= htmlspecialchars($taiSan['ten_tai_san']) ?></strong></h6>
                 </div>
                 <div class="card-body">
                     <p><strong>ID:</strong> <?= htmlspecialchars($taiSan['tai_san_id']) ?></p>
@@ -26,14 +26,14 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Ngày nhập</th>
-                                <th>Số lượng trong kho</th>
+                                <th>Vị trí</th>
+                                <th>Số lượng</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($details as $detail): ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($detail['ngay_mua']) ?></td>
+                                    <td><?= htmlspecialchars($detail['ten_vi_tri']) ?></td>
                                     <td><?= htmlspecialchars($detail['so_luong']) ?></td>
                                 </tr>
                             <?php endforeach; ?>

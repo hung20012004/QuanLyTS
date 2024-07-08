@@ -40,7 +40,6 @@
                 <h5 class="card-title mb-0">Quản Lý Tài Sản</h5>
                 <div>
                     <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a>
-                    <a href="index.php?model=taisan&action=create" class="btn btn-primary">Thêm mới</a>
                     <a href="index.php?model=taisan&action=export" class="btn btn-success">Xuất excel</a>
                 </div>
             </div>
@@ -91,8 +90,6 @@
                                         class="btn btn-info btn-sm mx-2">Chi tiết</a>
                                     <a href="index.php?model=taisan&action=edit&id=<?php echo $taisan['tai_san_id']; ?>"
                                         class="btn btn-warning btn-sm mx-2">Sửa</a>
-                                    <a href="index.php?model=taisan&action=delete&id=<?php echo $taisan['tai_san_id']; ?>"
-                                        class="btn btn-danger btn-sm mx-2" onclick="return confirmDelete(<?php echo $taisan['tai_san_id']; ?>);">Xóa</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
