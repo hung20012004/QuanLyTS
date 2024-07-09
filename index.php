@@ -12,6 +12,7 @@ require 'controllers/UserController.php';
 require 'controllers/AuthController.php';
 require 'controllers/TaiSanController.php';
 require 'controllers/TinhTrangController.php';
+require 'controllers/PhieuSuaController.php';
 
 
 $controller = new Controller();
@@ -28,6 +29,9 @@ if (!isset($_SESSION['user_id']) && !in_array($action, ['login', 'register'])) {
 switch ($model) {
     case 'baotri':
         $controller = new BaoTriController();
+        break;
+    case 'phieusua':
+        $controller = new PhieuSuaController();
         break;
     case 'phieunhap':
         $controller = new PhieuNhapController();
@@ -121,6 +125,21 @@ switch ($action) {
     case 'nhap_tai_san':
         $controller->nhap_tai_san($id);
         break;
+    case 'cancel':
+        $controller->cancel($id);
+        break;
+    case 'cancellationrequest':
+        $controller->cancellationrequest($id);
+        break;    
+    case 'hoan_thanh':
+        $controller->hoan_thanh($id);
+        break;   
+    case 'getRepairForms':
+        $controller->getRepairForms();
+        break;   
+    case 'calendar':
+        $controller->calendarView();
+        break; 
     default:
         $controller->index();
         break;

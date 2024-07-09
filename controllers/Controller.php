@@ -23,6 +23,17 @@ class Controller {
     public function delete($id) {
         
     }
+    public function cancel($id) {
+        
+    }
+    public function cancellationrequest($id) {
+        
+    }
+    public function hoan_thanh($id) {
+        
+    }
+    public function getRepairForms() {}
+    public function calendarView() {}
     public function show($id) {
         
     }

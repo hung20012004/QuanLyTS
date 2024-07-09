@@ -26,7 +26,7 @@ CREATE TABLE tai_san (
 -- Vị trí
 CREATE TABLE vi_tri (
     vi_tri_id INT AUTO_INCREMENT PRIMARY KEY,
-    ten_vi_tri VARCHAR(100) NOT NULL UNIQUE,
+    ten_vi_tri VARCHAR(100) NOT NULL,
     khoa ENUM('HTTT','CNTT','KT','Co khi','Cong trinh','Moi truong-ATGT') NOT NULL
 );
 
@@ -154,9 +154,9 @@ CREATE TABLE phieu_sua(
     ngay_hoan_thanh DATE,
     mo_ta TEXT,
     user_yeu_cau_id INT NOT NULL,
-    user_sua_chua_id INT NOT NULL,
+    user_sua_chua_id INT,
     vi_tri_id INT,
-    trang_thai ENUM('DaGui','DaNhan','DaHoanThanh','Huy') NOT NULL,
+    trang_thai ENUM('DaGui','DaNhan','DaHoanThanh','YeuCauHuy','Huy') NOT NULL,
     FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id),
     FOREIGN KEY (user_yeu_cau_id) REFERENCES `users`(user_id),
     FOREIGN KEY (user_sua_chua_id) REFERENCES `users`(user_id)

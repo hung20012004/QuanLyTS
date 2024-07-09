@@ -51,6 +51,20 @@
                             <input type="text" id="tenViTri" class="form-control" placeholder="Nhập tên vị trí">
                         </div>
                     </div>
+                    <div class="col-md-4 mb-2">
+                    <div class="d-flex align-items-center">
+                        <label for="tenKhoa" class="mr-2 mb-0" style="white-space: nowrap;">Tên khoa:</label>
+                        <select id="tenKhoa" class="form-control">
+                            <option value="">Tất cả</option>
+                            <option value="HTTT">Hệ thống thông tin</option>
+                            <option value="CNTT">Công nghệ thông tin</option>
+                            <option value="KT">Kỹ Thuật</option>
+                            <option value="Co khi">Cơ khí</option>
+                            <option value="Cong trinh">Công trình</option>
+                            <option value="Moi truong-ATGT">Môi trường-ATGT</option>
+                        </select>
+                    </div>
+                    </div>
                 </div>
             </form>
             <div class="table-responsive">
@@ -59,6 +73,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Tên Vị Trí</th>
+                            <th>Tên Khoa</th> 
                             <th>Thao Tác</th>
                         </tr>
                     </thead>
@@ -67,12 +82,11 @@
                             <tr>
                                 <td class="text-center"><?= $viTri['vi_tri_id'] ?></td>
                                 <td><?= htmlspecialchars($viTri['ten_vi_tri']) ?></td>
+                                <td><?= htmlspecialchars($viTri['khoa']) ?></td>
                                 <td class="d-flex justify-content-center">
                                     <a href="index.php?model=vitri&action=show&id=<?= $viTri['vi_tri_id'] ?>"
                                         class="btn btn-info btn-sm mx-2">Xem</a>
                                     <?php if ($viTri['vi_tri_id']!=1): ?>
-                                        <a href="index.php?model=vitri&action=edit&id=<?= $viTri['vi_tri_id'] ?>"
-                                            class="btn btn-warning btn-sm mx-2">Sửa</a>
                                         <form action="index.php?model=vitri&action=delete&id=<?= $viTri['vi_tri_id'] ?>" method="POST" style="display: inline-block;">
                                             <button type="submit" class="btn btn-danger btn-sm mx-2" onclick="return confirm('Bạn có chắc muốn xóa vị trí này?');">Xóa</button>
                                         </form>
@@ -88,20 +102,27 @@
 </div>
 <script>
     $(document).ready(function() {
-        var table=$('#dataTable').DataTable({
+        var table = $('#dataTable').DataTable({
             dom: 'rtip',
-                    language: {
-                        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
-                    }
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
+            }
         });
-    // Thêm sự kiện tìm kiếm cho input
-        $('#tenViTri').on('input', function(){
+
+        // Thêm sự kiện tìm kiếm cho input
+        $('#tenViTri').on('input', function() {
             table.column(1).search(this.value).draw();
         });
+
+        // Thêm sự kiện tìm kiếm cho dropdown
+        $('#tenKhoa').on('change', function() {
+            table.column(2).search(this.value).draw();
+        });
+
         var toggleButton = document.getElementById('toggleSearch');
         var searchForm = document.getElementById('searchForm');
 
-        toggleButton.addEventListener('click', function () {
+        toggleButton.addEventListener('click', function() {
             if (searchForm.style.display === 'none') {
                 searchForm.style.display = 'block';
                 toggleButton.textContent = 'Ẩn tìm kiếm';
@@ -111,9 +132,11 @@
             }
         });
     });
-    document.addEventListener('DOMContentLoaded', function () {
+
+    document.addEventListener('DOMContentLoaded', function() {
         function confirmDelete() {
             return confirm('Bạn có chắc muốn xóa vị trí này?');
         }
     });
 </script>
+
