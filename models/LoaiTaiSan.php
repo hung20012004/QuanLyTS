@@ -22,7 +22,17 @@ class LoaiTaiSan {
 
     // Đọc tất cả loại tài sản
     public function read() {
-        $query = "SELECT * FROM " . $this->table_name;
+        $query = "SELECT * FROM " . $this->table_name." ORDER BY loai_tai_san_id ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    public function search($loai_ts_tk)
+    {
+        
+         $query = "SELECT * FROM loai_tai_san
+         WHERE ten_loai_tai_san LIKE '%".$loai_ts_tk."%'";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
