@@ -50,7 +50,7 @@
             <a class="collapse-item <?= ($current_model == 'phieuthanhly' && $current_action == 'index') ? 'active' : '' ?>"
                 href="route.php?model=phieuthanhly&action=index">Phiếu thanh lý tài sản</a>
             <a class="collapse-item <?= ($current_model == 'phieusua' && $current_action == 'index') ? 'active' : '' ?>"
-                href="route.php?model=phieusua&action=index">Phiếu sửa tài sản</a>
+                href="index.php?model=phieusua&action=index">Phiếu sửa tài sản</a>
         </div>
     </div>
 </li>

@@ -14,7 +14,7 @@ require 'controllers/TaiSanController.php';
 require 'controllers/TinhTrangController.php';
 require 'controllers/PhieuThanhLyController.php';
 require 'controllers/PhieuTraController.php';
-
+require 'controllers/PhieuSuaController.php';
 
 
 $controller = new Controller();
@@ -34,6 +34,9 @@ switch ($model) {
         break;
     case 'phieunhap':
         $controller = new PhieuNhapController();
+        break;
+    case 'phieusua':
+        $controller = new PhieuSuaController();
         break;
     case 'phieuthanhly':
         $controller = new PhieuThanhLyController();
@@ -130,12 +133,27 @@ switch ($action) {
     case 'thanh_ly':
         $controller->thanh_ly($id);
         break;
+    case 'cancel':
+        $controller->cancel($id);
+        break;
+    case 'cancellationrequest':
+        $controller->cancellationrequest($id);
+        break;    
+    case 'hoan_thanh':
+        $controller->hoan_thanh($id);
+        break;   
+    case 'getRepairForms':
+        $controller->getRepairForms();
+        break;   
+    case 'calendar':
+        $controller->calendarView();
+        break; 
      case 'xuatphieu':
         $controller->exportphieu($id);
         break;
-        case 'exportWord':
-            $controller->exportWord($id);
-            break;
+    case 'exportWord':
+        $controller->exportWord($id);
+        break;
     case 'tra':
         $controller->tra($id);
         break;

@@ -30,7 +30,7 @@
                         alert.style.display = 'none';
                     }, 150);
                 }
-            }, 7000); // 7000 milliseconds = 7 seconds
+            }, 2000); // 7000 milliseconds = 7 seconds
         </script>
     <?php endif; ?>
 

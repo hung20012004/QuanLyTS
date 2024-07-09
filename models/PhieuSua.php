@@ -182,80 +182,91 @@ class PhieuSua {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function statistic() {
-        $statistics = [];
-
-        // Tổng số phiếu sửa đã xử lý
-        $query = "SELECT COUNT(*) as total FROM phieu_sua WHERE trang_thai = 'Đã hoàn thành'";
-        $result = $this->conn->query($query);
-        $statistics['totalProcessed'] = $result->fetch_assoc()['total'];
-
-        // Số phiếu sửa chưa xử lý
-        $query = "SELECT COUNT(*) as total FROM phieu_sua WHERE trang_thai != 'Đã hoàn thành'";
-        $result = $this->conn->query($query);
-        $statistics['totalUnprocessed'] = $result->fetch_assoc()['total'];
-
-        // Những phiếu mới hoàn thành gần đây
-        $query = "SELECT * FROM phieu_sua WHERE trang_thai = 'Đã hoàn thành' ORDER BY ngay_hoan_thanh DESC LIMIT 5";
-        $result = $this->conn->query($query);
-        $statistics['recentCompleted'] = $result->fetch_all(MYSQLI_ASSOC);
-
-        // Những vị trí mới gửi phiếu gần đây
-        $query = "SELECT * FROM phieu_sua ORDER BY ngay_yeu_cau DESC LIMIT 5";
-        $result = $this->conn->query($query);
-        $statistics['recentRequests'] = $result->fetch_all(MYSQLI_ASSOC);
-
-        // Vị trí gửi nhiều phiếu nhất
-        $query = "SELECT vi_tri_id, COUNT(*) as total FROM phieu_sua GROUP BY vi_tri_id ORDER BY total DESC LIMIT 1";
-        $result = $this->conn->query($query);
-        $statistics['mostRequests'] = $result->fetch_assoc();
-
-        // Vị trí gửi ít phiếu nhất
-        $query = "SELECT vi_tri_id, COUNT(*) as total FROM phieu_sua GROUP BY vi_tri_id ORDER BY total ASC LIMIT 1";
-        $result = $this->conn->query($query);
-        $statistics['leastRequests'] = $result->fetch_assoc();
+    public function getStatistics($user_id, $role) {
+        $statistics = [
+            'totalProcessed' => $this->getTotalProcessed($user_id, $role),
+            'totalUnprocessed' => $this->getTotalUnprocessed($user_id, $role),
+            'recentCompleted' => $this->getRecentCompleted($user_id, $role),
+            'recentReceives' => $this->getRecentReceives($user_id, $role),
+            'recentRequests' => $this->getRecentRequests(),
+            'mostRequests' => $this->getMostRequests(),
+            'leastRequests' => $this->getLeastRequests()
+        ];
 
         return $statistics;
     }
     
-    public function getTotalProcessed() {
-        $stmt = $this->conn->prepare("SELECT COUNT(*) FROM phieu_sua WHERE trang_thai = 'DaHoanThanh'");
-        $stmt->execute();
+    private function getTotalProcessed($user_id, $role) {
+        $sql = "SELECT COUNT(*) FROM phieu_sua WHERE trang_thai = 'DaHoanThanh'";
+        if ($role == 'KyThuat') {
+            $sql .= " AND user_sua_chua_id = ?";
+        }
+        $stmt = $this->conn->prepare($sql);
+        if ($role == 'KyThuat') {
+            $stmt->execute([$user_id]);
+        } else {
+            $stmt->execute();
+        }
         return $stmt->fetchColumn();
     }
 
-    public function getTotalUnprocessed() {
-        $stmt = $this->conn->prepare("SELECT COUNT(*) FROM phieu_sua WHERE trang_thai = 'DaNhan'");
-        $stmt->execute();
+    private function getTotalUnprocessed($user_id, $role) {
+        $sql = "SELECT COUNT(*) FROM phieu_sua WHERE trang_thai = 'DaNhan'";
+        if ($role == 'KyThuat') {
+            $sql .= " AND user_sua_chua_id = ?";
+        }
+        $stmt = $this->conn->prepare($sql);
+        if ($role == 'KyThuat') {
+            $stmt->execute([$user_id]);
+        } else {
+            $stmt->execute();
+        }
         return $stmt->fetchColumn();
     }
 
-    public function getRecentCompleted($limit = 5) {
-        $stmt = $this->conn->prepare("SELECT phieu_sua_id, ngay_yeu_cau, ngay_sua_chua, ngay_hoan_thanh, mo_ta 
-                                    FROM phieu_sua 
-                                    WHERE trang_thai = 'DaHoanThanh' 
-                                    ORDER BY ngay_hoan_thanh DESC 
-                                    LIMIT :limit");
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-        $stmt->execute();
+    private function getRecentCompleted($user_id, $role) {
+        $sql = "SELECT phieu_sua_id, ngay_yeu_cau, ngay_sua_chua, ngay_hoan_thanh, mo_ta, trang_thai
+                FROM phieu_sua 
+                WHERE trang_thai = 'DaHoanThanh'";
+        if ($role == 'KyThuat') {
+            $sql .= " AND user_sua_chua_id = :id";
+        }
+        $sql .= " ORDER BY ngay_hoan_thanh DESC LIMIT 5";
+       
+        $stmt = $this->conn->prepare($sql);
+        if ($role == 'KyThuat') {
+            $stmt->bindParam(':id', $user_id);
+            $stmt->execute();
+        } else {
+            $stmt->execute();
+        }
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function getRecentReceives($user_id, $role) {
+        $sql = "SELECT phieu_sua_id, ngay_yeu_cau, ngay_sua_chua, ngay_hoan_thanh, trang_thai 
+                FROM phieu_sua 
+                WHERE trang_thai IN ('DaNhan', 'DaHoanThanh')";
+        if ($role == 'KyThuat') {
+            $sql .= " AND user_sua_chua_id = :id";
+        }
+        $sql .= " ORDER BY ngay_sua_chua DESC LIMIT 5";
+        
+        $stmt = $this->conn->prepare($sql);
+        if ($role == 'KyThuat') {
+            $stmt->bindParam(':id', $user_id);
+            $stmt->execute();
+        } else {
+            $stmt->execute();
+        }
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getRecentRequests($limit = 5) {
-        $stmt = $this->conn->prepare("SELECT phieu_sua_id, ngay_yeu_cau, ngay_sua_chua, ngay_hoan_thanh, mo_ta 
-                                    FROM phieu_sua 
+        $stmt = $this->conn->prepare("SELECT ps.phieu_sua_id, ps.ngay_yeu_cau, u.ten AS user_yeu_cau_name, ps.mo_ta 
+                                    FROM phieu_sua ps 
+                                    JOIN users u ON u.user_id = ps.user_yeu_cau_id
                                     WHERE trang_thai = 'DaGui'
-                                    ORDER BY ngay_yeu_cau DESC 
-                                    LIMIT :limit");
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getRecentReceiveds($limit = 5) {
-        $stmt = $this->conn->prepare("SELECT phieu_sua_id, ngay_yeu_cau, ngay_sua_chua, ngay_hoan_thanh, trang_thai
-                                    FROM phieu_sua 
-                                    WHERE trang_thai IN ('DaNhan', 'DaHoanThanh') 
                                     ORDER BY ngay_yeu_cau DESC 
                                     LIMIT :limit");
         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
