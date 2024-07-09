@@ -66,7 +66,7 @@ class PhieuBanGiao
     public function update()
     {
         $query = "UPDATE " . $this->table_name . "
-                  SET user_ban_giao_id = :user_ban_giao_id,
+                  SET
                       user_nhan_id = :user_nhan_id,
                       vi_tri_id = :vi_tri_id,
                       ngay_gui = :ngay_gui,
@@ -75,7 +75,7 @@ class PhieuBanGiao
 
         $stmt = $this->conn->prepare($query);
 
-        $stmt->bindParam(":user_ban_giao_id", $this->user_ban_giao_id);
+        
         $stmt->bindParam(":user_nhan_id", $this->user_nhan_id);
         $stmt->bindParam(":vi_tri_id", $this->vi_tri_id);
         $stmt->bindParam(":ngay_gui", $this->ngay_gui);

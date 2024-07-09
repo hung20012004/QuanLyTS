@@ -44,13 +44,13 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="ngayXacNhan" class="col-sm-2 col-form-label">Ngày phê duyệt:</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="ngayXacNhan" name="ngay_xac_nhan"
-                            value="<?= $phieuNhap['ngay_xac_nhan'] ? date('d/m/Y', strtotime($phieuNhap['ngay_xac_nhan'])) : 'Chưa duyệt' ?>"
-                            readonly>
-                    </div>
-                </div>
+    <label for="ngayXacNhan" class="col-sm-2 col-form-label">Ngày phê duyệt:</label>
+    <div class="col-sm-10">
+        <input type="text" class="form-control" id="ngayXacNhan" name="ngay_xac_nhan"
+            value="<?= $phieuNhap['ngay_xac_nhan'] ? date('d/m/Y', strtotime($phieuNhap['ngay_xac_nhan'])) : 'Chưa duyệt'; ?>"
+            readonly>
+    </div>
+</div>
 
                 <h5 class="mt-4">Chi tiết phiếu nhập</h5>
                 <table id="chiTietTable" class="table table-bordered">

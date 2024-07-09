@@ -108,6 +108,7 @@
 </div>
 
 <script>
+    
 $(document).ready(function() {
     var table = $('#dataTable').DataTable({
         dom: 'rtip',

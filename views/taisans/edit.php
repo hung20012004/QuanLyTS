@@ -49,12 +49,13 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>    
-                    </form>   
+                     
                 </div>
                 <div class="card-footer d-flex justify-content-between">
                     <a href="index.php?model=taisan&action=index" class="btn btn-secondary">Hủy</a>
                     <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
                 </div>
+                </form>  
             </div>
         </div>
     </div>

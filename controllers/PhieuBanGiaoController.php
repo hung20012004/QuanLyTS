@@ -205,11 +205,14 @@ class PhieuBanGiaoController extends Controller
             } elseif ($action == 'reject') {
                 $this->phieuBanGiaoModel->trang_thai = 'KhongDuyet';
             }
+            
             $this->phieuBanGiaoModel->ngay_duyet = date('Y-m-d');
             $this->phieuBanGiaoModel->user_duyet_id = $_SESSION['user_id'];
             $this->phieuBanGiaoModel->user_ban_giao_id = $_POST['nguoiBanGiao'];
             $this->phieuBanGiaoModel->ngay_kiem_tra = $_POST['ngayKiemTra'];
             $this->phieuBanGiaoModel->phieu_ban_giao_id = $id;
+            // var_dump($this->phieuBanGiaoModel);
+            // exit();
             $this->phieuBanGiaoModel->updateStatus();
 
             header("Location: index.php?model=phieubangiao&action=index");

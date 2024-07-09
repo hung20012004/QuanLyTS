@@ -130,8 +130,10 @@ CREATE TABLE phieu_thanh_ly (
     ngay_tao DATE NOT NULL,
     ngay_xac_nhan DATE,
     ngay_thanh_ly DATE,
+    ghi_chu TEXT,
+
     tong_gia_tri DECIMAL(15,0) NOT NULL,
-    trang_thai ENUM('','KhongDuyet','DangChoPheDuyet','DaPheDuyet','DaNhap') NOT NULL,
+    trang_thai ENUM('DaLuu','KhongDuyet','DangChoPheDuyet','DaPheDuyet','DaThanhLy') NOT NULL,
     FOREIGN KEY (user_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
     FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
 );

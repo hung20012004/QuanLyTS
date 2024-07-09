@@ -40,7 +40,6 @@
                 <h5 class="card-title mb-0">Quản Lý Tài Sản</h5>
                 <div>
                     <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a>
-                    <a href="index.php?model=taisan&action=export" class="btn btn-success">Xuất excel</a>
                 </div>
             </div>
         </div>
