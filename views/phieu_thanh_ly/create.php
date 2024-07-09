@@ -1,4 +1,26 @@
 <div class="container-fluid">
+      <?php if (isset($_SESSION['message'])): ?>
+        <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show"
+            role="alert">
+            <?= $_SESSION['message']; ?>
+        </div>
+        <?php
+        unset($_SESSION['message']);
+        unset($_SESSION['message_type']);
+        ?>
+        <!-- <script>
+            setTimeout(function () {
+                var alert = document.getElementById('alert-message');
+                if (alert) {
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                    setTimeout(function () {
+                        alert.style.display = 'none';
+                    }, 150);
+                }
+            }, 7000); // 7000 milliseconds = 7 seconds
+        </script> -->
+    <?php endif; ?>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Tạo phiếu nhập tài sản</h6>
@@ -31,6 +53,7 @@
                         <tr>
                             <th>Tên tài sản</th>
                             <th>Số lượng</th>
+                            <th>Tình trạng</th>
                             <th>Hành động</th>
                         </tr>
                     </thead>
@@ -48,6 +71,16 @@
                             </td>
                             <td>
                                 <input type="number" class="form-control" name="so_luong[]" required min="1">
+                            </td>
+                            <td>
+                                <select class="form-control select-tinh-trang" name="tinh_trang[]" required>
+                                    <option value="Moi">Mới</option>
+                                    <option value="Tot">Tốt</option>
+                                    <option value="Kha">Khá</option>
+                                    <option value="TrungBinh">Trung bình</option>
+                                    <option value="Kem">Kém</option>
+                                    <option value="Hong">Hỏng</option>
+                                </select>
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>
@@ -79,12 +112,14 @@ function addTaiSan() {
     var cell1 = newRow.insertCell(0);
     var cell2 = newRow.insertCell(1);
     var cell3 = newRow.insertCell(2);
+    var cell4 = newRow.insertCell(3);
     // var cell4 = newRow.insertCell(3);
 
     // cell1.innerHTML = document.querySelector('.loai-tai-san').outerHTML;
     cell1.innerHTML = document.querySelector('.select-tai-san').outerHTML;
     cell2.innerHTML = '<input type="number" class="form-control" name="so_luong[]" required min="1">';
-    cell3.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>';
+    cell3.innerHTML = document.querySelector('.select-tinh-trang').outerHTML;
+    cell4.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>';
 
     newRow.querySelector('.loai-tai-san').addEventListener('change', function() {
         updateTaiSanOptions(this);

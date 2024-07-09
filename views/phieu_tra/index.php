@@ -1,9 +1,9 @@
 <div class="container-fluid">
-    <div class="row mt-3">  
+    <div class="row mt-3">
         <div class="col">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=phieuthanhly&action=index">Phiếu Thanh Lý</a></li>
+                    <li class="breadcrumb-item"><a href="index.php?model=phieutra&action=index">Phiếu trả</a></li>
                 </ol>
             </nav>
         </div>
@@ -12,8 +12,7 @@
 
 <div class="container-fluid">
     <?php if (isset($_SESSION['message'])): ?>
-        <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show"
-            role="alert">
+        <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
             <?= $_SESSION['message']; ?>
         </div>
         <?php
@@ -30,32 +29,29 @@
                         alert.style.display = 'none';
                     }, 150);
                 }
-            }, 7000); // 7000 milliseconds = 7 seconds
+            }, 7000);
         </script>
     <?php endif; ?>
 
     <div class="card shadow mb-4">
         <div class="card-header py-2">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Quản lý phiếu thanh lý</h5>
+                <h5 class="card-title mb-0">Quản lý phiếu trả tài sản</h5>
                 <div>
-                    <?php if ($_SESSION['role'] == 'NhanVienQuanLy'): ?>
-                        <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a>
-                        <a href="index.php?model=phieuthanhly&action=create" class="btn btn-primary">Thêm mới</a>
-                       
-                    <?php elseif ($_SESSION['role'] == 'QuanLy'): ?>
-                        <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a>
+                    <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a>
+                    <?php if ($_SESSION['role'] == 'NhanVien'): ?>
+                        <a href="index.php?model=phieutra&action=create" class="btn btn-primary">Thêm mới</a>
                     <?php endif; ?>
+                    <a href="index.php?model=phieutra&action=export" class="btn btn-success">Xuất excel</a>
                 </div>
             </div>
         </div>
         <div class="card-body">
-             <!-- <form id="searchForm" class="mb-3" style="display: none;">
-               <div class="row">
+            <!-- <form id="searchForm" class="mb-3" style="display: none;">
+                <div class="row">
                     <div class="col-md-4 mb-2">
                         <div class="d-flex align-items-center">
-                            <label for="ngayBatDau" class="mr-2 mb-0" style="white-space: nowrap;">Từ
-                                ngày:&nbsp&nbsp&nbsp</label>
+                            <label for="ngayBatDau" class="mr-2 mb-0" style="white-space: nowrap;">Từ ngày:&nbsp;&nbsp;&nbsp;</label>
                             <input type="date" id="ngayBatDau" class="form-control" placeholder="Từ ngày">
                         </div>
                     </div>
@@ -64,9 +60,12 @@
                             <label for="ngayKetThuc" class="mr-2 mb-0" style="white-space: nowrap;">Đến ngày:</label>
                             <input type="date" id="ngayKetThuc" class="form-control" placeholder="Đến ngày">
                         </div>
-                    </div> -->
-                   <div id="searchForm" class="mb-3">
-                        <form action="index.php?model=phieuthanhly&action=search" method="post" class="form-inline">
+                    </div>
+                </div>
+            </form> -->
+
+            <div id="searchForm" class="mb-3">
+                        <form action="index.php?model=phieutra&action=search" method="post" class="form-inline">
                             <div class="form-group mr-3">
                                 <label for="ngay_tao_tk" class="mr-2">Ngày tạo phiếu</label>
                                 <input type="date" class="form-control" id="ngay_tao_tk" name="ngay_tao_tk" placeholder="Ngày tạo phiếu">
@@ -78,69 +77,73 @@
                             <button type="submit" class="btn btn-success" name = "btn_tim_kiem">Tìm kiếm</button>
                         </form>
                     </div>
-                <!-- </div>
-            </form> -->
             <div class="table-responsive">
                 <table id="dataTable" class="table table-bordered" width="100%" cellspacing="0">
                     <thead class="bg-light text-black text-center">
                         <tr>
                             <th>Mã số phiếu</th>
-                            <th>Ngày tạo phiếu</th>
+                            <th>Ngày gửi</th>
+                            <th>Ngày kiểm tra</th>
                             <th>Ngày phê duyệt</th>
+                            <th>Ngày trả</th>
                             <th>Trạng thái</th>
-                            <th>Ngày thanh lý</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($phieuThanhLy as $phieu): ?>
+                        <?php foreach ($phieuTra as $phieu): ?>
                                 <tr>
-                                    <td class="text-center"><?php echo $phieu['phieu_thanh_ly_id']; ?></td>
-                                    <td class="text-center"><?= date('d-m-Y', strtotime($phieu['ngay_tao'])) ?></td>
+                                    <td class="text-center"><?php echo $phieu['phieu_tra_id']; ?></td>
+                                    <td class="text-center"><?= date('d-m-Y', strtotime($phieu['ngay_gui'])) ?></td>
+                                    <td class="text-center"><?= !empty($phieu['ngay_kiem_tra']) ? date('d-m-Y', strtotime($phieu['ngay_kiem_tra'])) : ''; ?></td>
+                                    <td class="text-center"><?= !empty($phieu['ngay_duyet']) ? date('d-m-Y', strtotime($phieu['ngay_duyet'])) : ''; ?></td>
+                                    <td class="text-center"><?= !empty($phieu['ngay_tra']) ? date('d-m-Y', strtotime($phieu['ngay_tra'])) : ''; ?></td>
                                     <td class="text-center">
-                                        <?= $phieu['trang_thai'] != 'DangChoPheDuyet' ? (!empty($phieu['ngay_xac_nhan']) ? date('d-m-Y', strtotime($phieu['ngay_xac_nhan'])) : '') : ''; ?>
-                                    </td>
-                                    <td class="text-center">
-                                     <?php
-                                            if ($phieu['trang_thai'] == 'DangChoPheDuyet') {
+                                        <?php
+                                        switch ($phieu['trang_thai']) {
+                                            case 'DaGui':
+                                                echo 'Đã gửi';
+                                                break;
+                                            case 'DaHuy':
+                                                echo 'Đã hủy';
+                                                break;
+                                            case 'DangChoPheDuyet':
                                                 echo 'Đang chờ phê duyệt';
-                                            } elseif ($phieu['trang_thai'] == 'KhongDuyet') {
-                                                echo 'Không phê duyệt';
-                                            } elseif ($phieu['trang_thai'] == 'DaThanhLy') {
-                                                echo 'Đã thanh lý';
-                                            } else {
+                                                break;
+                                            case 'DaPheDuyet':
                                                 echo 'Đã phê duyệt';
-                                            }
-                                            ?>
-                                    </td>
-                                    <td class="text-center">
-                                       <?= $phieu['trang_thai'] == 'DaThanhLy' ? (!empty($phieu['ngay_thanh_ly']) ? date('d-m-Y', strtotime($phieu['ngay_thanh_ly'])) : '') : '' ?>
+                                                break;
+                                            case 'DaTra':
+                                                echo 'Đã trả';
+                                                break;
+                                            case 'KhongDuyet':
+                                                echo 'Không duyệt';
+                                                break;
+                                            default:
+                                                echo $phieu['trang_thai'];
+                                        }
+                                        ?>
                                     </td>
                                     <td class="d-flex justify-content-center">
-                                        <a href="index.php?model=phieuthanhly&action=show&id=<?php echo $phieu['phieu_thanh_ly_id']; ?>"
-                                            class="btn btn-info btn-sm mx-2">Xem</a>
-                                        <?php if ($phieu['trang_thai'] == 'DangChoPheDuyet'): ?>
-                                            <a href="index.php?model=phieuthanhly&action=edit&id=<?php echo $phieu['phieu_thanh_ly_id']; ?>"
-                                                class="btn btn-warning btn-sm mx-2">Sửa</a>
-                                            <?php if ($_SESSION['role'] == 'NhanVienQuanLy'): ?>
-                                                <a href="index.php?model=phieuthanhly&action=delete&id=<?= $phieu['phieu_thanh_ly_id']; ?>" onclick="return confirmDelete();"
+                                        <a href="index.php?model=phieutra&action=show&id=<?php echo $phieu['phieu_tra_id']; ?>" class="btn btn-info btn-sm mx-2">Xem</a>
+                                        <?php if ($_SESSION['role'] == 'NhanVien' && $phieu['trang_thai'] == 'DaGui'): ?>
+                                            <a href="index.php?model=phieutra&action=edit&id=<?php echo $phieu['phieu_tra_id']; ?>" class="btn btn-warning btn-sm mx-2">Sửa</a>
+                                        <?php endif; ?>
+                                        <?php if ($_SESSION['role'] == 'NhanVien' && $phieu['trang_thai'] == 'DaGui'): ?>
+                                                <a href="index.php?model=phieutra&action=delete&id=<?= $phieu['phieu_tra_id']; ?>" onclick="return confirmDelete();"
                                                     class="btn btn-danger btn-sm mx-2">Xóa</a>
                                             <?php endif; ?>
+                                        <?php if ($_SESSION['role'] == 'QuanLy' && $phieu['trang_thai'] == 'DangChoPheDuyet'): ?>
+                                            <a href="index.php?model=phieutra&action=xet_duyet&id=<?php echo $phieu['phieu_tra_id']; ?>" class="btn btn-primary btn-sm mx-2">Xét duyệt</a>
                                         <?php endif; ?>
-                                         <?php if ($phieu['trang_thai'] == 'DaPheDuyet' ): ?>
-                                            <?php if ($_SESSION['role'] == 'NhanVienQuanLy'): ?>
-                                                <a href="index.php?model=phieuthanhly&action=thanh_ly&id=<?php echo $phieu['phieu_thanh_ly_id']; ?>"
-                                                    class="btn btn-success btn-sm mx-2">Thanh lý</a>
-                                            <?php endif; ?>
+                                             <?php if ($_SESSION['role'] == 'NhanVienQuanLy' && $phieu['trang_thai'] == 'DaGui'): ?>
+                                            <a href="index.php?model=phieutra&action=kiem_tra&id=<?php echo $phieu['phieu_tra_id']; ?>" class="btn btn-primary btn-sm mx-2">Kiểm tra</a>
                                         <?php endif; ?>
-                                         <?php if ($phieu['trang_thai'] == 'DaPheDuyet' || $phieu['trang_thai'] == 'DaThanhLy' ): ?>
-                                              <a href="index.php?model=phieuthanhly&action=xuatphieu&id=<?php echo $phieu['phieu_thanh_ly_id']; ?>" class="btn btn-success">Xuất excel</a>
+                                          <?php if ($_SESSION['role'] == 'NhanVien' && $phieu['trang_thai'] == 'DaPheDuyet'): ?>
+                                            <a href="index.php?model=phieutra&action=tra&id=<?php echo $phieu['phieu_tra_id']; ?>" class="btn btn-warning btn-sm mx-2">Trả tài sản</a>
                                         <?php endif; ?>
-
-                                        <?php if ($_SESSION['role'] == 'QuanLy'): ?>
-                                            <a href="index.php?model=phieuthanhly&action=xet_duyet&id=<?php echo $phieu['phieu_thanh_ly_id']; ?>"
-                                            class="btn btn-sm mx-2 btn-primary">Xét duyệt</a>
-                                            <input type="hidden" name="nguoi_phe_duyet_id" value="<?= $_SESSION['user_id']?>">
+                                        <?php if ($phieu['trang_thai'] == 'DaPheDuyet' || $phieu['trang_thai'] == 'DaTra' ): ?>
+                                              <a href="index.php?model=phieutra&action=xuatphieu&id=<?php echo $phieu['phieu_tra_id']; ?>" class="btn btn-success">Xuất excel</a>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
@@ -172,11 +175,9 @@
 
         //     for (var i = 1; i < rows.length; i++) {
         //         var cells = rows[i].getElementsByTagName('td');
-        //         var ngayNhap = cells[1].textContent.trim();
-        //         var ngayXacNhan = cells[2].textContent.trim();
+        //         var ngayGui = cells[1].textContent.trim();
 
-        //         // Kiểm tra điều kiện lọc
-        //         var passNgay = (!ngayBatDau || ngayNhap >= ngayBatDau) && (!ngayKetThuc || ngayNhap <= ngayKetThuc) && (!ngayKetThuc || ngayXacNhan <= ngayKetThuc);
+        //         var passNgay = (!ngayBatDau || ngayGui >= ngayBatDau) && (!ngayKetThuc || ngayGui <= ngayKetThuc);
 
         //         if (passNgay) {
         //             rows[i].style.display = '';
@@ -189,7 +190,6 @@
         // document.getElementById('ngayBatDau').addEventListener('change', filterTable);
         // document.getElementById('ngayKetThuc').addEventListener('change', filterTable);
 
-        // // Gọi filterTable ngay khi trang được tải để áp dụng bất kỳ giá trị mặc định nào
         // filterTable();
 
         var toggleButton = document.getElementById('toggleSearch');
@@ -205,6 +205,7 @@
             }
         });
     });
+
     function confirmDelete() {
         return confirm('Bạn có chắc muốn xóa phiếu này?');
     }

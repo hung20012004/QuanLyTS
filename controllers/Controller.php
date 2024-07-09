@@ -33,6 +33,7 @@ class Controller {
     public function logout() {}
     public function profile() {}
     public function export(){}
+    public function exportphieu($id){}
     public function statistics(){}
     public function forgot_password_request(){}
     public function reset_password(){}
@@ -44,5 +45,7 @@ class Controller {
     public function xet_duyet($id){}
     public function nhap_tai_san($id){}
     public function kiem_tra($id){}
+    public function thanh_ly($id){}
+    public function tra($id){}
 }
 ?>

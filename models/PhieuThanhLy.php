@@ -9,13 +9,15 @@ class PhieuThanhLy {
     public $ngay_xac_nhan;
     public $user_id;
     public $trang_thai;
+    public $nguoi_duyet_id;
+    public $ngay_thanh_ly;
 
     public function __construct($db) {
         $this->conn = $db;
     }
 
     public function readAll() {
-        $query = "SELECT ptl.*, u.ten AS user_name 
+        $query = "SELECT ptl.*, u.ten AS user_name, u.user_id
                   FROM " . $this->table_name . " ptl
                   LEFT JOIN users u ON ptl.user_id = u.user_id
                   ORDER BY ptl.ngay_tao DESC";
@@ -39,9 +41,10 @@ class PhieuThanhLy {
     }
 
     public function readById($id) {
-        $query = "SELECT ptl.*, u.ten AS user_name 
-                  FROM " . $this->table_name . " ptl
+        $query = "SELECT ptl.*, u.ten AS user_name , usr.ten AS nguoi_duyet_name
+                  FROM " . $this->table_name ." ptl
                   LEFT JOIN users u ON ptl.user_id = u.user_id
+                  LEFT JOIN users usr ON ptl.user_duyet_id = usr.user_id
                   WHERE ptl.phieu_thanh_ly_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $id);
@@ -51,10 +54,12 @@ class PhieuThanhLy {
 
     public function readTai_San() {
         $query = "SELECT *
-                  FROM tai_san";
+                  FROM tai_san ts
+                  INNER JOIN vi_tri_chi_tiet vtct ON vtct.tai_san_id = ts.tai_san_id
+                  WHERE vi_tri_id = ?";
                   
         $stmt = $this->conn->prepare($query);
-        $stmt->execute();
+        $stmt->execute([1]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -62,18 +67,18 @@ class PhieuThanhLy {
 
     public function create() {
        $query = "INSERT INTO " . $this->table_name . " 
-                  SET ngay_tao=:ngay_tao, ngay_xac_nhan=:ngay_xac_nhan, ghi_chu=:ghi_chu, user_id=:user_id, trang_thai=:trang_thai";
+                  SET ngay_tao=:ngay_tao, ghi_chu=:ghi_chu, user_id=:user_id, trang_thai=:trang_thai";
 
         $stmt = $this->conn->prepare($query);
 
         $this->ngay_tao = htmlspecialchars(strip_tags($this->ngay_tao));
-        $this->ngay_xac_nhan = htmlspecialchars(strip_tags($this->ngay_xac_nhan));
+        // $this->ngay_xac_nhan = htmlspecialchars(strip_tags($this->ngay_xac_nhan));
         $this->ghi_chu = htmlspecialchars(strip_tags($this->ghi_chu));
         $this->user_id = htmlspecialchars(strip_tags($this->user_id));
         $this->trang_thai = htmlspecialchars(strip_tags($this->trang_thai));
 
         $stmt->bindParam(':ngay_tao', $this->ngay_tao);
-        $stmt->bindParam(':ngay_xac_nhan', $this->ngay_xac_nhan);
+        // $stmt->bindParam(':ngay_xac_nhan', $this->ngay_xac_nhan);
         $stmt->bindParam(':ghi_chu', $this->ghi_chu);
         $stmt->bindParam(':user_id', $this->user_id);
         $stmt->bindParam(':trang_thai', $this->trang_thai);
@@ -113,20 +118,23 @@ class PhieuThanhLy {
 
     public function updateStatus() {
         $query = "UPDATE " . $this->table_name . " 
-                  SET ngay_xac_nhan=:ngay_xac_nhan, trang_thai=:trang_thai, ghi_chu=:ghi_chu 
+                  SET trang_thai=:trang_thai, ghi_chu=:ghi_chu, user_duyet_id=:nguoi_duyet_id, ngay_thanh_ly =:ngay_thanh_ly 
                   WHERE phieu_thanh_ly_id=:phieu_thanh_ly_id";
 
         $stmt = $this->conn->prepare($query);
 
-        $this->ngay_xac_nhan = htmlspecialchars(strip_tags($this->ngay_xac_nhan));
         $this->ghi_chu = htmlspecialchars(strip_tags($this->ghi_chu));
         $this->trang_thai = htmlspecialchars(strip_tags($this->trang_thai));
         $this->phieu_thanh_ly_id= htmlspecialchars(strip_tags($this->phieu_thanh_ly_id));
+        $this->nguoi_duyet_id= htmlspecialchars(strip_tags($this->nguoi_duyet_id));
+        $this->ngay_thanh_ly = htmlspecialchars($this->ngay_thanh_ly);
 
-        $stmt->bindParam(':ngay_xac_nhan', $this->ngay_xac_nhan);
+
         $stmt->bindParam(':ghi_chu', $this->ghi_chu);
         $stmt->bindParam(':trang_thai', $this->trang_thai);
         $stmt->bindParam(':phieu_thanh_ly_id', $this->phieu_thanh_ly_id);
+        $stmt->bindParam(':nguoi_duyet_id', $this->nguoi_duyet_id);
+        $stmt->bindParam(':ngay_thanh_ly', $this->ngay_thanh_ly);
 
         return $stmt->execute();
     }

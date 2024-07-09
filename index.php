@@ -13,6 +13,8 @@ require 'controllers/AuthController.php';
 require 'controllers/TaiSanController.php';
 require 'controllers/TinhTrangController.php';
 require 'controllers/PhieuThanhLyController.php';
+require 'controllers/PhieuTraController.php';
+
 
 
 $controller = new Controller();
@@ -33,8 +35,8 @@ switch ($model) {
     case 'phieunhap':
         $controller = new PhieuNhapController();
         break;
-    case 'thanhly':
-        $controller = new ThanhLyController();
+    case 'phieuthanhly':
+        $controller = new PhieuThanhLyController();
         break;
     case 'vitri':
         $controller = new ViTriController();
@@ -56,6 +58,9 @@ switch ($model) {
         break;
     case 'phieubangiao':
         $controller = new PhieuBanGiaoController();
+        break;   
+    case 'phieutra':
+        $controller = new PhieuTraController();
         break;       
     default:
         $controller = new Controller();
@@ -124,6 +129,15 @@ switch ($action) {
         break;
     case 'nhap_tai_san':
         $controller->nhap_tai_san($id);
+        break;
+    case 'thanh_ly':
+        $controller->thanh_ly($id);
+        break;
+     case 'xuatphieu':
+        $controller->exportphieu($id);
+        break;
+    case 'tra':
+        $controller->tra($id);
         break;
     default:
         $controller->index();

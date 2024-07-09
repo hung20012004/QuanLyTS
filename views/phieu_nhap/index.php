@@ -76,7 +76,7 @@
                             <th>Ngày phê duyệt</th>
                             <th>Ngày nhập tài sản</th>
                             <th>Trạng thái</th>
-                            <th>Thao tác</th>FF
+                            <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>

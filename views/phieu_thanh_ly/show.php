@@ -32,17 +32,46 @@
                 <div class="form-group row">
                     <label for="ngayNhap" class="col-sm-2 col-form-label">Ngày tạo:</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="ngayThanhLy" name="ngay_nhap"
-                            value="<?= $phieuThanhLy['ngay_tao'] ?>" readonly>
+                        <input type="text" class="form-control" id="ngaytao" name="ngay_tao"
+                            value="<?= date('d-m-Y', strtotime($phieuThanhLy['ngay_tao'])) ?>" readonly>
                     </div>
                 </div>
-                <div class="form-group row">
+
+                <?php 
+                if(!empty($phieuThanhLy['ngay_xac_nhan'])){
+                ?>
+                    <div class="form-group row">
                     <label for="ngayXacNhan" class="col-sm-2 col-form-label">Ngày phê duyệt:</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="ngayXacNhan" name="ngay_xac_nhan"
-                            value="<?= $phieuThanhLy['ngay_xac_nhan'] ?>" readonly>
+                        <input type="text" class="form-control" id="ngayXacNhan" name="ngay_xac_nhan"
+                            value="<?= date('d-m-Y', strtotime($phieuThanhLy['ngay_xac_nhan'])) ?>" readonly>
                     </div>
                 </div>
+                <?php } ?>
+                
+                <?php 
+                if(!empty($phieuThanhLy['user_duyet_id'])){
+                ?>
+                    <div class="form-group row">
+                    <label for="nguoiduyet" class="col-sm-2 col-form-label">Người phê duyệt:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="nguoiduyet" name="ten"
+                            value="<?= $phieuThanhLy['nguoi_duyet_name'] ?>" readonly>
+                    </div>
+                </div>
+                <?php } ?>
+
+                 <?php 
+                if(!empty($phieuThanhLy['ngay_thanh_ly'])){
+                ?>
+                    <div class="form-group row">
+                    <label for="ngay_thanh_ly" class="col-sm-2 col-form-label">Ngày thanh lý:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="ngay_thanh_ly" name="ngay_thanh_ly"
+                            value="<?= date('d-m-Y', strtotime($phieuThanhLy['ngay_thanh_ly'])) ?>" readonly>
+                    </div>
+                </div>
+                <?php } ?>
 
                 <h5 class="mt-4">Chi tiết phiếu thanh lý</h5>
                 <table id="chiTietTable" class="table table-bordered">

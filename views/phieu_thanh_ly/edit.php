@@ -71,8 +71,9 @@
                 <table id="chiTietTable" class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Tên tài sản</th>
+                           <th>Tên tài sản</th>
                             <th>Số lượng</th>
+                            <th>Tình trạng</th>
                             <th>Hành động</th>
                         </tr>
                     </thead>
@@ -96,10 +97,21 @@
                                     <input type="number" class="form-control" name="so_luong[]"
                                         value="<?= $chiTiet['so_luong'] ?>" required min="1">
                                 </td>
+                                 <td>
+                                <select class="form-control select-tinh-trang" name="tinh_trang[]" required>
+                                    <option value="Moi" <?= ($chiTiet['tinh_trang'] == 'Moi') ? 'selected' : ''; ?>>Mới</option>
+                                    <option value="Tot" <?= ($chiTiet['tinh_trang'] == 'Tot') ? 'selected' : ''; ?>>Tốt</option>
+                                    <option value="Kha" <?= ($chiTiet['tinh_trang'] == 'Kha') ? 'selected' : ''; ?>>Khá</option>
+                                    <option value="TrungBinh" <?= ($chiTiet['tinh_trang'] == 'TrungBinh') ? 'selected' : ''; ?>>Trung bình</option>
+                                    <option value="Kem" <?= ($chiTiet['tinh_trang'] == 'Kem') ? 'selected' : ''; ?>>Kém</option>
+                                    <option value="Hong" <?= ($chiTiet['tinh_trang'] == 'Hong') ? 'selected' : ''; ?>>Hỏng</option>
+                                </select>
+                               </td>
                                 <td>
                                     <button type="button" class="btn btn-danger btn-sm"
                                         onclick="removeTaiSan(this)">Xóa</button>
                                 </td>
+
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -132,28 +144,31 @@
         var cell3 = newRow.insertCell(2);
         var cell4 = newRow.insertCell(3);
 
-        cell1.innerHTML = `
-        <?php $loai_tai_san_list = $this->loaiTaiSanModel->readAll(); ?>
-        <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required>
-            <option value="">Chọn loại tài sản</option>
-            <?php foreach ($loai_tai_san_list as $loai): ?>
-                        <option value="<?= $loai['loai_tai_san_id']; ?>">
-                            <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
-                        </option>
-            <?php endforeach; ?>
-        </select>
-    `;
-        cell2.innerHTML = `
+         //  <option value="Hong" <?= ($chiTiet['tinh_trang'] == 'Hong') ? 'selected' : ''; ?>>Hỏng</option>
+
+       cell1.innerHTML = `
         <select class="form-control select-tai-san" name="tai_san_id[]" required>
-                                    <option value="">Chọn tài sản</option>
-                                    <?php foreach ($tai_san_list as $tai_san): ?>
-                                                <option value="<?= $tai_san['tai_san_id']; ?>" data-loai="<?= $tai_san['loai_tai_san_id']; ?>" style="display: none;">
-                                                    <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
-                                                </option>
-                                    <?php endforeach; ?>
-                                </select>
+            <option value=""  >Chọn tài sản</option>
+                <?php foreach ($tai_san_list as $tai_san): ?>
+                    <option value="<?= $tai_san['tai_san_id']; ?>">
+                         <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
+                     </option>
+                <?php endforeach; ?>
+                </select>
     `;
-        cell3.innerHTML = '<input type="number" class="form-control" name="so_luong[]" required min="1">';
+
+        cell2.innerHTML = '<input type="number" class="form-control" name="so_luong[]" required min="1">';
+        cell3.innerHTML = `<select class="form-control select-tinh-trang" name="tinh_trang[]" required>
+                                    <option value="Moi" >Mới</option>
+                                    <option value="Tot">Tốt</option>
+                                    <option value="Kha">Khá</option>
+                                    <option value="TrungBinh" >Trung bình</option>
+                                    <option value="Kem" >Kém</option>
+                                    <option value="Hong">Hỏng</option>
+                                </select>
+
+                               
+        `;
         cell4.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>';
 
         newRow.querySelector('.loai-tai-san').addEventListener('change', function () {

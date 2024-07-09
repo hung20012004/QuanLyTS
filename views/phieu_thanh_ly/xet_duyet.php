@@ -12,6 +12,28 @@
 </div>
 
 <div class="container-fluid">
+    <?php if (isset($_SESSION['message'])): ?>
+        <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show"
+            role="alert">
+            <?= $_SESSION['message']; ?>
+        </div>
+        <?php
+        unset($_SESSION['message']);
+        unset($_SESSION['message_type']);
+        ?>
+        <!-- <script>
+            setTimeout(function () {
+                var alert = document.getElementById('alert-message');
+                if (alert) {
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                    setTimeout(function () {
+                        alert.style.display = 'none';
+                    }, 150);
+                }
+            }, 7000); // 7000 milliseconds = 7 seconds
+        </script> -->
+    <?php endif; ?>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Xét duyệt phiếu thanh lý tài sản</h6>
@@ -20,8 +42,6 @@
             <form method="POST"
                 action="index.php?model=phieuthanhly&action=xet_duyet&id=<?= $phieuNhap['phieu_thanh_ly_id'] ?>"
                 id="phieuNhapForm">
-                <input type="hidden" name="phieu_nhap_id" value="<?= $phieuNhap['phieu_thanh_ly_id'] ?>">
-
                 <div class="form-group row">
                     <label for="nguoiNhap" class="col-sm-2 col-form-label">Người tạo phiếu:</label>
                     <div class="col-sm-10">
@@ -57,12 +77,14 @@
                             <tr>
                                 <td>
                                     <input type="text" class="form-control" name="tai_san_ten[]" value="<?= htmlspecialchars($chiTiet['ten_tai_san']) ?>" readonly>
+                                     <input type="hidden" name="tai_san_id[]" value="<?= $chiTiet['tai_san_id'] ?>">
+                                     <input type="hidden" name="chi_tiet_id[]" value="<?= $chiTiet['chi_tiet_id'] ?>">
                                 </td>
                                 <td>
                                     <input type="number" class="form-control" name="so_luong[]"
-                                        value="<?= $chiTiet['so_luong'] ?>" readonly min="1">
+                                        value="<?= $chiTiet['so_luong'] ?>" min="1">
                                 </td>
-
+                                <input type="hidden" name="nguoi_phe_duyet_id" value="<?= $_SESSION['user_id']?>">
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -70,7 +92,7 @@
                 
                 <div class="form-group mt-3">
                     <label for="ghiChu">Ghi chú:</label>
-                    <textarea class="form-control" id="ghiChu" name="ghi_chu"
+                    <textarea class="form-control" id="ghiChu" name="ghi_chu_duyet"
                         rows="3"><?= htmlspecialchars($phieuNhap['ghi_chu']) ?></textarea>
                 </div>
 
@@ -82,6 +104,7 @@
                                 <button type="submit" name="action" value="approve" class="btn btn-success mr-2"
                                     onclick="return confirm('Bạn có chắc muốn phê duyệt phiếu thanh lý này?')">Phê
                                     duyệt</button>
+
                                 <button type="submit" name="action" value="reject" class="btn btn-danger"
                                     onclick="return confirm('Bạn có chắc muốn không phê duyệt phiếu thanh lý này?')">Không
                                     phê duyệt</button>
