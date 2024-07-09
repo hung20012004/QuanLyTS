@@ -58,6 +58,7 @@ class Controller {
     public function kiem_tra($id){}
     public function thanh_ly($id){}
     public function tra($id){}
+    public function ban_giao($id){}
     public function exportWord($id){}
 }
 ?>

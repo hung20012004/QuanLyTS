@@ -75,6 +75,7 @@
                     </thead>
                     <tbody>
                         <?php foreach ($phieuBanGiao as $phieu): ?>
+                           
                             <?php if (($phieu['user_nhan_id'] == $_SESSION['user_id'] && $_SESSION['role']=='NhanVien')
                               || ($phieu['user_ban_giao_id'] == $_SESSION['user_id'] && $_SESSION['role']=='NhanVienQuanLy')
                               || ($phieu['user_ban_giao_id'] == '' && $_SESSION['role']=='NhanVienQuanLy')

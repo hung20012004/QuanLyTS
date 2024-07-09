@@ -264,6 +264,47 @@ class ViTriChiTiet
         }
         return 0;
     }
+    public function updateSoLuong($vi_tri_id, $tai_san_id, $so_luong)
+    {
 
+        // Trừ số lượng từ kho (vi_tri_id = 1)
+        $query = "UPDATE " . $this->table_name . " 
+                  SET so_luong = so_luong - :so_luong 
+                  WHERE vi_tri_id = 1 AND tai_san_id = :tai_san_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':so_luong', $so_luong, PDO::PARAM_INT);
+        $stmt->bindParam(':tai_san_id', $tai_san_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Kiểm tra xem đã có bản ghi cho vị trí đích chưa
+        $query = "SELECT so_luong FROM " . $this->table_name . " 
+                  WHERE vi_tri_id = :vi_tri_id AND tai_san_id = :tai_san_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':vi_tri_id', $vi_tri_id, PDO::PARAM_INT);
+        $stmt->bindParam(':tai_san_id', $tai_san_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            // Nếu đã có, cập nhật số lượng
+            $query = "UPDATE " . $this->table_name . " 
+                      SET so_luong = so_luong + :so_luong 
+                      WHERE vi_tri_id = :vi_tri_id AND tai_san_id = :tai_san_id";
+        } else {
+            // Nếu chưa có, tạo mới bản ghi
+            $query = "INSERT INTO " . $this->table_name . " 
+                      (vi_tri_id, tai_san_id, so_luong) 
+                      VALUES (:vi_tri_id, :tai_san_id, :so_luong)";
+        }
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':vi_tri_id', $vi_tri_id, PDO::PARAM_INT);
+        $stmt->bindParam(':tai_san_id', $tai_san_id, PDO::PARAM_INT);
+        $stmt->bindParam(':so_luong', $so_luong, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return true;
+
+    }
 }
 ?>
