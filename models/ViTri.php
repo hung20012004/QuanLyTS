@@ -30,21 +30,23 @@ class ViTri {
 
     // Tạo vị trí mới
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " SET ten_vi_tri=:ten_vi_tri";
-
+        $query = "INSERT INTO " . $this->table_name . " SET ten_vi_tri=:ten_vi_tri, khoa=:khoa";
+    
         $stmt = $this->conn->prepare($query);
-
+    
         // sanitize
         $this->ten_vi_tri = htmlspecialchars(strip_tags($this->ten_vi_tri));
-
+        $this->khoa = htmlspecialchars(strip_tags($this->khoa));
+    
         // bind value
         $stmt->bindParam(':ten_vi_tri', $this->ten_vi_tri);
-
+        $stmt->bindParam(':khoa', $this->khoa);
+    
         if ($stmt->execute()) {
             return true;
         }
         return false;
-    }
+    }    
 
     // Đọc thông tin vị trí theo ID
     public function readById($id) {
@@ -57,17 +59,19 @@ class ViTri {
 
     // Cập nhật thông tin vị trí
     public function update() {
-        $query = "UPDATE " . $this->table_name . " SET ten_vi_tri = :ten_vi_tri WHERE vi_tri_id = :vi_tri_id";
+        $query = "UPDATE " . $this->table_name . " SET ten_vi_tri = :ten_vi_tri, khoa=:khoa WHERE vi_tri_id = :vi_tri_id";
 
         $stmt = $this->conn->prepare($query);
 
         // sanitize
         $this->ten_vi_tri = htmlspecialchars(strip_tags($this->ten_vi_tri));
         $this->vi_tri_id = htmlspecialchars(strip_tags($this->vi_tri_id));
+        $this->khoa = htmlspecialchars(strip_tags($this->khoa));
 
         // bind values
         $stmt->bindParam(':ten_vi_tri', $this->ten_vi_tri);
         $stmt->bindParam(':vi_tri_id', $this->vi_tri_id);
+        $stmt->bindParam(':khoa', $this->khoa);
 
         if ($stmt->execute()) {
             return true;
@@ -87,10 +91,11 @@ class ViTri {
     }
 
     //Kiểm tra đã tồn tại chưa
-    public function checkExist($ten_vi_tri) {
-        $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE ten_vi_tri = :ten_vi_tri";
+    public function checkExist($ten_vi_tri, $khoa) {
+        $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE ten_vi_tri = :ten_vi_tri AND khoa = :khoa";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':ten_vi_tri', $ten_vi_tri);
+        $stmt->bindParam(':khoa', $khoa);
         $stmt->execute();
         if ($stmt->fetchColumn() > 0) {
             return true;

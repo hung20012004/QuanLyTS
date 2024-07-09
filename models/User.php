@@ -59,6 +59,13 @@ class User {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function readKyThuat() {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE role = 'KyThuat' ";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // Cập nhật thông tin người dùng
     public function update() {
         $query = "UPDATE " . $this->table_name . " SET email = :email, ten = :ten, password = :password, khoa=:khoa,role = :role,avatar=:avatar WHERE user_id = :user_id";
