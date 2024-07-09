@@ -42,7 +42,7 @@
                     <?php if ($_SESSION['role'] == 'NhanVien'): ?>
                         <a href="index.php?model=phieutra&action=create" class="btn btn-primary">Thêm mới</a>
                     <?php endif; ?>
-                    <a href="index.php?model=phieutra&action=export" class="btn btn-success">Xuất excel</a>
+                    <!-- <a href="index.php?model=phieutra&action=export" class="btn btn-success">Xuất excel</a> -->
                 </div>
             </div>
         </div>

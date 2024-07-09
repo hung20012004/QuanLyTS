@@ -39,22 +39,26 @@
                 <div>
                     <button id="toggleSearch" class="btn btn-secondary">Tìm kiếm</button>
                     <a href="index.php?model=loaitaisan&action=create" class="btn btn-primary">Thêm Mới</a>
+
                 </div>
             </div>
         </div>
         <div class="card-body">
-            <form id="searchForm" class="mb-3" style="display: none;">
-                <div class="row">
+            <div id="searchForm" class="mb-3" style="display: none;">
+                    <form action="index.php?model=loaitaisan&action=index" method="post" class="form-inline">
                     <div class="col-md-4 mb-2">
                         <div class="d-flex align-items-center">
                             <label for="loaiTaiSanSearch" class="mr-2 mb-0" style="white-space: nowrap;">Loại tài sản:</label>
-                            <input type="text" id="loaiTaiSanSearch" class="form-control" placeholder="Nhập loại tài sản">
+                            <input type="text" id="loaiTaiSanSearch" class="form-control" name = "loai_ts_tk" placeholder="Nhập loại tài sản">
                         </div>
-                    </div>
-                </div>
-            </form>
+                     </div>
+                      <div class="col-md-3 mb-2">
+                         <button type="submit" class="btn btn-success" name = "btn_tim_kiem">Tìm kiếm</button>
+                     </div>
+                     </form>
+            </div>
             <div class="table-responsive">
-                <table id="dataTable" class="table table-bordered" width="100%" cellspacing="0">
+                <table id="dataTable" class="table table-bordered " width="100%" cellspacing="0">
                     <thead class="bg-light text-black text-center">
                         <tr>
                             <th>ID</th>
@@ -63,14 +67,19 @@
                         </tr>
                     </thead>
                     <tbody id="loaiTaiSanTable">
-                        <?php foreach ($loaiTaiSans as $loaiTaiSan): ?>
+                         <?php $i = 0; foreach ($loaiTaiSans as $loaiTaiSan): ?>
                             <?php if ($loaiTaiSan['loai_tai_san_id'] != 0): ?>
                                 <tr>
+                                <!-- <?php if ($i % 2 == 0): ?>
+                                    <tr style="background-color: white;">
+                                <?php else: ?>
+                                    <tr style="background-color: lightgrey;">
+                                <?php endif; ?> -->
                                     <td class="text-center"><?= $loaiTaiSan['loai_tai_san_id'] ?></td>
                                     <td><?= htmlspecialchars($loaiTaiSan['ten_loai_tai_san']) ?></td>
                                     <td class="d-flex justify-content-center">
                                         <a href="index.php?model=loaitaisan&action=edit&id=<?= $loaiTaiSan['loai_tai_san_id'] ?>"
-                                            class="btn btn-warning btn-sm mx-2">Sửa</a>
+                                            class="btn btn-warning btn-sm sm-1">Sửa</a>
                                         <form action="index.php?model=loaitaisan&action=delete&id=<?= $loaiTaiSan['loai_tai_san_id'] ?>"
                                             method="POST" style="display: inline-block;"
                                             onsubmit="return confirmDelete();">
@@ -78,6 +87,7 @@
                                         </form>
                                     </td>
                                 </tr>
+                                <?php ++$i; ?>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </tbody>
@@ -88,17 +98,17 @@
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    var table = $('#dataTable').DataTable({
-        dom: 'rtip',
-        language: {
-            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
-        }
-    });
+    // var table = $('#dataTable').DataTable({
+    //     dom: 'rtip',
+    //     language: {
+    //         "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
+    //     }
+    // });
 
     // Thêm sự kiện tìm kiếm cho input
-    $('#loaiTaiSanSearch').on('keyup', function () {
-        table.column(1).search(this.value).draw();
-    });
+    // $('#loaiTaiSanSearch').on('keyup', function () {
+    //     table.column(1).search(this.value).draw();
+    // });
 
     var toggleButton = document.getElementById('toggleSearch');
     var searchForm = document.getElementById('searchForm');

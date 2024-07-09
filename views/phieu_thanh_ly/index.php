@@ -137,7 +137,7 @@
                                               <a href="index.php?model=phieuthanhly&action=xuatphieu&id=<?php echo $phieu['phieu_thanh_ly_id']; ?>" class="btn btn-success">Xuất excel</a>
                                         <?php endif; ?>
 
-                                        <?php if ($_SESSION['role'] == 'QuanLy'): ?>
+                                        <?php if ($_SESSION['role'] == 'QuanLy' && $phieu['trang_thai']== 'DangChoPheDuyet'): ?>
                                             <a href="index.php?model=phieuthanhly&action=xet_duyet&id=<?php echo $phieu['phieu_thanh_ly_id']; ?>"
                                             class="btn btn-sm mx-2 btn-primary">Xét duyệt</a>
                                             <input type="hidden" name="nguoi_phe_duyet_id" value="<?= $_SESSION['user_id']?>">

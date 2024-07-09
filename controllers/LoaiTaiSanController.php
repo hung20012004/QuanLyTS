@@ -15,8 +15,16 @@ class LoaiTaiSanController extends Controller {
     }
 
     public function index() {
+        if(isset($_POST['btn_tim_kiem']))
+        {
+            $loai_ts_tk = $_POST['loai_ts_tk'];
+            $stmt = $this->loaiTaiSan->search($loai_ts_tk);
+            $loaiTaiSans = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        else{
         $stmt = $this->loaiTaiSan->read();
         $loaiTaiSans = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
         $content = 'views/loaitaisans/index.php';
         include('views/layouts/base.php');
     }
