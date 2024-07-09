@@ -23,6 +23,18 @@ class PhieuSua {
                   LEFT JOIN users u1 ON ps.user_yeu_cau_id = u1.user_id
                   LEFT JOIN users u2 ON ps.user_sua_chua_id = u2.user_id
                   LEFT JOIN vi_tri vt ON ps.vi_tri_id = vt.vi_tri_id
+                  ORDER BY ps.phieu_sua_id ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function readExport() {
+        $query = "SELECT ps.phieu_sua_id, u1.ten AS user_yeu_cau_name, u2.ten AS user_sua_chua_name, ps.ngay_yeu_cau, ps.ngay_sua_chua, ps.ngay_hoan_thanh, vt.ten_vi_tri, ps.trang_thai 
+                  FROM " . $this->table_name . " ps
+                  LEFT JOIN users u1 ON ps.user_yeu_cau_id = u1.user_id
+                  LEFT JOIN users u2 ON ps.user_sua_chua_id = u2.user_id
+                  LEFT JOIN vi_tri vt ON ps.vi_tri_id = vt.vi_tri_id
                   ORDER BY ps.ngay_yeu_cau DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();

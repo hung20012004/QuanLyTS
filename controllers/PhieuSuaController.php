@@ -380,64 +380,77 @@ class PhieuSuaController extends Controller
     }
 
     public function export()
-{
-    // Fetch the data
-    $phieuSuas = $this->phieuSuaModel->readAll();
+    {
+        // Fetch the data
+        $phieuSuas = $this->phieuSuaModel->readExport();
 
-    // Create new Spreadsheet object
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
+        // Translate status values
+        $statusTranslation = [
+            'DaGui' => 'Đã gửi',
+            'DaNhan' => 'Đã nhận',
+            'DaHoanThanh' => 'Đã hoàn thành',
+            'YeuCauHuy' => 'Yêu cầu hủy',
+            'Huy' => 'Hủy'
+        ];
 
-    // Set column headers
-    $headers = [
-        'phieu_sua_id' => 'Phiếu sửa ID',
-        'user_yeu_cau_name' => 'Người yêu cầu',
-        'ngay_yeu_cau' => 'Ngày yêu cầu',
-        'user_sua_chua_name' => 'Người sửa chữa',
-        'ngay_sua_chua' => 'Ngày sửa chữa',
-        'ngay_hoan_thanh' => 'Ngày hoàn thành',
-        'ten_vi_tri' => 'Vị trí',
-        'trang_thai' => 'Trạng thái'
-    ];
+        // Create new Spreadsheet object
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        // Set column headers
+        $headers = [
+            'phieu_sua_id' => 'Phiếu sửa ID',
+            'user_yeu_cau_name' => 'Người yêu cầu',
+            'ngay_yeu_cau' => 'Ngày yêu cầu',
+            'user_sua_chua_name' => 'Người sửa chữa',
+            'ngay_sua_chua' => 'Ngày sửa chữa',
+            'ngay_hoan_thanh' => 'Ngày hoàn thành',
+            'ten_vi_tri' => 'Vị trí',
+            'trang_thai' => 'Trạng thái'
+        ];
 
-    // Apply header styling
-    $headerStyle = [
-        'font' => [
-            'bold' => true,
-        ],
-        'fill' => [
-            'fillType' => Fill::FILL_SOLID,
-            'startColor' => [
-                'rgb' => 'FFFF00',
+        // Apply header styling
+        $headerStyle = [
+            'font' => ['bold' => true],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => 'FFFF00'],
             ],
-        ],
-        'borders' => [
-            'allBorders' => [
-                'borderStyle' => Border::BORDER_THIN,
+            'borders' => [
+                'allBorders' => ['borderStyle' => Border::BORDER_THIN],
             ],
-        ],
-    ];
+        ];
 
-    // Set headers and apply style
-    foreach (range('A', 'H') as $col) {
-        $sheet->getColumnDimension($col)->setAutoSize(true);
-        $sheet->getStyle($col . '1')->applyFromArray($headerStyle);
+        // Set headers and apply style
+        foreach (range('A', 'H') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+            $sheet->getStyle($col . '1')->applyFromArray($headerStyle);
+        }
+        $sheet->fromArray(array_values($headers), NULL, 'A1');
+
+        // Add data rows
+        $data = [];
+        foreach ($phieuSuas as $row) {
+            $row['trang_thai'] = $statusTranslation[$row['trang_thai']];
+            $data[] = $row;
+        }
+        $sheet->fromArray($data, NULL, 'A2');
+
+        // Create the Excel file
+        $writer = new Xlsx($spreadsheet);
+
+        // Set headers for download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="phieu_sua.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        // Clear any previous output
+        if (ob_get_length()) {
+            ob_end_clean();
+        }
+
+        // Save to output
+        $writer->save('php://output');
+        exit;
     }
-    $sheet->fromArray($headers, NULL, 'A1');
-
-    // Add data rows
-    $sheet->fromArray($phieuSuas, NULL, 'A2');
-
-    // Create the Excel file
-    $writer = new Xlsx($spreadsheet);
-
-    // Set headers for download
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment;filename="phieu_sua.xlsx"');
-    header('Cache-Control: max-age=0');
-
-    // Save to output
-    $writer->save('php://output');
-    exit;
-}
 }

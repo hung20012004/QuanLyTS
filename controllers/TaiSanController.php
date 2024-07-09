@@ -115,7 +115,6 @@ class TaiSanController extends Controller {
         $totalAssets = $this->taiSan->getTotalAssets();
         $totalAssetTypes = $this->loaiTaiSan->getTotalAssetTypes();
         $assetTypes = $this->taiSan->getAssetTypeStatistics();
-        $recentAssets = $this->taiSan->getRecentAssets();
     
         // Prepare data for chart.js
         $chartData = [
@@ -128,7 +127,6 @@ class TaiSanController extends Controller {
             'totalAssets' => $totalAssets,
             'totalAssetTypes' => $totalAssetTypes,
             'assetTypes' => $assetTypes,
-            'recentAssets' => $recentAssets,
             'chartData' => json_encode($chartData),
         ];
         // Load the view
