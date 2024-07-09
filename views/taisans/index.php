@@ -8,7 +8,7 @@
             </nav>
         </div>
     </div>
-<divv>
+</div>
 
 <div class="container-fluid">
     <?php if (isset($_SESSION['message'])): ?>

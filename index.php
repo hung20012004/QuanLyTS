@@ -54,9 +54,6 @@ switch ($model) {
     case 'loaitaisan':
         $controller = new LoaiTaiSanController();
         break;
-    case 'khauhao':
-        $controller = new KhauHaoController();
-        break;
     case 'phieubangiao':
         $controller = new PhieuBanGiaoController();
         break;       

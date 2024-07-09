@@ -324,8 +324,9 @@ class PhieuSuaController extends Controller
             'users' => $users
         ];
 
-        // Load view
         $content = 'views/phieu_sua/calendar.php';
+
+        // Render layout với nội dung calendar
         include 'views/layouts/base.php';
     }
 
@@ -350,9 +351,7 @@ class PhieuSuaController extends Controller
             ];
         }, $forms);
 
-        header('Location: index.php?controller=phieusua&action=calendar');
         echo json_encode($events);
-        exit;
     }
 
     private function getEventColor($trangThai) {
@@ -366,16 +365,10 @@ class PhieuSuaController extends Controller
     }
 
     public function statistics() {
-        // Fetch statistics
-        $statistics = [
-            'totalProcessed' => $this->phieuSuaModel->getTotalProcessed(),
-            'totalUnprocessed' => $this->phieuSuaModel->getTotalUnprocessed(),
-            'recentCompleted' => $this->phieuSuaModel->getRecentCompleted(),
-            'recentRequests' => $this->phieuSuaModel->getRecentRequests(),
-            'recentReceives' => $this->phieuSuaModel->getRecentReceiveds(),
-            'mostRequests' => $this->phieuSuaModel->getMostRequests(),
-            'leastRequests' => $this->phieuSuaModel->getLeastRequests()
-        ];
+        $user_id = $_SESSION['user_id']; // Giả sử bạn lưu user_id trong session
+        $role = $_SESSION['role'];
+    
+        $statistics = $this->phieuSuaModel->getStatistics($user_id, $role);
 
         // Render the view with the statistics
         $content = 'views/phieu_sua/statistics.php';

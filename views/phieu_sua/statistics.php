@@ -45,7 +45,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Những phiếu mới hoàn thành gần đây -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
@@ -79,11 +79,43 @@
             </div>
         </div>
 
+        <!-- Những phiếu mới nhận gần đây -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Những phiếu mới nhận gần đây</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>ID Phiếu</th>
+                                <th>Ngày yêu cầu</th>
+                                <th>Ngày sửa chữa</th>
+                                <th>Ngày hoàn thành</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($statistics['recentReceives'] as $form): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($form['phieu_sua_id']) ?></td>
+                                <td><?= htmlspecialchars($form['ngay_yeu_cau']) ?></td>
+                                <td><?= htmlspecialchars($form['ngay_sua_chua']) ?></td>
+                                <td><?= htmlspecialchars($form['ngay_hoan_thanh']) ?></td>
+                                <td><?= htmlspecialchars($form['trang_thai']) ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
         <?php if ($_SESSION['role'] != 'KyThuat'): ?>
         <!-- Những vị trí mới gửi phiếu gần đây -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Những vị trí mới gửi phiếu gần đây</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Những phiếu mới nhận gần đây</h6>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -104,40 +136,6 @@
                                 <td><?= htmlspecialchars($form['ngay_yeu_cau']) ?></td>
                                 <td><?= htmlspecialchars($form['ngay_sua_chua']) ?></td>
                                 <td><?= htmlspecialchars($form['ngay_hoan_thanh']) ?></td>
-                                <td><?= htmlspecialchars($form['mo_ta']) ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
-
-        <!-- Những vị trí mới gửi phiếu gần đây -->
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Những phiếu mới nhận gần đây</h6>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>ID Phiếu</th>
-                                <th>Ngày yêu cầu</th>
-                                <th>Ngày sửa chữa</th>
-                                <th>Ngày hoàn thành</th>
-                                <th>Mô tả</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($statistics['recentReceives'] as $form): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($form['phieu_sua_id']) ?></td>
-                                <td><?= htmlspecialchars($form['ngay_yeu_cau']) ?></td>
-                                <td><?= htmlspecialchars($form['ngay_sua_chua']) ?></td>
-                                <td><?= htmlspecialchars($form['ngay_hoan_thanh']) ?></td>
                                 <td><?= htmlspecialchars($form['trang_thai']) ?></td>
                             </tr>
                             <?php endforeach; ?>
@@ -146,7 +144,6 @@
                 </div>
             </div>
         </div>
-
         <div class="row">
             <!-- Vị trí gửi nhiều phiếu nhất -->
             <div class="col-xl-3 col-md-6 mb-4">
@@ -182,4 +179,5 @@
                 </div>
             </div>
         </div>
+        <?php endif; ?>
     </div>

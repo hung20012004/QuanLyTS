@@ -44,7 +44,7 @@
             },
             events: function(fetchInfo, successCallback, failureCallback) {
                 $.ajax({
-                    url: 'index.php?controller=phieusua&action=calendar',
+                    url: 'route.php?controller=phieusua&action=getRepairForms',
                     dataType: 'json',
                     data: {
                         user_sua_chua_id: $('#user-select').val()
