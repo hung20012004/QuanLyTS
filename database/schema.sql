@@ -106,7 +106,7 @@ CREATE TABLE phieu_tra (
 
     ngay_tra DATE,
     ghi_chu TEXT,
-    trang_thai ENUM('DaGui','DaKiemTra','DangChoPheDuyet','DaPheDuyet','DaTra','KhongDuyet') NOT NULL,
+    trang_thai ENUM('DaGui','DaHuy','DangChoPheDuyet','DaPheDuyet','DaTra','KhongDuyet') NOT NULL,
     FOREIGN KEY (user_tra_id) REFERENCES `users`(user_id) ON DELETE CASCADE,
     FOREIGN KEY (user_nhan_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
     FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
