@@ -1,15 +1,16 @@
 <?php
 // models/ChiTietphieuNhap.php
 
-class ChiTietPhieuNhap
+class ChiTietPhieuThanhLy
 {
     private $conn;
-    private $table_name = "chi_tiet_phieu_nhap_tai_san";
+    private $table_name = "chi_tiet_phieu_thanh_ly";
 
     public $chi_tiet_id;
-    public $phieu_nhap_tai_san_id;
+    public $phieu_thanh_ly_id;
     public $tai_san_id;
     public $so_luong;
+    public $tinh_trang;
 
     public function __construct($db)
     {
@@ -19,17 +20,19 @@ class ChiTietPhieuNhap
     public function create()
     {
         $query = "INSERT INTO " . $this->table_name . " 
-                  SET phieu_nhap_tai_san_id=:phieu_nhap_tai_san_id, tai_san_id=:tai_san_id, so_luong=:so_luong";
+                  SET phieu_thanh_ly_id=:phieu_thanh_ly_id, tai_san_id=:tai_san_id, so_luong=:so_luong , tinh_trang =:tinh_trang";
 
         $stmt = $this->conn->prepare($query);
 
-        $this->phieu_nhap_tai_san_id = htmlspecialchars(strip_tags($this->phieu_nhap_tai_san_id));
+        $this->phieu_thanh_ly_id = htmlspecialchars(strip_tags($this->phieu_thanh_ly_id));
         $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
         $this->so_luong = htmlspecialchars(strip_tags($this->so_luong));
+        $this->tinh_trang = htmlspecialchars(strip_tags($this->tinh_trang));
 
-        $stmt->bindParam(':phieu_nhap_tai_san_id', $this->phieu_nhap_tai_san_id);
+        $stmt->bindParam(':phieu_thanh_ly_id', $this->phieu_thanh_ly_id);
         $stmt->bindParam(':tai_san_id', $this->tai_san_id);
         $stmt->bindParam(':so_luong', $this->so_luong);
+        $stmt->bindParam(':tinh_trang', $this->tinh_trang);
 
         if ($stmt->execute()) {
             return $this->conn->lastInsertId();
@@ -53,20 +56,20 @@ class ChiTietPhieuNhap
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function readByPhieuNhapId($phieu_nhap_tai_san_id)
-    {
-        $query = "SELECT *
-                  FROM " . $this->table_name . " ct
-                  INNER JOIN tai_san ts ON ct.tai_san_id = ts.tai_san_id
-                  INNER JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id
-                  WHERE ct.phieu_nhap_tai_san_id = :phieu_nhap_tai_san_id";
+    // public function readByPhieuThanhLyId($phieu_nhap_tai_san_id)
+    // {
+    //     $query = "SELECT *
+    //               FROM " . $this->table_name . " ct
+    //               INNER JOIN tai_san ts ON ct.tai_san_id = ts.tai_san_id
+    //               INNER JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id
+    //               WHERE ct.phieu_nhap_tai_san_id = :phieu_nhap_tai_san_id";
 
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':phieu_nhap_tai_san_id', $phieu_nhap_tai_san_id);
-        $stmt->execute();
+    //     $stmt = $this->conn->prepare($query);
+    //     $stmt->bindParam(':phieu_nhap_tai_san_id', $phieu_nhap_tai_san_id);
+    //     $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // }
 
     public function readByChiTietId($chi_tiet_id)
     {
@@ -115,11 +118,11 @@ class ChiTietPhieuNhap
         $stmt2->bindParam(1, $chi_tiet_id);
         $stmt2->execute();
     }
-    public function deleteByPhieuNhapId($phieu_nhap_tai_san_id)
+    public function deleteByPhieuThanhLyId($phieu_thanh_ly_id)
     {
-        $query = "DELETE FROM " . $this->table_name . " WHERE phieu_nhap_tai_san_id = ?";
+        $query = "DELETE FROM " . $this->table_name . " WHERE phieu_thanh_ly_id = ?";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $phieu_nhap_tai_san_id);
+        $stmt->bindParam(1, $phieu_thanh_ly_id);
         return $stmt->execute();
     }
     public function getTopAssets($limit = 5)
@@ -171,20 +174,30 @@ class ChiTietPhieuNhap
         }
     }
     
-    public function readDetailedByPhieuNhapId($phieuNhapId)
+    public function readDetailedByPhieuThanhLyId($phieuThanhLy)
 {
-    $query = "SELECT ct.*, ts.ten_tai_san, lts.ten_loai_tai_san, lts.loai_tai_san_id 
-              FROM chi_tiet_phieu_nhap_tai_san ct
+    $query = "SELECT *
+              FROM chi_tiet_phieu_thanh_ly ct
               JOIN tai_san ts ON ct.tai_san_id = ts.tai_san_id
-              JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id
-              WHERE ct.phieu_nhap_tai_san_id = :phieu_nhap_id";
+            -- JOIN vi_tri_chi_tiet vtct ON ct.tai_san_id = vtct.tai_san_id
+              WHERE ct.phieu_thanh_ly_id = :phieu_thanh_ly_id";
     
     $stmt = $this->conn->prepare($query);
-    $stmt->bindParam(':phieu_nhap_id', $phieuNhapId);
+    $stmt->bindParam(':phieu_thanh_ly_id', $phieuThanhLy);
     $stmt->execute();
     
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+public function updateSoluongPhieu($chitietid, $newQuantity)
+{
+    $query = "UPDATE chi_tiet_phieu_thanh_ly SET so_luong = :so_luong WHERE chi_tiet_id = :chi_tiet_id";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':so_luong', $newQuantity, PDO::PARAM_INT);
+    $stmt->bindParam(':chi_tiet_id', $chitietid, PDO::PARAM_INT);
+    return $stmt->execute();
+}
+ 
 
 }
 ?>

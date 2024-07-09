@@ -25,7 +25,8 @@
                 <div class="form-group row">
                     <label for="nguoiNhap" class="col-sm-2 col-form-label">Người tạo phiếu:</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="nguoiNhap" value="<?= $phieuNhap['user_name'] ?>"
+                        <input type="text" class="form-control" id="nguoiNhap"
+                            value="<?= $phieuNhap['ten_nguoi_tao'] ? htmlspecialchars($phieuNhap['ten_nguoi_tao']) : 'Chưa duyệt'; ?>"
                             readonly>
                     </div>
                 </div>
@@ -33,7 +34,7 @@
                     <label for="ngayNhap" class="col-sm-2 col-form-label">Ngày tạo phiếu:</label>
                     <div class="col-sm-10">
                         <input type="date" class="form-control" id="ngayNhap" name="ngay_nhap"
-                            value="<?= $phieuNhap['ngay_nhap'] ?>" readonly>
+                            value="<?= $phieuNhap['ngay_tao'] ?>" readonly>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -97,25 +98,23 @@
                         rows="3"><?= htmlspecialchars($phieuNhap['ghi_chu']) ?></textarea>
                 </div>
             </form>
-            <div class="form-group row">
-                    <div class="col-sm-12">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a href="index.php?model=phieunhap&action=index" class="btn btn-secondary">Quay lại</a>
-                            <form
-                                action="index.php?model=phieunhap&action=xet_duyet&id=<?php echo $phieuNhap['phieu_nhap_tai_san_id']; ?>"
-                                method="POST" class="d-flex">
-                                <button type="submit" name="action" value="approve" class="btn btn-success mr-2"
-                                    onclick="return confirm('Bạn có chắc muốn phê duyệt phiếu nhập này?')">Phê
-                                    duyệt</button>
-                                <button type="submit" name="action" value="reject" class="btn btn-danger"
-                                    onclick="return confirm('Bạn có chắc muốn không phê duyệt phiếu nhập này?')">Không
-                                    phê duyệt</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+
         </div>
+        <form action="index.php?model=phieunhap&action=xet_duyet&id=<?php echo $phieuNhap['phieu_nhap_tai_san_id']; ?>"
+            <div class="card-footer d-flex justify-content-between">
+            <a href="index.php?model=phieunhap&action=index" class="btn btn-secondary">Quay lại</a>
+
+            method="POST" class="d-flex">
+            <button type="submit" name="action" value="approve" class="btn btn-success mr-2"
+                onclick="return confirm('Bạn có chắc muốn phê duyệt phiếu nhập này?')">Phê
+                duyệt</button>
+            <button type="submit" name="action" value="reject" class="btn btn-danger"
+                onclick="return confirm('Bạn có chắc muốn không phê duyệt phiếu nhập này?')">Không
+                phê duyệt</button>
+
     </div>
+    </form>
+</div>
 </div>
 
 <script>
@@ -132,9 +131,9 @@
         <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required>
             <option value="">Chọn loại tài sản</option>
             <?php foreach ($loai_tai_san_list as $loai): ?>
-                            <option value="<?= $loai['loai_tai_san_id']; ?>">
-                                <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
-                            </option>
+                                <option value="<?= $loai['loai_tai_san_id']; ?>">
+                                    <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
+                                </option>
             <?php endforeach; ?>
         </select>
     `;
@@ -142,9 +141,9 @@
         <select class="form-control select-tai-san" name="tai_san_id[]" required>
                                     <option value="">Chọn tài sản</option>
                                     <?php foreach ($tai_san_list as $tai_san): ?>
-                                                    <option value="<?= $tai_san['tai_san_id']; ?>" data-loai="<?= $tai_san['loai_tai_san_id']; ?>" style="display: none;">
-                                                        <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
-                                                    </option>
+                                                        <option value="<?= $tai_san['tai_san_id']; ?>" data-loai="<?= $tai_san['loai_tai_san_id']; ?>" style="display: none;">
+                                                            <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
+                                                        </option>
                                     <?php endforeach; ?>
                                 </select>
     `;

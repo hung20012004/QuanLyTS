@@ -3,8 +3,8 @@
         <div class="col">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=phieunhap&action=index">Phiếu nhập</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Chi tiết</li>
+                    <li class="breadcrumb-item"><a href="index.php?model=phieuthanhly&action=index">Phiếu nhập</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Chỉnh sửa phiếu nhập</li>
                 </ol>
             </nav>
         </div>
@@ -12,21 +12,44 @@
 </div>
 
 <div class="container-fluid">
+        <?php if (isset($_SESSION['message'])): ?>
+        <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show"
+            role="alert">
+            <?= $_SESSION['message']; ?>
+        </div>
+        <?php
+        unset($_SESSION['message']);
+        unset($_SESSION['message_type']);
+        ?>
+        <!-- <script>
+            setTimeout(function () {
+                var alert = document.getElementById('alert-message');
+                if (alert) {
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                    setTimeout(function () {
+                        alert.style.display = 'none';
+                    }, 150);
+                }
+            }, 7000); // 7000 milliseconds = 7 seconds
+        </script> -->
+    <?php endif; ?>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Phiếu nhập tài sản</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Chỉnh sửa phiếu nhập tài sản</h6>
         </div>
+        
         <div class="card-body">
             <form method="POST"
-                action="index.php?model=phieunhap&action=edit&id=<?= $phieuNhap['phieu_nhap_tai_san_id'] ?>"
-                id="phieuNhapForm">
-                <input type="hidden" name="phieu_nhap_id" value="<?= $phieuNhap['phieu_nhap_tai_san_id'] ?>">
+                action="index.php?model=phieuthanhly&action=edit&id=<?= $phieuNhap['phieu_thanh_ly_id'] ?>"
+                id="phieuThanhLyForm">
+                <!-- <input type="hidden" name="phieu_nhap_id" value="<?= $phieuNhap['phieu_thanh_ly_id'] ?>"> -->
 
                 <div class="form-group row">
                     <label for="nguoiNhap" class="col-sm-2 col-form-label">Người tạo phiếu:</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="nguoiNhap"
-                        value="<?= $phieuNhap['ten_nguoi_tao'] ? htmlspecialchars($phieuNhap['ten_nguoi_tao']) : 'Chưa duyệt'; ?>" readonly>
+                            value="<?= htmlspecialchars($_SESSION['ten']); ?>" readonly>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -37,18 +60,10 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="nguoiTao" class="col-sm-2 col-form-label">Người phê duyệt phiếu:</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="nguoiTao"
-                            value="<?= $phieuNhap['user_duyet_id'] ? htmlspecialchars($phieuNhap['ten_nguoi_duyet']) : 'Chưa duyệt'; ?>" readonly>
-                    </div>
-                </div>
-                <div class="form-group row">
                     <label for="ngayXacNhan" class="col-sm-2 col-form-label">Ngày phê duyệt:</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="ngayXacNhan" name="ngay_xac_nhan"
-                            value="<?= $phieuNhap['ngay_xac_nhan'] ? date('d/m/Y', strtotime($phieuNhap['ngay_xac_nhan'])) : 'Chưa duyệt' ?>"
-                            readonly>
+                        <input type="date" class="form-control" id="ngayXacNhan" name="ngay_xac_nhan"
+                            value="<?= $phieuNhap['ngay_xac_nhan'] ?>" readonly>
                     </div>
                 </div>
 
@@ -56,28 +71,17 @@
                 <table id="chiTietTable" class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Loại tài sản</th>
-                            <th>Tên tài sản</th>
+                           <th>Tên tài sản</th>
                             <th>Số lượng</th>
+                            <th>Tình trạng</th>
+                            <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($chiTietPhieuNhap as $chiTiet): ?>
+                        <?php foreach ($chiTietPhieuThanhLy as $chiTiet): ?>
                             <tr>
                                 <td>
-                                    <select class="form-control loai-tai-san" name="loai_tai_san_id[]" readonly>
-                                        <option value="">Chọn loại tài sản</option>
-                                        <?php $loai_tai_san_list = $this->loaiTaiSanModel->readAll(); ?>
-                                        <?php foreach ($loai_tai_san_list as $loai): ?>
-                                            <option value="<?= $loai['loai_tai_san_id']; ?>"
-                                                <?= $loai['loai_tai_san_id'] == $chiTiet['loai_tai_san_id'] ? 'selected' : ''; ?>>
-                                                <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-control select-tai-san" name="tai_san_id[]" readonly
+                                    <select class="form-control select-tai-san" name="tai_san_id[]" required
                                         data-selected="<?= $chiTiet['tai_san_id'] ?>">
                                         <option value="">Chọn tài sản</option>
                                         <?php foreach ($tai_san_list as $tai_san): ?>
@@ -91,25 +95,42 @@
                                 </td>
                                 <td>
                                     <input type="number" class="form-control" name="so_luong[]"
-                                        value="<?= $chiTiet['so_luong'] ?>" readonly min="1">
+                                        value="<?= $chiTiet['so_luong'] ?>" required min="1">
+                                </td>
+                                 <td>
+                                <select class="form-control select-tinh-trang" name="tinh_trang[]" required>
+                                    <option value="Moi" <?= ($chiTiet['tinh_trang'] == 'Moi') ? 'selected' : ''; ?>>Mới</option>
+                                    <option value="Tot" <?= ($chiTiet['tinh_trang'] == 'Tot') ? 'selected' : ''; ?>>Tốt</option>
+                                    <option value="Kha" <?= ($chiTiet['tinh_trang'] == 'Kha') ? 'selected' : ''; ?>>Khá</option>
+                                    <option value="TrungBinh" <?= ($chiTiet['tinh_trang'] == 'TrungBinh') ? 'selected' : ''; ?>>Trung bình</option>
+                                    <option value="Kem" <?= ($chiTiet['tinh_trang'] == 'Kem') ? 'selected' : ''; ?>>Kém</option>
+                                    <option value="Hong" <?= ($chiTiet['tinh_trang'] == 'Hong') ? 'selected' : ''; ?>>Hỏng</option>
+                                </select>
+                               </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                        onclick="removeTaiSan(this)">Xóa</button>
                                 </td>
 
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                <button type="button" class="btn btn-primary" onclick="addTaiSan()">Thêm tài sản</button>
 
                 <div class="form-group mt-3">
                     <label for="ghiChu">Ghi chú:</label>
-                    <textarea class="form-control" id="ghiChu" name="ghi_chu" readonly
+                    <textarea class="form-control" id="ghiChu" name="ghi_chu"
                         rows="3"><?= htmlspecialchars($phieuNhap['ghi_chu']) ?></textarea>
                 </div>
 
-
+                <div class="form-group row">
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        <a href="index.php?model=phieuthanhly&action=index" class="btn btn-secondary">Hủy</a>
+                    </div>
+                </div>
             </form>
-        </div>
-        <div class="card-footer d-flex justify-content-between">
-        <a href="index.php?model=phieunhap&action=index" class="btn btn-secondary">Quay lại</a>
         </div>
     </div>
 </div>
@@ -123,28 +144,31 @@
         var cell3 = newRow.insertCell(2);
         var cell4 = newRow.insertCell(3);
 
-        cell1.innerHTML = `
-        <?php $loai_tai_san_list = $this->loaiTaiSanModel->readAll(); ?>
-        <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required>
-            <option value="">Chọn loại tài sản</option>
-            <?php foreach ($loai_tai_san_list as $loai): ?>
-                            <option value="<?= $loai['loai_tai_san_id']; ?>">
-                                <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
-                            </option>
-            <?php endforeach; ?>
-        </select>
-    `;
-        cell2.innerHTML = `
+         //  <option value="Hong" <?= ($chiTiet['tinh_trang'] == 'Hong') ? 'selected' : ''; ?>>Hỏng</option>
+
+       cell1.innerHTML = `
         <select class="form-control select-tai-san" name="tai_san_id[]" required>
-                                    <option value="">Chọn tài sản</option>
-                                    <?php foreach ($tai_san_list as $tai_san): ?>
-                                                    <option value="<?= $tai_san['tai_san_id']; ?>" data-loai="<?= $tai_san['loai_tai_san_id']; ?>" style="display: none;">
-                                                        <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
-                                                    </option>
-                                    <?php endforeach; ?>
-                                </select>
+            <option value=""  >Chọn tài sản</option>
+                <?php foreach ($tai_san_list as $tai_san): ?>
+                    <option value="<?= $tai_san['tai_san_id']; ?>">
+                         <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
+                     </option>
+                <?php endforeach; ?>
+                </select>
     `;
-        cell3.innerHTML = '<input type="number" class="form-control" name="so_luong[]" required min="1">';
+
+        cell2.innerHTML = '<input type="number" class="form-control" name="so_luong[]" required min="1">';
+        cell3.innerHTML = `<select class="form-control select-tinh-trang" name="tinh_trang[]" required>
+                                    <option value="Moi" >Mới</option>
+                                    <option value="Tot">Tốt</option>
+                                    <option value="Kha">Khá</option>
+                                    <option value="TrungBinh" >Trung bình</option>
+                                    <option value="Kem" >Kém</option>
+                                    <option value="Hong">Hỏng</option>
+                                </select>
+
+                               
+        `;
         cell4.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>';
 
         newRow.querySelector('.loai-tai-san').addEventListener('change', function () {
@@ -199,7 +223,7 @@
         });
     });
     // Form validation
-    document.getElementById('phieuNhapForm').addEventListener('submit', function (event) {
+    document.getElementById('phieuThanhLyForm').addEventListener('submit', function (event) {
         var isValid = true;
         var taiSanSelects = document.querySelectorAll('.select-tai-san');
         var soLuongInputs = document.querySelectorAll('input[name="so_luong[]"]');

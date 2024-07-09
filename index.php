@@ -12,7 +12,9 @@ require 'controllers/UserController.php';
 require 'controllers/AuthController.php';
 require 'controllers/TaiSanController.php';
 require 'controllers/TinhTrangController.php';
-require 'controllers/PhieuSuaController.php';
+require 'controllers/PhieuThanhLyController.php';
+require 'controllers/PhieuTraController.php';
+
 
 
 $controller = new Controller();
@@ -30,14 +32,11 @@ switch ($model) {
     case 'baotri':
         $controller = new BaoTriController();
         break;
-    case 'phieusua':
-        $controller = new PhieuSuaController();
-        break;
     case 'phieunhap':
         $controller = new PhieuNhapController();
         break;
-    case 'thanhly':
-        $controller = new ThanhLyController();
+    case 'phieuthanhly':
+        $controller = new PhieuThanhLyController();
         break;
     case 'vitri':
         $controller = new ViTriController();
@@ -56,6 +55,9 @@ switch ($model) {
         break;
     case 'phieubangiao':
         $controller = new PhieuBanGiaoController();
+        break;   
+    case 'phieutra':
+        $controller = new PhieuTraController();
         break;       
     default:
         $controller = new Controller();
@@ -125,21 +127,18 @@ switch ($action) {
     case 'nhap_tai_san':
         $controller->nhap_tai_san($id);
         break;
-    case 'cancel':
-        $controller->cancel($id);
+    case 'thanh_ly':
+        $controller->thanh_ly($id);
         break;
-    case 'cancellationrequest':
-        $controller->cancellationrequest($id);
-        break;    
-    case 'hoan_thanh':
-        $controller->hoan_thanh($id);
-        break;   
-    case 'getRepairForms':
-        $controller->getRepairForms();
-        break;   
-    case 'calendar':
-        $controller->calendarView();
-        break; 
+     case 'xuatphieu':
+        $controller->exportphieu($id);
+        break;
+        case 'exportWord':
+            $controller->exportWord($id);
+            break;
+    case 'tra':
+        $controller->tra($id);
+        break;
     default:
         $controller->index();
         break;

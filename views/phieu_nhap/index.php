@@ -44,7 +44,9 @@
                         <a href="index.php?model=phieunhap&action=create" class="btn btn-primary">Thêm mới</a>
                         <a href="index.php?model=phieunhap&action=export" class="btn btn-success">Xuất excel</a>
                     <?php elseif ($_SESSION['role'] == 'QuanLy'): ?>
+                        
                         <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a>
+                        <a href="index.php?model=phieunhap&action=export" class="btn btn-success">Xuất excel</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -81,7 +83,7 @@
                     </thead>
                     <tbody>
                         <?php foreach ($phieuNhap as $phieu): ?>
-                            <?php if ($phieu['user_id'] == $_SESSION['user_id']): ?>
+                            <?php if (($phieu['user_id'] == $_SESSION['user_id']&&$_SESSION['role']=='NhanVienQuanLy')||($_SESSION['role']=='QuanLy')): ?>
                                 <tr>
                                     <td class="text-center"><?php echo $phieu['phieu_nhap_tai_san_id']; ?></td>
                                     <td class="text-center"><?= date('d-m-Y', strtotime($phieu['ngay_tao'])) ?></td>
@@ -99,7 +101,7 @@
                                     <td class="d-flex justify-content-center">
                                         <a href="index.php?model=phieunhap&action=show&id=<?php echo $phieu['phieu_nhap_tai_san_id']; ?>"
                                             class="btn btn-info btn-sm mx-2">Xem</a>
-                                        <?php if ($phieu['trang_thai'] == 'DangChoPheDuyet'): ?>
+                                        <?php if ($phieu['trang_thai'] == 'DangChoPheDuyet'&&$_SESSION['role'] == 'NhanVienQuanLy'): ?>
                                             <a href="index.php?model=phieunhap&action=edit&id=<?php echo $phieu['phieu_nhap_tai_san_id']; ?>"
                                                 class="btn btn-warning btn-sm mx-2">Sửa</a>
                                             <?php if ($_SESSION['role'] == 'NhanVienQuanLy'): ?>
@@ -113,7 +115,7 @@
                                                     class="btn btn-success btn-sm mx-2">Nhập tài sản</a>
                                             <?php endif; ?>
                                         <?php endif; ?>
-                                        <?php if ($_SESSION['role'] == 'QuanLy'): ?>
+                                        <?php if ($_SESSION['role'] == 'QuanLy' &&$phieu['trang_thai'] == 'DangChoPheDuyet'): ?>
                                             <a href="index.php?model=phieunhap&action=xet_duyet&id=<?php echo $phieu['phieu_nhap_tai_san_id']; ?>"
                                                 class="btn btn-sm mx-2 btn-primary">Xét duyệt</a>
                                         <?php endif; ?>

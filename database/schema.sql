@@ -26,7 +26,7 @@ CREATE TABLE tai_san (
 -- Vị trí
 CREATE TABLE vi_tri (
     vi_tri_id INT AUTO_INCREMENT PRIMARY KEY,
-    ten_vi_tri VARCHAR(100) NOT NULL,
+    ten_vi_tri VARCHAR(100) NOT NULL UNIQUE,
     khoa ENUM('HTTT','CNTT','KT','Co khi','Cong trinh','Moi truong-ATGT') NOT NULL
 );
 
@@ -76,7 +76,7 @@ CREATE TABLE phieu_ban_giao (
     ngay_duyet DATE,
     ngay_ban_giao DATE,
 
-    trang_thai ENUM('DaGui','DaKiemTra','DangChoPheDuyet','DaPheDuyet','DaGiao','KhongDuyet') NOT NULL,
+    trang_thai ENUM('DaLuu','DaGui','DaKiemTra','DangChoPheDuyet','DaPheDuyet','DaGiao','KhongDuyet') NOT NULL,
     FOREIGN KEY (user_ban_giao_id) REFERENCES `users`(user_id) ON DELETE CASCADE,
     FOREIGN KEY (user_nhan_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
     FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id),
@@ -106,7 +106,7 @@ CREATE TABLE phieu_tra (
 
     ngay_tra DATE,
     ghi_chu TEXT,
-    trang_thai ENUM('DaGui','DaHuy','DangChoPheDuyet','DaPheDuyet','DaTra','KhongDuyet') NOT NULL,
+    trang_thai ENUM('DaLuu','DaGui','DaHuy','DangChoPheDuyet','DaPheDuyet','DaTra','KhongDuyet') NOT NULL,
     FOREIGN KEY (user_tra_id) REFERENCES `users`(user_id) ON DELETE CASCADE,
     FOREIGN KEY (user_nhan_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
     FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
@@ -131,7 +131,7 @@ CREATE TABLE phieu_thanh_ly (
     ngay_xac_nhan DATE,
     ngay_thanh_ly DATE,
     tong_gia_tri DECIMAL(15,0) NOT NULL,
-    trang_thai ENUM('KhongDuyet','DangChoPheDuyet','DaPheDuyet','DaNhap') NOT NULL,
+    trang_thai ENUM('','KhongDuyet','DangChoPheDuyet','DaPheDuyet','DaNhap') NOT NULL,
     FOREIGN KEY (user_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
     FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
 );
@@ -154,9 +154,9 @@ CREATE TABLE phieu_sua(
     ngay_hoan_thanh DATE,
     mo_ta TEXT,
     user_yeu_cau_id INT NOT NULL,
-    user_sua_chua_id INT,
+    user_sua_chua_id INT NOT NULL,
     vi_tri_id INT,
-    trang_thai ENUM('DaGui','DaNhan','DaHoanThanh','YeuCauHuy','Huy') NOT NULL,
+    trang_thai ENUM('DaGui','DaNhan','DaHoanThanh','Huy') NOT NULL,
     FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id),
     FOREIGN KEY (user_yeu_cau_id) REFERENCES `users`(user_id),
     FOREIGN KEY (user_sua_chua_id) REFERENCES `users`(user_id)

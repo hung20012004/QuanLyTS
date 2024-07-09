@@ -53,7 +53,7 @@ class PhieuNhap {
 
     public function create() {
         $query = "INSERT INTO " . $this->table_name . " 
-                  SET ngay_tao=:ngay_tao, ghi_chu=:ghi_chu,user_duyet_id=:user_id, user_id=:user_id, trang_thai=:trang_thai";
+                  SET ngay_tao=:ngay_tao, ghi_chu=:ghi_chu, user_id=:user_id, trang_thai=:trang_thai";
 
         $stmt = $this->conn->prepare($query);
 
@@ -61,14 +61,11 @@ class PhieuNhap {
         $this->ghi_chu = htmlspecialchars(strip_tags($this->ghi_chu));
         $this->user_id = htmlspecialchars(strip_tags($this->user_id));
         $this->trang_thai = htmlspecialchars(strip_tags($this->trang_thai));
-        $this->user_duyet_id = 1;
-
         $stmt->bindParam(':ngay_tao', $this->ngay_tao);
         $stmt->bindParam(':ghi_chu', $this->ghi_chu);
         $stmt->bindParam(':user_id', $this->user_id);
         $stmt->bindParam(':trang_thai', $this->trang_thai);
 
-        $stmt->bindParam(':user_duyet_id', $this->user_duyet_id);
         if ($stmt->execute()) {
             return $this->conn->lastInsertId();
         }
@@ -95,18 +92,28 @@ class PhieuNhap {
         return $stmt->execute();
     }
     public function updateStatus() {
+        if($this->user_duyet_id!=null){
         $query = "UPDATE " . $this->table_name . " 
+                  SET ngay_xac_nhan=:ngay_xac_nhan,user_duyet_id=:user_duyet_id, trang_thai=:trang_thai 
+                  WHERE phieu_nhap_tai_san_id=:phieu_nhap_tai_san_id";
+                  $this->user_duyet_id = htmlspecialchars(strip_tags($this->user_duyet_id));
+                  $stmt = $this->conn->prepare($query);
+                  $stmt->bindParam(':user_duyet_id', $this->user_duyet_id);
+        }
+        else{
+            $query = "UPDATE " . $this->table_name . " 
                   SET ngay_xac_nhan=:ngay_xac_nhan, trang_thai=:trang_thai 
                   WHERE phieu_nhap_tai_san_id=:phieu_nhap_tai_san_id";
-
-        $stmt = $this->conn->prepare($query);
-
+                  $stmt = $this->conn->prepare($query);
+        }
+        
         $this->ngay_xac_nhan = htmlspecialchars(strip_tags($this->ngay_xac_nhan));
         $this->trang_thai = htmlspecialchars(strip_tags($this->trang_thai));
         $this->phieu_nhap_tai_san_id = htmlspecialchars(strip_tags($this->phieu_nhap_tai_san_id));
-
+        
         $stmt->bindParam(':ngay_xac_nhan', $this->ngay_xac_nhan);
         $stmt->bindParam(':trang_thai', $this->trang_thai);
+        
         $stmt->bindParam(':phieu_nhap_tai_san_id', $this->phieu_nhap_tai_san_id);
 
         return $stmt->execute();
@@ -173,6 +180,18 @@ class PhieuNhap {
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    }
+    public function readByIdWithUserInfo($id)
+    {
+        $query = "SELECT p.*, u.ten AS ten_nguoi_tao, ud.ten AS ten_nguoi_duyet 
+                FROM " . $this->table_name . " p
+                LEFT JOIN users u ON p.user_id = u.user_id
+                LEFT JOIN users ud ON p.user_duyet_id = ud.user_id
+                WHERE p.phieu_nhap_tai_san_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
 ?>

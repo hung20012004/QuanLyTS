@@ -194,7 +194,7 @@ private function showCreateForm()
     }
     public function show($id)
     {
-        $phieuNhap = $this->phieuNhapModel->readById($id);
+        $phieuNhap = $this->phieuNhapModel->readByIdWithUserInfo($id);
         if (!$phieuNhap) {
             die('Phiếu nhập không tồn tại.');
         }
@@ -242,7 +242,7 @@ private function showCreateForm()
             } elseif ($action == 'reject') {
                 $this->phieuNhapModel->trang_thai = 'KhongDuyet';
             }
-            
+            $this->phieuNhapModel->user_duyet_id=$_SESSION['user_id'];
             $this->phieuNhapModel->ngay_xac_nhan = date('Y-m-d');
             $this->phieuNhapModel->phieu_nhap_tai_san_id=$id;
             $this->phieuNhapModel->updateStatus();
@@ -252,7 +252,7 @@ private function showCreateForm()
             exit();
         }
         else{
-            $phieuNhap = $this->phieuNhapModel->readById($id);
+            $phieuNhap = $this->phieuNhapModel->readByIdWithUserInfo($id);
             if (!$phieuNhap) {
                 die('Phiếu nhập không tồn tại.');
             }
@@ -279,7 +279,7 @@ private function showCreateForm()
 
     private function showNhapTaiSanForm($id)
     {
-        $phieuNhap = $this->phieuNhapModel->readById($id);
+        $phieuNhap = $this->phieuNhapModel->readByIdWithUserInfo($id);
         
         if (!$phieuNhap) {
             die('Phiếu nhập không tồn tại.');
@@ -310,6 +310,7 @@ private function showCreateForm()
                     $this->viTriChiTietModel->create();
                 }
             }
+            $this->phieuNhapModel->ngay_xac_nhan=$_POST['ngay_xac_nhan'];
             $this->phieuNhapModel->trang_thai='DaNhap';
             // var_dump($this->phieuNhapModel);
             // exit();
