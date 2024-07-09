@@ -115,6 +115,7 @@
                                         <a href="index.php?model=phieubangiao&action=show&id=<?php echo $phieu['phieu_ban_giao_id']; ?>" class="btn btn-info btn-sm mx-2">Xem</a>
                                         <?php if ($_SESSION['role'] == 'NhanVien' && $phieu['trang_thai'] == 'DaGui'): ?>
                                             <a href="index.php?model=phieubangiao&action=edit&id=<?php echo $phieu['phieu_ban_giao_id']; ?>" class="btn btn-warning btn-sm mx-2">Sửa</a>
+                                            <a href="index.php?model=phieubangiao&action=delete&id=<?php echo $phieu['phieu_ban_giao_id']; ?>" class="btn btn-danger btn-sm mx-2" onclick="return confirm('Bạn có chắc chắn muốn xóa phiếu này không?');">Xóa</a>
                                         <?php endif; ?>
                                         <?php if ($_SESSION['role'] == 'QuanLy' && $phieu['trang_thai'] == 'DangChoPheDuyet'): ?>
                                             <a href="index.php?model=phieubangiao&action=xet_duyet&id=<?php echo $phieu['phieu_ban_giao_id']; ?>" class="btn btn-primary btn-sm mx-2">Xét duyệt</a>
