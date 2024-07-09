@@ -43,5 +43,6 @@ class Controller {
     public function getByLoai(){}
     public function xet_duyet($id){}
     public function nhap_tai_san($id){}
+    public function kiem_tra($id){}
 }
 ?>

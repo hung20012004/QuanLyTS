@@ -118,6 +118,9 @@ switch ($action) {
     case 'getByLoai':
         $controller->getByLoai(); 
         break;
+    case 'kiem_tra':
+        $controller->kiem_tra($id); 
+        break;
     case 'nhap_tai_san':
         $controller->nhap_tai_san($id);
         break;
