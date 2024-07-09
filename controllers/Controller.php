@@ -26,6 +26,17 @@ class Controller {
     public function show($id) {
         
     }
+    public function cancel($id) {
+        
+    }
+    public function cancellationrequest($id) {
+        
+    }
+    public function hoan_thanh($id) {
+        
+    }
+    public function getRepairForms() {}
+    public function calendarView() {}
     public function viewedit($id) {}
     public function viewcreate(){}
     public function register() {}

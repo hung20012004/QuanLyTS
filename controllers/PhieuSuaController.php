@@ -1,4 +1,8 @@
 <?php
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 include_once 'config/database.php';
 include_once 'models/PhieuSua.php';
 include_once 'models/ViTri.php';
@@ -376,27 +380,64 @@ class PhieuSuaController extends Controller
     }
 
     public function export()
-    {
-        // Fetch the data
-        $phieuSuas = $this->phieuSuaModel->readAll();
+{
+    // Fetch the data
+    $phieuSuas = $this->phieuSuaModel->readAll();
 
-        // Set the header for CSV file
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename=phieu_sua.csv');
+    // Create new Spreadsheet object
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
 
-        $output = fopen('php://output', 'w');
+    // Set column headers
+    $headers = [
+        'phieu_sua_id' => 'Phiếu sửa ID',
+        'user_yeu_cau_name' => 'Người yêu cầu',
+        'ngay_yeu_cau' => 'Ngày yêu cầu',
+        'user_sua_chua_name' => 'Người sửa chữa',
+        'ngay_sua_chua' => 'Ngày sửa chữa',
+        'ngay_hoan_thanh' => 'Ngày hoàn thành',
+        'ten_vi_tri' => 'Vị trí',
+        'trang_thai' => 'Trạng thái'
+    ];
 
-        // Add BOM to fix UTF-8 in Excel
-        fputs($output, "\xEF\xBB\xBF");
+    // Apply header styling
+    $headerStyle = [
+        'font' => [
+            'bold' => true,
+        ],
+        'fill' => [
+            'fillType' => Fill::FILL_SOLID,
+            'startColor' => [
+                'rgb' => 'FFFF00',
+            ],
+        ],
+        'borders' => [
+            'allBorders' => [
+                'borderStyle' => Border::BORDER_THIN,
+            ],
+        ],
+    ];
 
-        // Set CSV column headers
-        fputcsv($output, array('phieu_sua_id', 'user_yeu_cau_name', 'ngay_yeu_cau', 'user_sua_chua_name', 'ngay_sua_chua', 'ngay_hoan_thanh', 'ten_vi_tri', 'trang_thai'));
-
-        // Add rows to the CSV file
-        foreach ($phieuSuas as $phieu) {
-            fputcsv($output, $phieu);
-        }
-
-        fclose($output);
+    // Set headers and apply style
+    foreach (range('A', 'H') as $col) {
+        $sheet->getColumnDimension($col)->setAutoSize(true);
+        $sheet->getStyle($col . '1')->applyFromArray($headerStyle);
     }
+    $sheet->fromArray($headers, NULL, 'A1');
+
+    // Add data rows
+    $sheet->fromArray($phieuSuas, NULL, 'A2');
+
+    // Create the Excel file
+    $writer = new Xlsx($spreadsheet);
+
+    // Set headers for download
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="phieu_sua.xlsx"');
+    header('Cache-Control: max-age=0');
+
+    // Save to output
+    $writer->save('php://output');
+    exit;
+}
 }
