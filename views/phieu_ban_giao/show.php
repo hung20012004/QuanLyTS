@@ -54,6 +54,20 @@
                             <td><?= htmlspecialchars($chiTiet['ten_loai_tai_san']); ?></td>
                             <td><?= htmlspecialchars($chiTiet['ten_tai_san']); ?></td>
                             <td><?= htmlspecialchars($chiTiet['so_luong']); ?></td>
+                            <?php
+                            // Define the mapping array for 'tinh_trang'
+                            $tinhTrangLabels = [
+                                'Moi' => 'Mới',
+                                'Tot' => 'Tốt',
+                                'Kha' => 'Khá',
+                                'TrungBinh' => 'Trung bình',
+                                'Kem' => 'Kém',
+                                'Hong' => 'Hỏng'
+                            ];
+
+                            // Get the condition label
+                            $tinhTrangLabel = $tinhTrangLabels[$chiTiet['tinh_trang']] ?? 'Không xác định';
+                            ?>
                             <td><?= htmlspecialchars($chiTiet['tinh_trang']); ?></td>
                         </tr>
                     <?php endforeach; ?>

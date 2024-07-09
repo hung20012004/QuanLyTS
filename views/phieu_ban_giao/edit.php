@@ -1,43 +1,46 @@
 <div class="container-fluid">
-    <div class="row mt-3">
-        <div class="col">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=phieunhap&action=index">phiếu bàn giao</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Chỉnh sửa phiếu bàn giao</li>
-                </ol>
-            </nav>
-        </div>
-    </div>
-</div>
-
-<div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Chỉnh sửa phiếu bàn giao tài sản</h6>
         </div>
         <div class="card-body">
             <form method="POST"
-                action="index.php?model=phieunhap&action=edit&id=<?= $phieuNhap['phieu_nhap_tai_san_id'] ?>"
-                id="phieuNhapForm">
-                <input type="hidden" name="phieu_nhap_id" value="<?= $phieuNhap['phieu_nhap_tai_san_id'] ?>">
-
+                action="index.php?model=phieubangiao&action=edit&id=<?= $phieuBanGiao['phieu_ban_giao_id']; ?>"
+                id="phieuBanGiaoForm">
+                <!-- Các trường thông tin chung của phiếu bàn giao -->
                 <div class="form-group row">
-                    <label for="nguoiNhap" class="col-sm-2 col-form-label">Người tạo phiếu:</label>
+                    <label for="nguoiNhan" class="col-sm-2 col-form-label">Người tạo yêu cầu:</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="nguoiNhap"
-                            value="<?= htmlspecialchars($_SESSION['ten']); ?>" readonly>
+                        <input type="text" class="form-control" id="nguoiNhan" name="nguoi_nhan"
+                            value="<?= $user_nhan['ten']; ?>" readonly>
+                        <input type="hidden" name="user_nhan_id" value="<?= $user_nhan['user_id']; ?>">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="ngayNhap" class="col-sm-2 col-form-label">Ngày tạo phiếu:</label>
+                    <label for="ngayTao" class="col-sm-2 col-form-label">Ngày tạo phiếu:</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="ngayNhap" name="ngay_tao"
-                            value="<?= $phieuNhap['ngay_tao'] ?>" readonly>
+                        <input type="date" class="form-control" id="ngayTao" name="ngay_tao"
+                            value="<?= $phieuBanGiao['ngay_gui']; ?>" readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="viTri" class="col-sm-2 col-form-label">Vị trí:</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="viTri" name="vi_tri_id" required>
+                            <option value="">Chọn vị trí</option>
+                            <?php foreach ($vi_tri_list as $vi_tri): ?>
+                                <?php if ($vi_tri['khoa'] === $user_nhan['khoa']): ?>
+                                    <option value="<?= $vi_tri['vi_tri_id']; ?>"
+                                        <?= ($vi_tri['vi_tri_id'] == $phieuBanGiao['vi_tri_id']) ? 'selected' : ''; ?>>
+                                        <?= htmlspecialchars($vi_tri['ten_vi_tri']); ?>
+                                    </option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </div>
 
-                <h5 class="mt-4">Chi tiết phiếu bàn giao</h5>
+                <h5 class="mt-4">Yêu cầu cung cấp các tài sản:</h5>
                 <table id="chiTietTable" class="table table-bordered">
                     <thead>
                         <tr>
@@ -48,7 +51,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($chiTietPhieuNhap as $chiTiet): ?>
+                        <?php foreach ($chiTietPhieuBanGiaoWithDetails as $chiTiet): ?>
                             <tr>
                                 <td>
                                     <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required>
@@ -56,20 +59,20 @@
                                         <?php $loai_tai_san_list = $this->loaiTaiSanModel->readAll(); ?>
                                         <?php foreach ($loai_tai_san_list as $loai): ?>
                                             <option value="<?= $loai['loai_tai_san_id']; ?>"
-                                                <?= $loai['loai_tai_san_id'] == $chiTiet['loai_tai_san_id'] ? 'selected' : ''; ?>>
+                                                <?= ($loai['loai_tai_san_id'] == $chiTiet['loai_tai_san_id']) ? 'selected' : ''; ?>>
                                                 <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
                                 </td>
                                 <td>
-                                    <select class="form-control select-tai-san" name="tai_san_id[]" required
-                                        data-selected="<?= $chiTiet['tai_san_id'] ?>">
+                                    <select class="form-control select-tai-san" name="tai_san_id[]" required>
                                         <option value="">Chọn tài sản</option>
                                         <?php foreach ($tai_san_list as $tai_san): ?>
                                             <option value="<?= $tai_san['tai_san_id']; ?>"
                                                 data-loai="<?= $tai_san['loai_tai_san_id']; ?>"
-                                                <?= $tai_san['tai_san_id'] == $chiTiet['tai_san_id'] ? 'selected' : ''; ?>>
+                                                <?= ($tai_san['tai_san_id'] == $chiTiet['tai_san_id']) ? 'selected' : ''; ?>
+                                                style="display: <?= ($tai_san['loai_tai_san_id'] == $chiTiet['loai_tai_san_id']) ? '' : 'none'; ?>;">
                                                 <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
                                             </option>
                                         <?php endforeach; ?>
@@ -77,7 +80,7 @@
                                 </td>
                                 <td>
                                     <input type="number" class="form-control" name="so_luong[]"
-                                        value="<?= $chiTiet['so_luong'] ?>" required min="1">
+                                        value="<?= $chiTiet['so_luong']; ?>" required min="1">
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-danger btn-sm"
@@ -92,19 +95,19 @@
                 <div class="form-group mt-3">
                     <label for="ghiChu">Ghi chú:</label>
                     <textarea class="form-control" id="ghiChu" name="ghi_chu"
-                        rows="3"><?= htmlspecialchars($phieuNhap['ghi_chu']) ?></textarea>
+                        rows="3"><?= $phieuBanGiao['ghi_chu']; ?></textarea>
                 </div>
 
-                <div class="form-group row">
+                <div class="form-group row mt-3">
                     <div class="col-sm-10">
-                        <button type="submit" class="btn btn-primary">Cập nhật</button>
-                        <a href="index.php?model=phieunhap&action=index" class="btn btn-secondary">Hủy</a>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 
 <script>
     function addTaiSan() {
@@ -115,32 +118,16 @@
         var cell3 = newRow.insertCell(2);
         var cell4 = newRow.insertCell(3);
 
-        cell1.innerHTML = `
-        <?php $loai_tai_san_list = $this->loaiTaiSanModel->readAll(); ?>
-        <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required>
-            <option value="">Chọn loại tài sản</option>
-            <?php foreach ($loai_tai_san_list as $loai): ?>
-                        <option value="<?= $loai['loai_tai_san_id']; ?>">
-                            <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
-                        </option>
-            <?php endforeach; ?>
-        </select>
-    `;
-        cell2.innerHTML = `
-        <select class="form-control select-tai-san" name="tai_san_id[]" required>
-                                    <option value="">Chọn tài sản</option>
-                                    <?php foreach ($tai_san_list as $tai_san): ?>
-                                                <option value="<?= $tai_san['tai_san_id']; ?>" data-loai="<?= $tai_san['loai_tai_san_id']; ?>" style="display: none;">
-                                                    <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
-                                                </option>
-                                    <?php endforeach; ?>
-                                </select>
-    `;
-        cell3.innerHTML = '<input type="number" class="form-control" name="so_luong[]" required min="1">';
+        cell1.innerHTML = document.querySelector('.loai-tai-san').outerHTML;
+        cell2.innerHTML = document.querySelector('.select-tai-san').outerHTML;
+        cell3.innerHTML = '<input type="number" class="form-control" name="so_luong[]" value="1" required min="1">';
         cell4.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>';
 
         newRow.querySelector('.loai-tai-san').addEventListener('change', function () {
             updateTaiSanOptions(this);
+        });
+        newRow.querySelector('.select-tai-san').addEventListener('change', function () {
+            mergeDuplicateRows();
         });
     }
 
@@ -156,29 +143,42 @@
     function updateTaiSanOptions(selectLoai) {
         var loaiTaiSanId = selectLoai.value;
         var selectTaiSan = selectLoai.closest('tr').querySelector('.select-tai-san');
-        var selectedTaiSanId = selectTaiSan.dataset.selected;
-
-        var hasValidSelection = false;
 
         Array.from(selectTaiSan.options).forEach(option => {
             if (option.value === "") {
                 option.style.display = "";
             } else {
-                var isMatch = option.dataset.loai === loaiTaiSanId;
-                option.style.display = isMatch ? "" : "none";
-                if (isMatch && option.value === selectedTaiSanId) {
-                    option.selected = true;
-                    hasValidSelection = true;
-                }
+                option.style.display = option.dataset.loai === loaiTaiSanId ? "" : "none";
             }
         });
 
-        if (!hasValidSelection) {
-            selectTaiSan.value = "";
+        selectTaiSan.value = ""; // Reset selection
+    }
+
+    function mergeDuplicateRows() {
+        var table = document.getElementById('chiTietTable');
+        var rows = table.getElementsByTagName('tr');
+        var rowsToDelete = [];
+
+        for (var i = 1; i < rows.length; i++) {
+            for (var j = i + 1; j < rows.length; j++) {
+                var loaiTaiSan1 = rows[i].querySelector('.loai-tai-san').value;
+                var taiSan1 = rows[i].querySelector('.select-tai-san').value;
+                var loaiTaiSan2 = rows[j].querySelector('.loai-tai-san').value;
+                var taiSan2 = rows[j].querySelector('.select-tai-san').value;
+
+                if (loaiTaiSan1 === loaiTaiSan2 && taiSan1 === taiSan2) {
+                    var soLuong1 = parseInt(rows[i].querySelector('input[name="so_luong[]"]').value);
+                    var soLuong2 = parseInt(rows[j].querySelector('input[name="so_luong[]"]').value);
+                    rows[i].querySelector('input[name="so_luong[]"]').value = soLuong1 + soLuong2;
+                    rowsToDelete.push(rows[j]);
+                }
+            }
         }
 
-        // Cập nhật giá trị đã chọn
-        selectTaiSan.dataset.selected = selectTaiSan.value;
+        for (var i = rowsToDelete.length - 1; i >= 0; i--) {
+            rowsToDelete[i].parentNode.removeChild(rowsToDelete[i]);
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -186,51 +186,11 @@
             select.addEventListener('change', function () {
                 updateTaiSanOptions(this);
             });
-            // Trigger the change event to update tai san options on page load
-            updateTaiSanOptions(select);
-        });
-    });
-    // Form validation
-    document.getElementById('phieuNhapForm').addEventListener('submit', function (event) {
-        var isValid = true;
-        var taiSanSelects = document.querySelectorAll('.select-tai-san');
-        var soLuongInputs = document.querySelectorAll('input[name="so_luong[]"]');
-
-        taiSanSelects.forEach(function (select, index) {
-            if (select.value === "") {
-                isValid = false;
-                select.classList.add('is-invalid');
-            } else {
-                select.classList.remove('is-invalid');
-            }
-
-            var soLuong = soLuongInputs[index].value;
-            if (soLuong === "" || parseInt(soLuong) < 1) {
-                isValid = false;
-                soLuongInputs[index].classList.add('is-invalid');
-            } else {
-                soLuongInputs[index].classList.remove('is-invalid');
-            }
         });
 
-        if (!isValid) {
-            event.preventDefault();
-            alert('Vui lòng kiểm tra lại thông tin nhập.');
-        }
-    });
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.loai-tai-san').forEach(function (select) {
-            select.addEventListener('change', function () {
-                updateTaiSanOptions(this);
-            });
-            // Kích hoạt sự kiện change để cập nhật tùy chọn tài sản khi tải trang
-            updateTaiSanOptions(select);
-        });
-
-        // Thêm sự kiện lắng nghe cho việc thay đổi tài sản
         document.querySelectorAll('.select-tai-san').forEach(function (select) {
             select.addEventListener('change', function () {
-                this.dataset.selected = this.value;
+                mergeDuplicateRows();
             });
         });
     });
