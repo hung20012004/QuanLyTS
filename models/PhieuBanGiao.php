@@ -126,5 +126,25 @@ class PhieuBanGiao
     }
     return false;
 }
+public function updateStatus2()
+{
+    $query = "UPDATE " . $this->table_name . "
+              SET trang_thai = :trang_thai,
+                  ngay_ban_giao = :ngay_ban_giao
+              WHERE phieu_ban_giao_id = :phieu_ban_giao_id";
+
+    $stmt = $this->conn->prepare($query);
+
+    $stmt->bindParam(":trang_thai", $this->trang_thai);
+   
+    $stmt->bindParam(":ngay_ban_giao", $this->ngay_ban_giao);
+
+    $stmt->bindParam(":phieu_ban_giao_id", $this->phieu_ban_giao_id);
+
+    if($stmt->execute()){
+        return true;
+    }
+    return false;
+}
 
 }

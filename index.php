@@ -6,7 +6,7 @@ require 'controllers/BaoTriController.php';
 require 'controllers/PhieuNhapController.php';
 require 'controllers/PhieuBanGiaoController.php';
 require 'controllers/LoaiTaiSanController.php';
-require 'controllers/ThanhLyController.php';
+
 require 'controllers/ViTriController.php';
 require 'controllers/UserController.php';
 require 'controllers/AuthController.php';
@@ -150,6 +150,9 @@ switch ($action) {
         break; 
      case 'xuatphieu':
         $controller->exportphieu($id);
+        break;
+    case 'ban_giao':
+        $controller->ban_giao($id);
         break;
     case 'exportWord':
         $controller->exportWord($id);
