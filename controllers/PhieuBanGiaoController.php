@@ -2,6 +2,7 @@
 include_once 'config/database.php';
 include_once 'models/PhieuBanGiao.php';
 include_once 'models/LoaiTaiSan.php';
+include_once 'models/ViTriChiTiet.php';
 include_once 'models/PhieuBanGiaoChiTiet.php';
 include_once 'models/TaiSan.php';
 include_once 'models/ViTri.php';
@@ -16,6 +17,7 @@ class PhieuBanGiaoController extends Controller
     private $taiSanModel;
     private $viTriModel;
     private $userModel;
+    private $viTriChiTietModel;
 
     public function __construct()
     {
@@ -27,6 +29,8 @@ class PhieuBanGiaoController extends Controller
         $this->viTriModel = new ViTri($this->db);
         $this->userModel = new User($this->db);
         $this->loaiTaiSanModel = new LoaiTaiSan($this->db);
+        $this->viTriChiTietModel = new ViTriChiTiet($this->db);
+
     }
 
     public function index()
@@ -80,7 +84,7 @@ class PhieuBanGiaoController extends Controller
 
     private function createPhieuBanGiao()
     {
-        $this->phieuBanGiaoModel->user_ban_giao_id = $_SESSION['user_id'];
+        $this->phieuBanGiaoModel->user_ban_giao_id = '';
         $this->phieuBanGiaoModel->user_nhan_id = $_POST['user_nhan_id'];
         $this->phieuBanGiaoModel->user_duyet_id = null;
         $this->phieuBanGiaoModel->vi_tri_id = $_POST['vi_tri_id'];
@@ -190,32 +194,50 @@ class PhieuBanGiaoController extends Controller
         }
     }
     public function xet_duyet($id)
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $action = isset($_POST['action']) ? $_POST['action'] : null;
-            if ($action == 'approve') {
-                $this->phieuBanGiaoModel->trang_thai = 'DaPheDuyet';
-                $this->phieuBanGiaoModel->ngay_duyet = date('Y-m-d');
-            } elseif ($action == 'reject') {
-                $this->phieuBanGiaoModel->trang_thai = 'KhongDuyet';
-                $this->phieuBanGiaoModel->ngay_duyet = date('Y-m-d');
-            }
-            $this->phieuBanGiaoModel->phieu_ban_giao_id = $id;
-            $this->phieuBanGiaoModel->update();
-            header("Location: index.php?model=phieubangiao&action=index");
-            exit();
-        } else {
-            $phieuBanGiao = $this->phieuBanGiaoModel->readById($id);
-            if (!$phieuBanGiao) {
-                die('Phiếu bàn giao không tồn tại.');
-            }
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $action = isset($_POST['action']) ? $_POST['action'] : null;
+        $ghi_chu_duyet = isset($_POST['ghi_chu_duyet']) ? $_POST['ghi_chu_duyet'] : '';
 
-            $user_duyet = $this->userModel->readById($_SESSION['user_id']);
-
-            $content = 'views/phieu_ban_giao/xet_duyet.php';
-            include ('views/layouts/base.php');
+        if ($action == 'approve') {
+            $this->phieuBanGiaoModel->trang_thai = 'DaPheDuyet';
+        } elseif ($action == 'reject') {
+            $this->phieuBanGiaoModel->trang_thai = 'KhongDuyet';
         }
+        $this->phieuBanGiaoModel->ngay_duyet = date('Y-m-d');
+        $this->phieuBanGiaoModel->user_duyet_id = $_SESSION['user_id'];
+        $this->phieuBanGiaoModel->user_ban_giao_id = $_POST['nguoiBanGiao'];
+        $this->phieuBanGiaoModel->ngay_kiem_tra = $_POST['ngayKiemTra'];
+        $this->phieuBanGiaoModel->phieu_ban_giao_id = $id;
+        $this->phieuBanGiaoModel->updateStatus();
+
+        header("Location: index.php?model=phieubangiao&action=index");
+        exit();
+    } else {
+        $phieuBanGiao = $this->phieuBanGiaoModel->readById($id);
+        if (!$phieuBanGiao) {
+            die('Phiếu bàn giao không tồn tại.');
+        }
+
+        $chiTietPhieuBanGiao = $this->phieuBanGiaoChiTietModel->readByPhieuBanGiaoId($id);
+        $chiTietWithAdditionalData = array();
+        foreach ($chiTietPhieuBanGiao as $chiTiet) {
+            $taiSan = $this->taiSanModel->readById($chiTiet['tai_san_id']);
+            $loaiTaiSan = $this->loaiTaiSanModel->readById($taiSan['loai_tai_san_id']);
+            $chiTiet['ten_tai_san'] = $taiSan['ten_tai_san'];
+            $chiTiet['ten_loai_tai_san'] = $loaiTaiSan['ten_loai_tai_san'];
+            $chiTietWithAdditionalData[] = $chiTiet;
+        }
+
+        $user_duyet = $this->userModel->readById($_SESSION['user_id']);
+        $nguoiNhan = $this->userModel->readById($phieuBanGiao['user_nhan_id']);
+        $nguoiBanGiao = $this->userModel->readById($phieuBanGiao['user_ban_giao_id']);
+        $viTri = $this->viTriModel->readById($phieuBanGiao['vi_tri_id']);
+
+        $content = 'views/phieu_ban_giao/xet_duyet.php';
+        include('views/layouts/base.php');
     }
+}
 
     public function delete($id)
     {
@@ -270,6 +292,80 @@ class PhieuBanGiaoController extends Controller
         // Load the view
         $content = 'views/phieu_ban_giao/show.php';
         include ('views/layouts/base.php');
+    }
+    public function kiem_tra($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->processKiemTraForm($id);
+        } else {
+            $this->showKiemTraForm($id);
+        }
+    }
+
+    private function showKiemTraForm($id)
+    {
+        $phieuBanGiao = $this->phieuBanGiaoModel->readById($id);
+        if (!$phieuBanGiao || $phieuBanGiao['trang_thai'] !== 'DaGui') {
+            die('Phiếu bàn giao không tồn tại hoặc không ở trạng thái chờ kiểm tra.');
+        }
+
+        $nguoiNhan = $this->userModel->readById($phieuBanGiao['user_nhan_id']);
+        $viTri = $this->viTriModel->readById($phieuBanGiao['vi_tri_id']);
+        $chiTietPhieuBanGiao = $this->phieuBanGiaoChiTietModel->readByPhieuBanGiaoId($id);
+
+        $chiTietWithAdditionalData = array();
+        foreach ($chiTietPhieuBanGiao as $chiTiet) {
+            $taiSan = $this->taiSanModel->readById($chiTiet['tai_san_id']);
+            $loaiTaiSan = $this->loaiTaiSanModel->readById($taiSan['loai_tai_san_id']);
+            $chiTiet['ten_tai_san'] = $taiSan['ten_tai_san'];
+            $chiTiet['ten_loai_tai_san'] = $loaiTaiSan['ten_loai_tai_san'];
+            $chiTiet['so_luong_trong_kho'] = $this->viTriChiTietModel->getSoLuongTrongKho(1, $chiTiet['tai_san_id']);
+            $chiTietWithAdditionalData[] = $chiTiet;
+        }
+
+
+        $content = 'views/phieu_ban_giao/kiem_tra.php';
+        include ('views/layouts/base.php');
+    }
+
+    private function processKiemTraForm($id)
+    {
+        $this->phieuBanGiaoModel->user_ban_giao_id = $_SESSION['user_id'];
+        if (isset($_POST['action'])) {
+            if ($_POST['action'] === 'gui') {
+                // Kiểm tra số lượng tài sản
+                $chiTietPhieuBanGiao = $this->phieuBanGiaoChiTietModel->readByPhieuBanGiaoId($id);
+                foreach ($chiTietPhieuBanGiao as $chiTiet) {
+                    $soLuongTrongKho = $this->viTriChiTietModel->getSoLuongTrongKho(1, $chiTiet['tai_san_id']);
+                    if ($chiTiet['so_luong'] > $soLuongTrongKho) {
+                        $_SESSION['message'] = 'Phiếu gửi không hợp lệ. Số lượng yêu cầu vượt quá số lượng trong kho.';
+                        $_SESSION['message_type'] = 'danger';
+                        header("Location: index.php?model=phieubangiao&action=kiem_tra&id=$id");
+                        exit();
+                    }
+                }
+
+                // Cập nhật trạng thái phiếu
+                $this->phieuBanGiaoModel->phieu_ban_giao_id = $id;
+                $this->phieuBanGiaoModel->trang_thai = 'DangChoPheDuyet';
+                $this->phieuBanGiaoModel->ngay_kiem_tra = date('Y-m-d');
+                $this->phieuBanGiaoModel->updateStatus();
+
+                $_SESSION['message'] = 'Kiểm tra phiếu thành công. Phiếu đã chuyển sang trạng thái chờ phê duyệt.';
+                $_SESSION['message_type'] = 'success';
+            } elseif ($_POST['action'] === 'huy') {
+                // Cập nhật trạng thái phiếu thành 'DaHuy'
+                $this->phieuBanGiaoModel->phieu_ban_giao_id = $id;
+                $this->phieuBanGiaoModel->trang_thai = 'DaHuy';
+                $this->phieuBanGiaoModel->updateStatus();
+
+                $_SESSION['message'] = 'Phiếu đã được hủy.';
+                $_SESSION['message_type'] = 'warning';
+            }
+        }
+
+        header("Location: index.php?model=phieubangiao&action=index");
+        exit();
     }
     
 }

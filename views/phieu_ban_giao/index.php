@@ -29,7 +29,7 @@
                         alert.style.display = 'none';
                     }, 150);
                 }
-            }, 7000);
+            }, 2000);
         </script>
     <?php endif; ?>
 
@@ -119,6 +119,9 @@
                                         <?php endif; ?>
                                         <?php if ($_SESSION['role'] == 'QuanLy' && $phieu['trang_thai'] == 'DangChoPheDuyet'): ?>
                                             <a href="index.php?model=phieubangiao&action=xet_duyet&id=<?php echo $phieu['phieu_ban_giao_id']; ?>" class="btn btn-primary btn-sm mx-2">Xét duyệt</a>
+                                        <?php endif; ?>
+                                        <?php if ($_SESSION['role'] == 'NhanVienQuanLy' && $phieu['trang_thai'] == 'DaGui'): ?>
+                                            <a href="index.php?model=phieubangiao&action=kiem_tra&id=<?php echo $phieu['phieu_ban_giao_id']; ?>" class="btn btn-primary btn-sm mx-2">Kiểm tra</a>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

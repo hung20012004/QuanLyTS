@@ -1,7 +1,8 @@
 <?php
 // models/ViTriChiTiet.php
 
-class ViTriChiTiet {
+class ViTriChiTiet
+{
     private $conn;
     private $table_name = "vi_tri_chi_tiet";
 
@@ -11,12 +12,14 @@ class ViTriChiTiet {
     public $so_luong;
     public $trong_kho;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
     // Đọc tất cả chi tiết vị trí
-    public function read() {
+    public function read()
+    {
         $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri, loai_tai_san.ten_loai_tai_san 
                  FROM (( " . $this->table_name . "
                  INNER JOIN tai_san ON vi_tri_chi_tiet.tai_san_id = tai_san.tai_san_id)
@@ -27,7 +30,8 @@ class ViTriChiTiet {
         return $stmt;
     }
 
-    public function readNotKho() {
+    public function readNotKho()
+    {
         $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri, loai_tai_san.ten_loai_tai_san 
                  FROM (( " . $this->table_name . "
                  INNER JOIN tai_san ON vi_tri_chi_tiet.tai_san_id = tai_san.tai_san_id)
@@ -40,7 +44,8 @@ class ViTriChiTiet {
     }
 
     // Tạo chi tiết vị trí mới
-    public function create() {
+    public function create()
+    {
         $query = "SELECT so_luong FROM " . $this->table_name . " WHERE tai_san_id = :tai_san_id AND vi_tri_id = :vi_tri_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':tai_san_id', $this->tai_san_id);
@@ -51,7 +56,7 @@ class ViTriChiTiet {
             $query = "INSERT INTO " . $this->table_name . " SET vi_tri_id=:vi_tri_id, tai_san_id=:tai_san_id, so_luong=:so_luong";
 
             $stmt = $this->conn->prepare($query);
-            
+
             // sanitize
             $this->vi_tri_id = htmlspecialchars(strip_tags($this->vi_tri_id));
             $this->tai_san_id = htmlspecialchars(strip_tags($this->tai_san_id));
@@ -61,15 +66,16 @@ class ViTriChiTiet {
             $stmt->bindParam(':vi_tri_id', $this->vi_tri_id);
             $stmt->bindParam(':tai_san_id', $this->tai_san_id);
             $stmt->bindParam(':so_luong', $this->so_luong);
-            
+
             if ($stmt->execute()) {
                 return true;
             }
             return false;
         }
     }
-    
-    public function createOrUpdate($tai_san_id, $vi_tri_id, $so_luong) {
+
+    public function createOrUpdate($tai_san_id, $vi_tri_id, $so_luong)
+    {
         try {
             $this->conn->beginTransaction();
 
@@ -117,7 +123,8 @@ class ViTriChiTiet {
         }
     }
     // Đọc thông tin chi tiết vị trí theo ID
-    public function readById($id) {
+    public function readById($id)
+    {
         $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri, loai_tai_san.ten_loai_tai_san 
                  FROM " . $this->table_name . " 
                  INNER JOIN tai_san ON vi_tri_chi_tiet.tai_san_id = tai_san.tai_san_id)
@@ -131,7 +138,8 @@ class ViTriChiTiet {
     }
 
     // Đọc thông tin chi tiết vị trí theo ID vị trí
-    public function readByViTriId($vi_tri_id) {
+    public function readByViTriId($vi_tri_id)
+    {
         $query = "SELECT vi_tri_chi_tiet.*, tai_san.ten_tai_san, vi_tri.ten_vi_tri, loai_tai_san.ten_loai_tai_san , loai_tai_san.loai_tai_san_id 
                  FROM (( " . $this->table_name . "
                  INNER JOIN tai_san ON vi_tri_chi_tiet.tai_san_id = tai_san.tai_san_id)
@@ -145,21 +153,22 @@ class ViTriChiTiet {
     }
 
     // Cập nhật thông tin chi tiết vị trí
-    public function update($tai_san_id, $vi_tri_id, $so_luong) {
+    public function update($tai_san_id, $vi_tri_id, $so_luong)
+    {
         $query = "UPDATE " . $this->table_name . " SET so_luong = :so_luong WHERE tai_san_id = :tai_san_id AND vi_tri_id = :vi_tri_id";
-    
+
         $stmt = $this->conn->prepare($query);
-    
+
         // sanitize
         $tai_san_id = htmlspecialchars(strip_tags($tai_san_id));
         $vi_tri_id = htmlspecialchars(strip_tags($vi_tri_id));
         $so_luong = htmlspecialchars(strip_tags($so_luong));
-    
+
         // bind values
         $stmt->bindParam(':tai_san_id', $tai_san_id);
         $stmt->bindParam(':vi_tri_id', $vi_tri_id);
         $stmt->bindParam(':so_luong', $so_luong);
-    
+
         if ($stmt->execute()) {
             return true;
         }
@@ -167,9 +176,10 @@ class ViTriChiTiet {
     }
 
     // Trong lớp viTriChiTiet hoặc một lớp quản lý tương ứng
-    public function updateKho($chiTietID, $soLuongThayDoi) {
+    public function updateKho($chiTietID, $soLuongThayDoi)
+    {
         // Assume there is a table or data structure for kho where vi_tri_id = 0
-        $sql = "UPDATE ". $this->table_name ." SET so_luong = so_luong + :soLuongThayDoi WHERE tai_san_id = :chiTietID AND vi_tri_id = 0";
+        $sql = "UPDATE " . $this->table_name . " SET so_luong = so_luong + :soLuongThayDoi WHERE tai_san_id = :chiTietID AND vi_tri_id = 0";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':soLuongThayDoi', $soLuongThayDoi, PDO::PARAM_INT);
         $stmt->bindParam(':chiTietID', $chiTietID, PDO::PARAM_INT);
@@ -178,7 +188,8 @@ class ViTriChiTiet {
 
 
     // Xóa chi tiết vị trí
-    public function delete($id) {
+    public function delete($id)
+    {
         $query = "DELETE FROM " . $this->table_name . " WHERE vi_tri_chi_tiet_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $id);
@@ -197,21 +208,23 @@ class ViTriChiTiet {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? $result['so_luong'] : null;
     }
-    public function kiemTraKho($tai_san_id, $soLuongCanThem) {
+    public function kiemTraKho($tai_san_id, $soLuongCanThem)
+    {
         // Assume there is a table or data structure for kho where vi_tri_id = 0
-        $sql = "SELECT so_luong FROM ". $this->table_name ." WHERE tai_san_id = :tai_san_id AND vi_tri_id = 1";
+        $sql = "SELECT so_luong FROM " . $this->table_name . " WHERE tai_san_id = :tai_san_id AND vi_tri_id = 1";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':tai_san_id', $tai_san_id, PDO::PARAM_INT);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
         $soLuongTrongKho = $row ? $row['so_luong'] : 0;
-    
+
         // Kiểm tra nếu số lượng trong kho đủ để thực hiện thay đổi
         return ($soLuongTrongKho + $soLuongCanThem >= 0); // Nếu cần giảm số lượng, hãy thay đổi điều kiện này phù hợp
     }
 
-    public function checkExist($id){
+    public function checkExist($id)
+    {
         $query = "SELECT COUNT(*) FROM " . $this->table_name . " WHERE vi_tri_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $id);
@@ -221,23 +234,36 @@ class ViTriChiTiet {
         return false;
     }
     public function readByTaiSanAndViTri($taiSanId, $viTriId)
-{
-    $query = "SELECT * FROM vi_tri_chi_tiet WHERE tai_san_id = :tai_san_id AND vi_tri_id = :vi_tri_id";
-    $stmt = $this->conn->prepare($query);
-    $stmt->bindParam(':tai_san_id', $taiSanId, PDO::PARAM_INT);
-    $stmt->bindParam(':vi_tri_id', $viTriId, PDO::PARAM_INT);
-    $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
+    {
+        $query = "SELECT * FROM vi_tri_chi_tiet WHERE tai_san_id = :tai_san_id AND vi_tri_id = :vi_tri_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':tai_san_id', $taiSanId, PDO::PARAM_INT);
+        $stmt->bindParam(':vi_tri_id', $viTriId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-public function updateQuantity($viTriChiTietId, $newQuantity)
-{
-    $query = "UPDATE vi_tri_chi_tiet SET so_luong = :so_luong WHERE vi_tri_chi_tiet_id = :vi_tri_chi_tiet_id";
-    $stmt = $this->conn->prepare($query);
-    $stmt->bindParam(':so_luong', $newQuantity, PDO::PARAM_INT);
-    $stmt->bindParam(':vi_tri_chi_tiet_id', $viTriChiTietId, PDO::PARAM_INT);
-    return $stmt->execute();
-}
+    public function updateQuantity($viTriChiTietId, $newQuantity)
+    {
+        $query = "UPDATE vi_tri_chi_tiet SET so_luong = :so_luong WHERE vi_tri_chi_tiet_id = :vi_tri_chi_tiet_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':so_luong', $newQuantity, PDO::PARAM_INT);
+        $stmt->bindParam(':vi_tri_chi_tiet_id', $viTriChiTietId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+    public function getSoLuongTrongKho($vi_tri_id, $tai_san_id)
+    {
+        $query = "SELECT so_luong FROM vi_tri_chi_tiet WHERE vi_tri_id = ? AND tai_san_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(1, $vi_tri_id, PDO::PARAM_INT);
+        $stmt->bindValue(2, $tai_san_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            return $result['so_luong'];
+        }
+        return 0;
+    }
 
 }
 ?>
