@@ -7,6 +7,7 @@ class User {
     public $user_id;
     public $email;
     public $ten;
+    public $khoa;
     public $password;
     public $role;
     public $avatar;
@@ -25,7 +26,7 @@ class User {
 
     // Tạo người dùng mới
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " SET email=:email, ten=:ten, password=:password, role=:role";
+        $query = "INSERT INTO " . $this->table_name . " SET email=:email, ten=:ten, password=:password, role=:role, khoa=:khoa";
 
         $stmt = $this->conn->prepare($query);
 
@@ -34,12 +35,14 @@ class User {
         $this->ten = htmlspecialchars(strip_tags($this->ten));
         $this->password = htmlspecialchars(strip_tags($this->password));
         $this->role = htmlspecialchars(strip_tags($this->role));
+        $this->khoa = htmlspecialchars(strip_tags($this->khoa));
 
         // bind values
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':ten', $this->ten);
         $stmt->bindParam(':password', $this->password);
         $stmt->bindParam(':role', $this->role);
+        $stmt->bindParam(':khoa', $this->khoa);
 
         if ($stmt->execute()) {
             return true;
@@ -58,11 +61,12 @@ class User {
 
     // Cập nhật thông tin người dùng
     public function update() {
-        $query = "UPDATE " . $this->table_name . " SET email = :email, ten = :ten, password = :password, role = :role,avatar=:avatar WHERE user_id = :user_id";
+        $query = "UPDATE " . $this->table_name . " SET email = :email, ten = :ten, password = :password, khoa=:khoa,role = :role,avatar=:avatar WHERE user_id = :user_id";
 
         $stmt = $this->conn->prepare($query);
 
         // sanitize
+        $this->khoa = htmlspecialchars(strip_tags($this->khoa));
         $this->email = htmlspecialchars(strip_tags($this->email));
         $this->ten = htmlspecialchars(strip_tags($this->ten));
         $this->password = htmlspecialchars(strip_tags($this->password));
@@ -77,7 +81,7 @@ class User {
         $stmt->bindParam(':password', $this->password);
         $stmt->bindParam(':role', $this->role);
         $stmt->bindParam(':user_id', $this->user_id);
-
+        $stmt->bindParam(':khoa', $this->khoa);
         if ($stmt->execute()) {
             return true;
         }

@@ -3,8 +3,8 @@
         <div class="col">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=user&action=index">Người Dùng</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Tạo Người Dùng</li>
+                    <li class="breadcrumb-item"><a href="index.php?model=user&action=index">Quản lý tài khoản người dùng</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Tạo tài khoản</li>
                 </ol>
             </nav>
         </div>
@@ -17,7 +17,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Thêm người dùng</h5>
+                        <h5 class="card-title mb-0">Tạo tài khoản</h5>
                     </div>
                 </div>
                 <div class="card-body">
@@ -50,9 +50,20 @@
                         <div class="mb-3">
                             <label for="role" class="form-label">Vai trò:</label>
                             <select name="role" id="role" class="form-control" required>
-                                <option value="NhanVien" <?php echo $role === 'NhanVien' ? 'selected' : ''; ?>>Nhân viên</option>
+                                <option value="NhanVien" <?php echo $role === 'NhanVien' ? 'selected' : ''; ?>>Cán bộ nhân viên nhà trường</option>
                                 <option value="KyThuat" <?php echo $role === 'KyThuat' ? 'selected' : ''; ?>>Kỹ thuật viên</option>
                                 <option value="NhanVienQuanLy" <?php echo $role === 'NhanVienQuanLy' ? 'selected' : ''; ?>>Nhân viên quản lý tài sản</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="khoa" class="form-label">Khoa:</label>
+                            <select name="khoa" id="khoa" class="form-control" required>
+                                <option value="HTTT" >Hệ thống thông tin</option>
+                                <option value="CNTT" >Công nghệ thông tin</option>
+                                <option value="KT" >Kinh tế</option>
+                                <option value="Co khi" >Cơ khí</option>
+                                <option value="Cong trinh" >Công trình</option>
+                                <option value="Moi truong-ATGT" >Môi trường - An toàn giao thông</option>
                             </select>
                         </div>
                 </div>

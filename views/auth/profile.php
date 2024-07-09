@@ -3,7 +3,7 @@
         <div class="col">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item active" aria-current="page">Thông tin người dùng</li>
+                    <li class="breadcrumb-item active" aria-current="page">Thông tin cá nhân</li>
                 </ol>
             </nav>
         </div>
@@ -16,7 +16,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Thông tin người dùng</h5>
+                        <h5 class="card-title mb-0">Thông tin cá nhân</h5>
                         <button id="editBtn" class="btn btn-info">Sửa</button>
                     </div>
                 </div>
@@ -65,6 +65,11 @@
                                     <label for="email" class="form-label">Email:</label>
                                     <input type="email" name="email" id="email" class="form-control"
                                         value="<?= htmlspecialchars($user['email']); ?>" required disabled>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phongBan" class="form-label">Khoa:</label>
+                                    <input type="phongBan" name="email" id="email" class="form-control"
+                                        value="<?= htmlspecialchars($user['khoa']); ?>" required disabled>
                                 </div>
                                 <div class="mb-3">
                                     <label for="current_password" class="form-label">Mật khẩu hiện tại:</label>
@@ -121,7 +126,7 @@
 
         editBtn.addEventListener('click', function () {
             inputs.forEach(input => {
-                if (input.id !== 'email') { // Make email field permanently disabled
+                if (input.id !== 'email' &&input.id !== 'phongBan') { // Make email field permanently disabled
                     input.disabled = !input.disabled;
                 }
             });

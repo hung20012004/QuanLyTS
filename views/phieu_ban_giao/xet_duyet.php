@@ -1,4 +1,16 @@
 <div class="container-fluid">
+    <div class="row mt-3">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.php?model=phieubangiao&action=index">Bàn giao tài sản</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Xét duyệt phiếu bàn giao tài sản</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Xét duyệt phiếu bàn giao tài sản</h6>
@@ -95,12 +107,14 @@
             </div>
 
             <form action="index.php?model=phieubangiao&action=xet_duyet&id=<?= $phieuBanGiao['phieu_ban_giao_id']; ?>" method="POST" class="mt-4">
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+        <a href="index.php?model=phieubangiao&action=index" class="btn btn-secondary">Quay lại</a>
                 <input type="hidden" name="nguoiBanGiao" value="<?php echo $nguoiBanGiao['user_id']; ?>">
                 <input type="hidden" name="ngayKiemTra" value="<?= htmlspecialchars($phieuBanGiao['ngay_kiem_tra']); ?>">
                 <button type="submit" name="action" value="approve" class="btn btn-success">Phê duyệt</button>
                 <button type="submit" name="action" value="reject" class="btn btn-danger">Từ chối</button>
-                <a href="index.php?model=phieubangiao&action=index" class="btn btn-secondary">Quay lại</a>
-            </form>
         </div>
+        </form>
     </div>
 </div>

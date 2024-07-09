@@ -3,7 +3,7 @@
         <div class="col">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=phieubangiao&action=index">Phiếu bàn giao</a></li>
+                    <li class="breadcrumb-item active"><a href="index.php?model=phieubangiao&action=index">Bàn giao tài sản</a></li>
                 </ol>
             </nav>
         </div>
@@ -40,7 +40,7 @@
                 <div>
                     <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a>
                     <?php if ($_SESSION['role'] == 'NhanVien'): ?>
-                        <a href="index.php?model=phieubangiao&action=create" class="btn btn-primary">Thêm mới</a>
+                        <a href="index.php?model=phieubangiao&action=create" class="btn btn-primary">Tạo yêu cầu</a>
                     <?php endif; ?>
                     <a href="index.php?model=phieubangiao&action=export" class="btn btn-success">Xuất excel</a>
                 </div>
@@ -49,16 +49,13 @@
         <div class="card-body">
             <form id="searchForm" class="mb-3" style="display: none;">
                 <div class="row">
-                    <div class="col-md-4 mb-2">
+                    <div class="col-md-7 mb-2">
                         <div class="d-flex align-items-center">
-                            <label for="ngayBatDau" class="mr-2 mb-0" style="white-space: nowrap;">Từ ngày:&nbsp;&nbsp;&nbsp;</label>
-                            <input type="date" id="ngayBatDau" class="form-control" placeholder="Từ ngày">
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <div class="d-flex align-items-center">
-                            <label for="ngayKetThuc" class="mr-2 mb-0" style="white-space: nowrap;">Đến ngày:</label>
-                            <input type="date" id="ngayKetThuc" class="form-control" placeholder="Đến ngày">
+                            <label for="tenEmail" class="form-label w-80">Ngày tạo phiếu:</label>
+                                <div class="input-group">
+                                    <input type="date" name="ngayBatDau" id="ngayBatDau" class="form-control" placeholder="Từ ngày">
+                                    <input type="date" name="ngayKetThuc" id="ngayKetThuc" class="form-control" placeholder="Đến ngày">
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -68,7 +65,7 @@
                     <thead class="bg-light text-black text-center">
                         <tr>
                             <th>Mã số phiếu</th>
-                            <th>Ngày gửi</th>
+                            <th>Ngày tạo phiếu</th>
                             <th>Ngày kiểm tra</th>
                             <th>Ngày phê duyệt</th>
                             <th>Ngày bàn giao</th>
@@ -78,7 +75,10 @@
                     </thead>
                     <tbody>
                         <?php foreach ($phieuBanGiao as $phieu): ?>
-                            <?php if ($phieu['user_ban_giao_id'] == $_SESSION['user_id'] || $phieu['user_nhan_id'] == $_SESSION['user_id']): ?>
+                            <?php if (($phieu['user_nhan_id'] == $_SESSION['user_id'] && $_SESSION['role']=='NhanVien')
+                              || ($phieu['user_ban_giao_id'] == $_SESSION['user_id'] && $_SESSION['role']=='NhanVienQuanLy')
+                              || ($phieu['user_ban_giao_id'] == '' && $_SESSION['role']=='NhanVienQuanLy')
+                              ||($_SESSION['role']=='QuanLy'&& ($phieu['trang_thai']=='DaBanGiao'||$phieu['trang_thai']=='DangChoPheDuyet'||$phieu['trang_thai']=='KhongDuyet'||$phieu['trang_thai']=='DaPheDuyet'))): ?>
                                 <tr>
                                     <td class="text-center"><?php echo $phieu['phieu_ban_giao_id']; ?></td>
                                     <td class="text-center"><?= date('d-m-Y', strtotime($phieu['ngay_gui'])) ?></td>
@@ -121,7 +121,10 @@
                                             <a href="index.php?model=phieubangiao&action=xet_duyet&id=<?php echo $phieu['phieu_ban_giao_id']; ?>" class="btn btn-primary btn-sm mx-2">Xét duyệt</a>
                                         <?php endif; ?>
                                         <?php if ($_SESSION['role'] == 'NhanVienQuanLy' && $phieu['trang_thai'] == 'DaGui'): ?>
-                                            <a href="index.php?model=phieubangiao&action=kiem_tra&id=<?php echo $phieu['phieu_ban_giao_id']; ?>" class="btn btn-primary btn-sm mx-2">Kiểm tra</a>
+                                            <a href="index.php?model=phieubangiao&action=kiem_tra&id=<?php echo $phieu['phieu_ban_giao_id']; ?>" class="btn btn-primary btn-sm mx-2">Tạo phiếu</a>
+                                        <?php endif; ?>
+                                        <?php if ($_SESSION['role'] == 'NhanVienQuanLy' && $phieu['trang_thai'] == 'DaPheDuyet'): ?>
+                                            <a href="index.php?model=phieubangiao&action=ban_giao&id=<?php echo $phieu['phieu_ban_giao_id']; ?>" class="btn btn-primary btn-sm mx-2">Bàn giao</a>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

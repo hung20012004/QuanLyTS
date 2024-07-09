@@ -84,13 +84,14 @@ class PhieuBanGiaoController extends Controller
 
     private function createPhieuBanGiao()
     {
-        $this->phieuBanGiaoModel->user_ban_giao_id = '';
         $this->phieuBanGiaoModel->user_nhan_id = $_POST['user_nhan_id'];
         $this->phieuBanGiaoModel->user_duyet_id = null;
         $this->phieuBanGiaoModel->vi_tri_id = $_POST['vi_tri_id'];
         $this->phieuBanGiaoModel->ghi_chu = $_POST['ghi_chu'];
         $this->phieuBanGiaoModel->ngay_gui = date('Y-m-d');
         $this->phieuBanGiaoModel->trang_thai = 'DaGui';
+        // var_dump($this->phieuBanGiaoModel);
+        // exit();
         return $this->phieuBanGiaoModel->create();
     }
 
@@ -103,7 +104,7 @@ class PhieuBanGiaoController extends Controller
             $this->phieuBanGiaoChiTietModel->phieu_ban_giao_id = $phieuBanGiaoId;
             $this->phieuBanGiaoChiTietModel->tai_san_id = $taiSanId;
             $this->phieuBanGiaoChiTietModel->so_luong = $_POST['so_luong'][$index];
-            $this->phieuBanGiaoChiTietModel->tinh_trang = 'Moi';
+            $this->phieuBanGiaoChiTietModel->tinh_trang = '';
             $this->phieuBanGiaoChiTietModel->create();
         }
     }
@@ -194,50 +195,50 @@ class PhieuBanGiaoController extends Controller
         }
     }
     public function xet_duyet($id)
-{
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $action = isset($_POST['action']) ? $_POST['action'] : null;
-        $ghi_chu_duyet = isset($_POST['ghi_chu_duyet']) ? $_POST['ghi_chu_duyet'] : '';
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $action = isset($_POST['action']) ? $_POST['action'] : null;
+            $ghi_chu_duyet = isset($_POST['ghi_chu_duyet']) ? $_POST['ghi_chu_duyet'] : '';
 
-        if ($action == 'approve') {
-            $this->phieuBanGiaoModel->trang_thai = 'DaPheDuyet';
-        } elseif ($action == 'reject') {
-            $this->phieuBanGiaoModel->trang_thai = 'KhongDuyet';
+            if ($action == 'approve') {
+                $this->phieuBanGiaoModel->trang_thai = 'DaPheDuyet';
+            } elseif ($action == 'reject') {
+                $this->phieuBanGiaoModel->trang_thai = 'KhongDuyet';
+            }
+            $this->phieuBanGiaoModel->ngay_duyet = date('Y-m-d');
+            $this->phieuBanGiaoModel->user_duyet_id = $_SESSION['user_id'];
+            $this->phieuBanGiaoModel->user_ban_giao_id = $_POST['nguoiBanGiao'];
+            $this->phieuBanGiaoModel->ngay_kiem_tra = $_POST['ngayKiemTra'];
+            $this->phieuBanGiaoModel->phieu_ban_giao_id = $id;
+            $this->phieuBanGiaoModel->updateStatus();
+
+            header("Location: index.php?model=phieubangiao&action=index");
+            exit();
+        } else {
+            $phieuBanGiao = $this->phieuBanGiaoModel->readById($id);
+            if (!$phieuBanGiao) {
+                die('Phiếu bàn giao không tồn tại.');
+            }
+
+            $chiTietPhieuBanGiao = $this->phieuBanGiaoChiTietModel->readByPhieuBanGiaoId($id);
+            $chiTietWithAdditionalData = array();
+            foreach ($chiTietPhieuBanGiao as $chiTiet) {
+                $taiSan = $this->taiSanModel->readById($chiTiet['tai_san_id']);
+                $loaiTaiSan = $this->loaiTaiSanModel->readById($taiSan['loai_tai_san_id']);
+                $chiTiet['ten_tai_san'] = $taiSan['ten_tai_san'];
+                $chiTiet['ten_loai_tai_san'] = $loaiTaiSan['ten_loai_tai_san'];
+                $chiTietWithAdditionalData[] = $chiTiet;
+            }
+
+            $user_duyet = $this->userModel->readById($_SESSION['user_id']);
+            $nguoiNhan = $this->userModel->readById($phieuBanGiao['user_nhan_id']);
+            $nguoiBanGiao = $this->userModel->readById($phieuBanGiao['user_ban_giao_id']);
+            $viTri = $this->viTriModel->readById($phieuBanGiao['vi_tri_id']);
+
+            $content = 'views/phieu_ban_giao/xet_duyet.php';
+            include ('views/layouts/base.php');
         }
-        $this->phieuBanGiaoModel->ngay_duyet = date('Y-m-d');
-        $this->phieuBanGiaoModel->user_duyet_id = $_SESSION['user_id'];
-        $this->phieuBanGiaoModel->user_ban_giao_id = $_POST['nguoiBanGiao'];
-        $this->phieuBanGiaoModel->ngay_kiem_tra = $_POST['ngayKiemTra'];
-        $this->phieuBanGiaoModel->phieu_ban_giao_id = $id;
-        $this->phieuBanGiaoModel->updateStatus();
-
-        header("Location: index.php?model=phieubangiao&action=index");
-        exit();
-    } else {
-        $phieuBanGiao = $this->phieuBanGiaoModel->readById($id);
-        if (!$phieuBanGiao) {
-            die('Phiếu bàn giao không tồn tại.');
-        }
-
-        $chiTietPhieuBanGiao = $this->phieuBanGiaoChiTietModel->readByPhieuBanGiaoId($id);
-        $chiTietWithAdditionalData = array();
-        foreach ($chiTietPhieuBanGiao as $chiTiet) {
-            $taiSan = $this->taiSanModel->readById($chiTiet['tai_san_id']);
-            $loaiTaiSan = $this->loaiTaiSanModel->readById($taiSan['loai_tai_san_id']);
-            $chiTiet['ten_tai_san'] = $taiSan['ten_tai_san'];
-            $chiTiet['ten_loai_tai_san'] = $loaiTaiSan['ten_loai_tai_san'];
-            $chiTietWithAdditionalData[] = $chiTiet;
-        }
-
-        $user_duyet = $this->userModel->readById($_SESSION['user_id']);
-        $nguoiNhan = $this->userModel->readById($phieuBanGiao['user_nhan_id']);
-        $nguoiBanGiao = $this->userModel->readById($phieuBanGiao['user_ban_giao_id']);
-        $viTri = $this->viTriModel->readById($phieuBanGiao['vi_tri_id']);
-
-        $content = 'views/phieu_ban_giao/xet_duyet.php';
-        include('views/layouts/base.php');
     }
-}
 
     public function delete($id)
     {
@@ -259,6 +260,41 @@ class PhieuBanGiaoController extends Controller
         }
     }
     public function show($id = null)
+    {
+        if ($id === null) {
+            $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Missing ID.');
+        }
+
+        // Fetch the main Phieu Ban Giao data
+        $phieuBanGiao = $this->phieuBanGiaoModel->readById($id);
+        if (!$phieuBanGiao) {
+            die('Phiếu bàn giao không tồn tại.');
+        }
+
+        // Fetch related data
+        $nguoiNhan = $this->userModel->readById($phieuBanGiao['user_nhan_id']);
+        $nguoiBanGiao = $this->userModel->readById($phieuBanGiao['user_ban_giao_id']);
+        $nguoiDuyet = $phieuBanGiao['user_duyet_id'] ? $this->userModel->readById($phieuBanGiao['user_duyet_id']) : null;
+        $viTri = $this->viTriModel->readById($phieuBanGiao['vi_tri_id']);
+
+        // Fetch Chi Tiet Phieu Ban Giao
+        $chiTietPhieuBanGiao = $this->phieuBanGiaoChiTietModel->readByPhieuBanGiaoId($id);
+
+        // Fetch additional data for each Chi Tiet
+        $chiTietWithAdditionalData = array();
+        foreach ($chiTietPhieuBanGiao as $chiTiet) {
+            $taiSan = $this->taiSanModel->readById($chiTiet['tai_san_id']);
+            $loaiTaiSan = $this->loaiTaiSanModel->readById($taiSan['loai_tai_san_id']);
+            $chiTiet['ten_tai_san'] = $taiSan['ten_tai_san'];
+            $chiTiet['ten_loai_tai_san'] = $loaiTaiSan['ten_loai_tai_san'];
+            $chiTietWithAdditionalData[] = $chiTiet;
+        }
+
+        // Load the view
+        $content = 'views/phieu_ban_giao/show.php';
+        include ('views/layouts/base.php');
+    }
+    public function ban_giao($id = null)
     {
         if ($id === null) {
             $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Missing ID.');
@@ -367,6 +403,76 @@ class PhieuBanGiaoController extends Controller
         header("Location: index.php?model=phieubangiao&action=index");
         exit();
     }
-    
+    public function exportWord($id)
+    {
+        require 'vendor/autoload.php';
+
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+
+        // Fetch data
+        $phieuBanGiao = $this->phieuBanGiaoModel->readById($id);
+        if (!$phieuBanGiao) {
+            die('Phiếu bàn giao không tồn tại.');
+        }
+
+        $nguoiNhan = $this->userModel->readById($phieuBanGiao['user_nhan_id']);
+        $nguoiBanGiao = $this->userModel->readById($phieuBanGiao['user_ban_giao_id']);
+        $nguoiDuyet = $phieuBanGiao['user_duyet_id'] ? $this->userModel->readById($phieuBanGiao['user_duyet_id']) : null;
+        $viTri = $this->viTriModel->readById($phieuBanGiao['vi_tri_id']);
+
+        $chiTietPhieuBanGiao = $this->phieuBanGiaoChiTietModel->readByPhieuBanGiaoId($id);
+        $chiTietWithAdditionalData = array();
+        foreach ($chiTietPhieuBanGiao as $chiTiet) {
+            $taiSan = $this->taiSanModel->readById($chiTiet['tai_san_id']);
+            $loaiTaiSan = $this->loaiTaiSanModel->readById($taiSan['loai_tai_san_id']);
+            $chiTiet['ten_tai_san'] = $taiSan['ten_tai_san'];
+            $chiTiet['ten_loai_tai_san'] = $loaiTaiSan['ten_loai_tai_san'];
+            $chiTietWithAdditionalData[] = $chiTiet;
+        }
+
+        // Add a section to the document
+        $section = $phpWord->addSection();
+
+        // Add title
+        $section->addText('PHIẾU BÀN GIAO TÀI SẢN', ['bold' => true, 'size' => 16], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+
+        // Add general information
+        $section->addText('Người tạo yêu cầu: ' . $nguoiNhan['ten']);
+        $section->addText('Ngày tạo phiếu: ' . date('d/m/Y', strtotime($phieuBanGiao['ngay_gui'])));
+        $section->addText('Vị trí: ' . $viTri['ten_vi_tri']);
+        $section->addText('Trạng thái: ' . $phieuBanGiao['trang_thai']);
+        $section->addText('Ghi chú: ' . $phieuBanGiao['ghi_chu']);
+
+        // Add table of assets
+        $table = $section->addTable();
+        $table->addRow();
+        $table->addCell(2000)->addText('Loại tài sản', ['bold' => true]);
+        $table->addCell(2000)->addText('Tên tài sản', ['bold' => true]);
+        $table->addCell(1000)->addText('Số lượng', ['bold' => true]);
+        $table->addCell(2000)->addText('Tình trạng', ['bold' => true]);
+
+        foreach ($chiTietWithAdditionalData as $chiTiet) {
+            $table->addRow();
+            $table->addCell(2000)->addText($chiTiet['ten_loai_tai_san']);
+            $table->addCell(2000)->addText($chiTiet['ten_tai_san']);
+            $table->addCell(1000)->addText($chiTiet['so_luong']);
+            $table->addCell(2000)->addText($chiTiet['tinh_trang']);
+        }
+
+        // Add additional information
+        $section->addText('Người bàn giao: ' . ($nguoiBanGiao ? $nguoiBanGiao['ten'] : 'Chưa bàn giao'));
+        $section->addText('Người duyệt: ' . ($nguoiDuyet ? $nguoiDuyet['ten'] : 'Chưa duyệt'));
+        $section->addText('Ngày kiểm tra: ' . ($phieuBanGiao['ngay_kiem_tra'] ? date('d/m/Y', strtotime($phieuBanGiao['ngay_kiem_tra'])) : 'Chưa kiểm tra'));
+        $section->addText('Ngày duyệt: ' . ($phieuBanGiao['ngay_duyet'] ? date('d/m/Y', strtotime($phieuBanGiao['ngay_duyet'])) : 'Chưa duyệt'));
+        $section->addText('Ngày bàn giao: ' . ($phieuBanGiao['ngay_ban_giao'] ? date('d/m/Y', strtotime($phieuBanGiao['ngay_ban_giao'])) : 'Chưa bàn giao'));
+
+        // Save file
+        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        $fileName = 'PhieuBanGiao_' . $id . '.docx';
+        header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        $objWriter->save("php://output");
+        exit;
+    }
 }
 ?>

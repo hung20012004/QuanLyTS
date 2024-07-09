@@ -1,7 +1,22 @@
 <div class="container-fluid">
+    <div class="row mt-3">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.php?model=phieubangiao&action=index">Bàn giao tài sản</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Chi tiết phiếu bàn giao tài sản</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Chi tiết phiếu bàn giao tài sản</h6>
+        <div class="card-header py-3  d-flex justify-content-between">
+            <h6 class="m-0 pt-3 font-weight-bold text-primary">Chi tiết phiếu bàn giao tài sản</h6>
+            <?php if ($phieuBanGiao['trang_thai']=='DaGiao'): ?>
+            <a href="index.php?model=phieubangiao&action=exportWord&id=<?= $phieuBanGiao['phieu_ban_giao_id']; ?>" class="btn btn-primary">Xuất Word</a>
+            <?php endif;?>
         </div>
         <div class="card-body">
             <div class="row mb-3">
@@ -24,7 +39,7 @@
                         'DaKiemTra' => 'Đã kiểm tra',
                         'DangChoPheDuyet' => 'Đang chờ phê duyệt',
                         'DaPheDuyet' => 'Đã phê duyệt',
-                        'DaTra' => 'Đã trả',
+                        'DaGiao' => 'Đã bàn giao',
                         'KhongDuyet' => 'Không duyệt'
                     ];
                     echo htmlspecialchars($statusMap[$phieuBanGiao['trang_thai']]);
@@ -38,7 +53,7 @@
                 </div>
             </div>
 
-            <h5 class="mt-4">Danh sách tài sản yêu cầu:</h5>
+            <h5 class="mt-4">Danh sách tài sản bàn giao:</h5>
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -99,21 +114,19 @@
                 </div>
             </div>
 
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <a href="index.php?model=phieubangiao&action=index" class="btn btn-secondary">Quay lại </a>
-                    <?php if ($phieuBanGiao['trang_thai'] == 'DaGui'): ?>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+        <a href="index.php?model=phieubangiao&action=index" class="btn btn-secondary">Quay lại </a>
+                    <?php if ($phieuBanGiao['trang_thai'] == 'DaGui'&&$_SESSION['role']=='NhanVienQuanLy'): ?>
                         <a href="index.php?model=phieubangiao&action=kiem_tra&id=<?= $phieuBanGiao['phieu_ban_giao_id']; ?>"
-                            class="btn btn-primary">Kiểm tra</a>
-                    <?php elseif ($phieuBanGiao['trang_thai'] == 'DaKiemTra'): ?>
+                            class="btn btn-primary">Tạo phiếu</a>
+                    <?php elseif ($phieuBanGiao['trang_thai'] == 'DangChoPheDuyet'&&$_SESSION['role']=='QuanLy'): ?>
                         <a href="index.php?model=phieubangiao&action=xet_duyet&id=<?= $phieuBanGiao['phieu_ban_giao_id']; ?>"
                             class="btn btn-success">Xét duyệt</a>
-                    <?php elseif ($phieuBanGiao['trang_thai'] == 'DaPheDuyet'): ?>
+                    <?php elseif ($phieuBanGiao['trang_thai'] == 'DaPheDuyet'&&$_SESSION['role']=='NhanVienQuanLy'): ?>
                         <a href="index.php?model=phieubangiao&action=ban_giao&id=<?= $phieuBanGiao['phieu_ban_giao_id']; ?>"
                             class="btn btn-info">Bàn giao</a>
                     <?php endif; ?>
-                </div>
-            </div>
         </div>
     </div>
 </div>

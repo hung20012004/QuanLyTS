@@ -62,11 +62,11 @@
                     <div class="col-md-4 mb-2">
                         <div class="d-flex align-items-center">
                             <label for="vaitroSearch" class="mr-2 mb-0" style="white-space: nowrap;">Vai trò:&nbsp;&nbsp;&nbsp;</label>
-                            <select id="vaitroSearch" class="form-control" >
+                            <select id="vaitroSearch" class="form-control">
                                 <option value="">Chọn vai trò</option>
-                                <option value="NhanVien">Nhân viên</option>
-                                <option value="KyThuat">Kỹ thuật viên</option>
-                                <option value="NhanVienQuanLy">Nhân viên quản lý tài sản</option>
+                                <option value="Cán bộ nhân viên nhà trường">Cán bộ nhân viên nhà trường</option>
+                                <option value="Kỹ thuật viên">Kỹ thuật viên</option>
+                                <option value="Nhân viên quản lý tài sản">Nhân viên quản lý tài sản</option>
                             </select>
                         </div>
                     </div>
@@ -85,12 +85,12 @@
                     </thead>
                     <tbody>
                         <?php foreach ($users as $user): ?>
-                            <?php if ($user['role'] !== 'Quanly'): ?>
+                            <?php if ($user['role'] !== 'QuanLy'): ?>
                                 <tr>
                                     <td class="text-center"><?= $user['user_id'] ?></td>
                                     <td><?= htmlspecialchars($user['email']) ?></td>
                                     <td><?= htmlspecialchars($user['ten']) ?></td>
-                                    <td><?= $user['role'] === 'NhanVien' ? 'Nhân viên' : ($user['role'] === 'KyThuat' ? 'Kỹ thuật viên' : ($user['role'] === 'NhanVienQuanLy' ? 'Nhân viên quản lý tài sản' : $user['role'])) ?></td>
+                                    <td><?= $user['role'] === 'NhanVien' ? 'Cán bộ nhân viên nhà trường' : ($user['role'] === 'KyThuat' ? 'Kỹ thuật viên' : ($user['role'] === 'NhanVienQuanLy' ? 'Nhân viên quản lý tài sản' : 'Quản lý')) ?></td>
                                     <td class="d-flex justify-content-center">
                                         <a href="index.php?model=user&action=edit&id=<?= $user['user_id'] ?>" class="btn btn-warning btn-sm mx-2">Sửa</a>
                                         <form action="index.php?model=user&action=delete&id=<?= $user['user_id'] ?>" method="POST" style="display: inline-block;" onsubmit="return confirmDelete();">
@@ -126,9 +126,7 @@ $(document).ready(function() {
             var name = data[2].toLowerCase();
             var role = data[3];
 
-            var roleMatch = roleFilter === '' || 
-                            (roleFilter === 'NhanVien' && role === 'Nhân viên') || 
-                            (roleFilter === 'KyThuat' && role === 'Kỹ thuật viên');
+            var roleMatch = roleFilter === '' || role.includes(roleFilter);
 
             return name.includes(nameFilter) && email.includes(emailFilter) && roleMatch;
         });

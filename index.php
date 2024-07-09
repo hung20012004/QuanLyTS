@@ -50,9 +50,6 @@ switch ($model) {
     case 'loaitaisan':
         $controller = new LoaiTaiSanController();
         break;
-    case 'khauhao':
-        $controller = new KhauHaoController();
-        break;
     case 'phieubangiao':
         $controller = new PhieuBanGiaoController();
         break;       
@@ -123,6 +120,9 @@ switch ($action) {
         break;
     case 'nhap_tai_san':
         $controller->nhap_tai_san($id);
+        break;
+    case 'exportWord':
+        $controller->exportWord($id);
         break;
     default:
         $controller->index();

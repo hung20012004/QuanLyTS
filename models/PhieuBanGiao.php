@@ -42,18 +42,16 @@ class PhieuBanGiao
     public function create()
     {
         $query = "INSERT INTO " . $this->table_name . " 
-                  SET user_ban_giao_id=:user_ban_giao_id, user_nhan_id=:user_nhan_id, 
+                  SET user_nhan_id=:user_nhan_id, 
                       vi_tri_id=:vi_tri_id, ngay_gui=:ngay_gui, trang_thai=:trang_thai";
 
         $stmt = $this->conn->prepare($query);
 
-        $this->user_ban_giao_id = htmlspecialchars(strip_tags($this->user_ban_giao_id));
         $this->user_nhan_id = htmlspecialchars(strip_tags($this->user_nhan_id));
         $this->vi_tri_id = htmlspecialchars(strip_tags($this->vi_tri_id));
         $this->ngay_gui = htmlspecialchars(strip_tags($this->ngay_gui));
         $this->trang_thai = htmlspecialchars(strip_tags($this->trang_thai));
 
-        $stmt->bindParam(":user_ban_giao_id", $this->user_ban_giao_id);
         $stmt->bindParam(":user_nhan_id", $this->user_nhan_id);
         $stmt->bindParam(":vi_tri_id", $this->vi_tri_id);
         $stmt->bindParam(":ngay_gui", $this->ngay_gui);

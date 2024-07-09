@@ -1,7 +1,40 @@
 <div class="container-fluid">
+    <div class="row mt-3">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.php?model=phieubangiao&action=index">Bàn giao tài sản</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Sửa yêu cầu bàn giao tài sản</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+<?php if (isset($_SESSION['message'])): ?>
+        <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
+            <?= $_SESSION['message']; ?>
+        </div>
+        <?php
+        unset($_SESSION['message']);
+        unset($_SESSION['message_type']);
+        ?>
+        <script>
+            setTimeout(function () {
+                var alert = document.getElementById('alert-message');
+                if (alert) {
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                    setTimeout(function () {
+                        alert.style.display = 'none';
+                    }, 150);
+                }
+            }, 2000);
+        </script>
+    <?php endif; ?>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Chỉnh sửa phiếu bàn giao tài sản</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Sửa yêu cầu bàn giao tài sản</h6>
         </div>
         <div class="card-body">
             <form method="POST"
@@ -97,14 +130,12 @@
                     <textarea class="form-control" id="ghiChu" name="ghi_chu"
                         rows="3"><?= $phieuBanGiao['ghi_chu']; ?></textarea>
                 </div>
-
-                <div class="form-group row mt-3">
-                    <div class="col-sm-10">
-                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                    </div>
-                </div>
-            </form>
         </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a href="index.php?model=phieubangiao&action=index" class="btn btn-secondary">Hủy</a>
+            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+        </div>
+        </form>
     </div>
 </div>
 

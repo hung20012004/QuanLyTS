@@ -3,76 +3,122 @@
         <div class="col">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php?model=phieunhap&action=index">phiếu bàn giao</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Nhập tài sản</li>
+                    <li class="breadcrumb-item"><a href="index.php?model=phieubangiao&action=index">Bàn giao tài sản</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Chi tiết phiếu bàn giao tài sản</li>
                 </ol>
             </nav>
         </div>
     </div>
 </div>
-
 <div class="container-fluid">
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Nhập tài sản - phiếu bàn giao #<?= $phieuNhap['phieu_nhap_tai_san_id'] ?></h6>
+        <div class="card-header py-3  d-flex justify-content-between">
+            <h6 class="m-0 pt-3 font-weight-bold text-primary">Chi tiết phiếu bàn giao tài sản</h6>
+            <?php if ($phieuBanGiao['trang_thai']=='DaGiao'): ?>
+            <a href="index.php?model=phieubangiao&action=exportWord&id=<?= $phieuBanGiao['phieu_ban_giao_id']; ?>" class="btn btn-primary">Xuất Word</a>
+            <?php endif;?>
         </div>
         <div class="card-body">
-            <form method="POST" action="index.php?model=phieunhap&action=nhap_tai_san&id=<?= $phieuNhap['phieu_nhap_tai_san_id'] ?>">
-                <!-- Hiển thị thông tin phiếu bàn giao và chi tiết -->
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Ngày tạo phiếu:</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" value="<?= date('d-m-Y', strtotime($phieuNhap['ngay_tao'])) ?>" readonly>
-                    </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Người tạo yêu cầu:</strong> <?= htmlspecialchars($nguoiNhan['ten']); ?>
                 </div>
-                <?php if ($phieuNhap['trang_thai'] != 'DangXetDuyet'): ?>
-                <div class="form-group row">
-                    <label for="nguoiDuyet" class="col-sm-2 col-form-label">Người phê duyệt phiếu:</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="nguoiDuyet"
-                            value="<?= htmlspecialchars($phieuNhap['user_duyet_id']); ?>" readonly>
-                    </div>
+                <div class="col-md-6">
+                    <strong>Ngày tạo phiếu:</strong> <?= date('d/m/Y', strtotime($phieuBanGiao['ngay_gui'])); ?>
                 </div>
-                <?php endif; ?>
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Ngày phê duyệt:</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" value="<?= date('d-m-Y', strtotime($phieuNhap['ngay_xac_nhan'])) ?>" readonly>
-                    </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Vị trí:</strong> <?= htmlspecialchars($viTri['ten_vi_tri']); ?>
+                </div>
+                <div class="col-md-6">
+                    <strong>Trạng thái:</strong>
+                    <?php
+                    $statusMap = [
+                        'DaGui' => 'Đã gửi',
+                        'DaKiemTra' => 'Đã kiểm tra',
+                        'DangChoPheDuyet' => 'Đang chờ phê duyệt',
+                        'DaPheDuyet' => 'Đã phê duyệt',
+                        'DaGiao' => 'Đã bàn giao',
+                        'KhongDuyet' => 'Không duyệt'
+                    ];
+                    echo htmlspecialchars($statusMap[$phieuBanGiao['trang_thai']]);
+                    ?>
                 </div>
 
-                <h5 class="mt-4">Chi tiết phiếu bàn giao</h5>
-                <table class="table table-bordered">
-                    <thead>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <strong>Ghi chú:</strong> <?= nl2br(htmlspecialchars($phieuBanGiao['ghi_chu'])); ?>
+                </div>
+            </div>
+
+            <h5 class="mt-4">Danh sách tài sản bàn giao:</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Loại tài sản</th>
+                        <th>Tên tài sản</th>
+                        <th>Số lượng</th>
+                        <th>Tình trạng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($chiTietWithAdditionalData as $chiTiet): ?>
                         <tr>
-                            <th>Loại tài sản</th>
-                            <th>Tên tài sản</th>
-                            <th>Số lượng</th>
+                            <td><?= htmlspecialchars($chiTiet['ten_loai_tai_san']); ?></td>
+                            <td><?= htmlspecialchars($chiTiet['ten_tai_san']); ?></td>
+                            <td><?= htmlspecialchars($chiTiet['so_luong']); ?></td>
+                            <?php
+                            // Define the mapping array for 'tinh_trang'
+                            $tinhTrangLabels = [
+                                'Moi' => 'Mới',
+                                'Tot' => 'Tốt',
+                                'Kha' => 'Khá',
+                                'TrungBinh' => 'Trung bình',
+                                'Kem' => 'Kém',
+                                'Hong' => 'Hỏng'
+                            ];
+
+                            // Get the condition label
+                            $tinhTrangLabel = $tinhTrangLabels[$chiTiet['tinh_trang']] ?? 'Không xác định';
+                            ?>
+                            <td><?= htmlspecialchars($chiTiet['tinh_trang']); ?></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($chiTietPhieuNhap as $chiTiet): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($chiTiet['ten_loai_tai_san']) ?></td>
-                                <td><?= htmlspecialchars($chiTiet['ten_tai_san']) ?></td>
-                                <td><?= $chiTiet['so_luong'] ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
 
-                <div class="form-group mt-3">
-                    <label for="ghiChu">Ghi chú:</label>
-                    <textarea class="form-control" id="ghiChu" name="ghi_chu" rows="3" readonly><?= htmlspecialchars($phieuNhap['ghi_chu']) ?></textarea>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <strong>Người bàn giao:</strong> <?= htmlspecialchars($nguoiBanGiao['ten'] ?? 'Chưa bàn giao'); ?>
                 </div>
+                <div class="col-md-6">
+                    <strong>Người duyệt:</strong> <?= htmlspecialchars($nguoiDuyet['ten'] ?? 'Chưa duyệt'); ?>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <strong>Ngày kiểm tra:</strong>
+                    <?= $phieuBanGiao['ngay_kiem_tra'] ? date('d/m/Y', strtotime($phieuBanGiao['ngay_kiem_tra'])) : 'Chưa kiểm tra'; ?>
+                </div>
+                <div class="col-md-6">
+                    <strong>Ngày duyệt:</strong>
+                    <?= $phieuBanGiao['ngay_duyet'] ? date('d/m/Y', strtotime($phieuBanGiao['ngay_duyet'])) : 'Chưa duyệt'; ?>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <strong>Ngày bàn giao:</strong>
+                    <?= $phieuBanGiao['ngay_ban_giao'] ? date('d/m/Y', strtotime($phieuBanGiao['ngay_ban_giao'])) : 'Chưa bàn giao'; ?>
+                </div>
+            </div>
 
-                <div class="form-group row">
-                    <div class="col-sm-10">
-                        <button type="submit" class="btn btn-primary">Xác nhận nhập tài sản</button>
-                        <a href="index.php?model=phieunhap&action=index" class="btn btn-secondary">Quay lại</a>
-                    </div>
-                </div>
-            </form>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+        <a href="index.php?model=phieubangiao&action=index" class="btn btn-secondary">Quay lại </a>
+            <a href="index.php?model=phieubangiao&action=ban_giao&id=<?= $phieuBanGiao['phieu_ban_giao_id']; ?>"
+                class="btn btn-info">Xác nhận bàn giao</a>
         </div>
     </div>
 </div>
