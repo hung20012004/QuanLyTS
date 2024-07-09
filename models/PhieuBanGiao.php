@@ -103,27 +103,30 @@ class PhieuBanGiao
     }
 
     public function updateStatus()
-    {
-        $query = "UPDATE " . $this->table_name . "
-                  SET trang_thai = :trang_thai,
-                      ngay_kiem_tra = :ngay_kiem_tra,
-                      ngay_duyet = :ngay_duyet,
-                      ngay_ban_giao = :ngay_ban_giao,
-                      user_duyet_id = :user_duyet_id
-                  WHERE phieu_ban_giao_id = :phieu_ban_giao_id";
+{
+    $query = "UPDATE " . $this->table_name . "
+              SET trang_thai = :trang_thai,
+                  ngay_kiem_tra = :ngay_kiem_tra,
+                  ngay_duyet = :ngay_duyet,
+                  ngay_ban_giao = :ngay_ban_giao,
+                  user_ban_giao_id = :user_ban_giao_id,
+                  user_duyet_id = :user_duyet_id
+              WHERE phieu_ban_giao_id = :phieu_ban_giao_id";
 
-        $stmt = $this->conn->prepare($query);
+    $stmt = $this->conn->prepare($query);
 
-        $stmt->bindParam(":trang_thai", $this->trang_thai);
-        $stmt->bindParam(":ngay_kiem_tra", $this->ngay_kiem_tra);
-        $stmt->bindParam(":ngay_duyet", $this->ngay_duyet);
-        $stmt->bindParam(":ngay_ban_giao", $this->ngay_ban_giao);
-        $stmt->bindParam(":user_duyet_id", $this->user_duyet_id);
-        $stmt->bindParam(":phieu_ban_giao_id", $this->phieu_ban_giao_id);
+    $stmt->bindParam(":trang_thai", $this->trang_thai);
+    $stmt->bindParam(":ngay_kiem_tra", $this->ngay_kiem_tra);
+    $stmt->bindParam(":ngay_duyet", $this->ngay_duyet);
+    $stmt->bindParam(":ngay_ban_giao", $this->ngay_ban_giao);
+    $stmt->bindParam(":user_ban_giao_id", $this->user_ban_giao_id);
+    $stmt->bindParam(":user_duyet_id", $this->user_duyet_id);
+    $stmt->bindParam(":phieu_ban_giao_id", $this->phieu_ban_giao_id);
 
-        if($stmt->execute()){
-            return true;
-        }
-        return false;
+    if($stmt->execute()){
+        return true;
     }
+    return false;
+}
+
 }
