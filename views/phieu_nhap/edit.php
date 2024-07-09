@@ -12,6 +12,28 @@
 </div>
 
 <div class="container-fluid">
+    <?php if (isset($_SESSION['message'])): ?>
+        <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show"
+            role="alert">
+            <?= $_SESSION['message']; ?>
+        </div>
+        <?php
+        unset($_SESSION['message']);
+        unset($_SESSION['message_type']);
+        ?>
+        <script>
+            setTimeout(function () {
+                var alert = document.getElementById('alert-message');
+                if (alert) {
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                    setTimeout(function () {
+                        alert.style.display = 'none';
+                    }, 150);
+                }
+            }, 7000); // 7000 milliseconds = 7 seconds
+        </script>
+    <?php endif; ?>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Chỉnh sửa phiếu nhập tài sản</h6>
@@ -95,14 +117,14 @@
                         rows="3"><?= htmlspecialchars($phieuNhap['ghi_chu']) ?></textarea>
                 </div>
 
-                <div class="form-group row">
-                    <div class="col-sm-10">
-                        <button type="submit" class="btn btn-primary">Cập nhật</button>
-                        <a href="index.php?model=phieunhap&action=index" class="btn btn-secondary">Hủy</a>
-                    </div>
-                </div>
-            </form>
+
         </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a href="index.php?model=phieunhap&action=index" class="btn btn-secondary">Hủy</a>
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
+
+        </div>
+        </form>
     </div>
 </div>
 
@@ -120,9 +142,9 @@
         <select class="form-control loai-tai-san" name="loai_tai_san_id[]" required>
             <option value="">Chọn loại tài sản</option>
             <?php foreach ($loai_tai_san_list as $loai): ?>
-                        <option value="<?= $loai['loai_tai_san_id']; ?>">
-                            <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
-                        </option>
+                            <option value="<?= $loai['loai_tai_san_id']; ?>">
+                                <?= htmlspecialchars($loai['ten_loai_tai_san']); ?>
+                            </option>
             <?php endforeach; ?>
         </select>
     `;
@@ -130,9 +152,9 @@
         <select class="form-control select-tai-san" name="tai_san_id[]" required>
                                     <option value="">Chọn tài sản</option>
                                     <?php foreach ($tai_san_list as $tai_san): ?>
-                                                <option value="<?= $tai_san['tai_san_id']; ?>" data-loai="<?= $tai_san['loai_tai_san_id']; ?>" style="display: none;">
-                                                    <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
-                                                </option>
+                                                    <option value="<?= $tai_san['tai_san_id']; ?>" data-loai="<?= $tai_san['loai_tai_san_id']; ?>" style="display: none;">
+                                                        <?= htmlspecialchars($tai_san['ten_tai_san']); ?>
+                                                    </option>
                                     <?php endforeach; ?>
                                 </select>
     `;

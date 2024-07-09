@@ -4,7 +4,7 @@
 class ChiTietPhieuNhap
 {
     private $conn;
-    private $table_name = "chi_tiet_phieu_nhap";
+    private $table_name = "chi_tiet_phieu_nhap_tai_san";
 
     public $chi_tiet_id;
     public $phieu_nhap_tai_san_id;
@@ -174,7 +174,7 @@ class ChiTietPhieuNhap
     public function readDetailedByPhieuNhapId($phieuNhapId)
 {
     $query = "SELECT ct.*, ts.ten_tai_san, lts.ten_loai_tai_san, lts.loai_tai_san_id 
-              FROM chi_tiet_phieu_nhap ct
+              FROM chi_tiet_phieu_nhap_tai_san ct
               JOIN tai_san ts ON ct.tai_san_id = ts.tai_san_id
               JOIN loai_tai_san lts ON ts.loai_tai_san_id = lts.loai_tai_san_id
               WHERE ct.phieu_nhap_tai_san_id = :phieu_nhap_id";

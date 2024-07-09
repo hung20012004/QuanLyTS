@@ -12,13 +12,47 @@
 </div>
 
 <div class="container-fluid">
+<?php if (isset($_SESSION['message'])): ?>
+        <div id="alert-message" class="alert alert-<?= $_SESSION['message_type']; ?> alert-dismissible fade show"
+            role="alert">
+            <?= $_SESSION['message']; ?>
+        </div>
+        <?php
+        unset($_SESSION['message']);
+        unset($_SESSION['message_type']);
+        ?>
+        <script>
+            setTimeout(function () {
+                var alert = document.getElementById('alert-message');
+                if (alert) {
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                    setTimeout(function () {
+                        alert.style.display = 'none';
+                    }, 150);
+                }
+            }, 7000); // 7000 milliseconds = 7 seconds
+        </script>
+    <?php endif; ?>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Nhập tài sản - Phiếu nhập #<?= $phieuNhap['phieu_nhap_tai_san_id'] ?></h6>
+            <h6 class="m-0 font-weight-bold text-primary">Nhập tài sản</h6>
         </div>
         <div class="card-body">
             <form method="POST" action="index.php?model=phieunhap&action=nhap_tai_san&id=<?= $phieuNhap['phieu_nhap_tai_san_id'] ?>">
-                <!-- Hiển thị thông tin phiếu nhập và chi tiết -->
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Mã số phiếu:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" value="<?= $phieuNhap['phieu_nhap_tai_san_id'] ?>" readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="nguoiNhap" class="col-sm-2 col-form-label">Người tạo phiếu:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="nguoiNhap"
+                        value="<?= $phieuNhap['ten_nguoi_tao'] ? htmlspecialchars($phieuNhap['ten_nguoi_tao']) : 'Chưa duyệt'; ?>" readonly>
+                    </div>
+                </div>
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">Ngày tạo phiếu:</label>
                     <div class="col-sm-10">
@@ -30,16 +64,18 @@
                     <label for="nguoiDuyet" class="col-sm-2 col-form-label">Người phê duyệt phiếu:</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="nguoiDuyet"
-                            value="<?= htmlspecialchars($phieuNhap['user_duyet_id']); ?>" readonly>
+                            value="<?= $phieuNhap['user_duyet_id'] ? htmlspecialchars($phieuNhap['ten_nguoi_duyet']) : 'Chưa duyệt'; ?>" readonly>
                     </div>
                 </div>
                 <?php endif; ?>
                 <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Ngày phê duyệt:</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" value="<?= date('d-m-Y', strtotime($phieuNhap['ngay_xac_nhan'])) ?>" readonly>
-                    </div>
-                </div>
+    <label for="ngayXacNhan" class="col-sm-2 col-form-label">Ngày phê duyệt:</label>
+    <div class="col-sm-10">
+        <input type="text" class="form-control" id="ngayXacNhanDisplay" value="<?= !empty($phieuNhap['ngay_xac_nhan']) ? date('d-m-Y', strtotime($phieuNhap['ngay_xac_nhan'])) : 'Chưa duyệt' ?>" readonly>
+        <input type="hidden" id="ngayXacNhan" name="ngay_xac_nhan" value="<?= !empty($phieuNhap['ngay_xac_nhan']) ? date('Y-m-d', strtotime($phieuNhap['ngay_xac_nhan'])) : '' ?>">
+    </div>
+</div>
+
 
                 <h5 class="mt-4">Chi tiết phiếu nhập</h5>
                 <table class="table table-bordered">
@@ -66,13 +102,14 @@
                     <textarea class="form-control" id="ghiChu" name="ghi_chu" rows="3" readonly><?= htmlspecialchars($phieuNhap['ghi_chu']) ?></textarea>
                 </div>
 
-                <div class="form-group row">
-                    <div class="col-sm-10">
-                        <button type="submit" class="btn btn-primary">Xác nhận nhập tài sản</button>
-                        <a href="index.php?model=phieunhap&action=index" class="btn btn-secondary">Quay lại</a>
-                    </div>
-                </div>
-            </form>
+
+            
         </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a href="index.php?model=phieunhap&action=index" class="btn btn-secondary">Quay lại</a>
+            <button type="submit" class="btn btn-primary">Xác nhận nhập tài sản</button>
+
+        </div>
+        </form>
     </div>
 </div>
