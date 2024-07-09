@@ -30,15 +30,37 @@ class ViTriController {
 
     public function show($id) {
         $viTri = $this->viTri->readById($id);
+        $viTriChiTiets = $this->viTriChiTiet->readByViTriId($id);
+        if ($_POST) {
+            $this->db->beginTransaction();
+            try {
+                // Cập nhật thông tin vị trí
+                $this->viTri->vi_tri_id = $id;
+                $this->viTri->ten_vi_tri = $_POST['ten_vi_tri'];
+                $this->viTri->khoa = $_POST['khoa'];
+
+               if( $this->viTri->update()){
+                    $this->db->commit();
+                    $_SESSION['message'] = 'Cập nhật vị trí thành công!';
+                    $_SESSION['message_type'] = 'success';
+                    header("Location: index.php?model=vitri");
+                    exit();
+               }
+               else{
+                    throw new Exception('Cập nhật vị trí thất bại!');
+               }
+            } catch (Exception $e) {
+                $this->db->rollBack();
+                $_SESSION['message'] = $e->getMessage();
+                $_SESSION['message_type'] = 'danger';
+            }
+        }
         if (!$viTri) {
             $_SESSION['message'] = 'Không tìm thấy vị trí!';
             $_SESSION['message_type'] = 'danger';
             header("Location: index.php?model=vitri");
             exit();
         }
-        
-        $viTriChiTiets = $this->viTriChiTiet->readByViTriId($id);
-        
         $content = 'views/vitris/show.php';
         include('views/layouts/base.php');
     }
@@ -49,20 +71,22 @@ class ViTriController {
     
             try {
                 $this->viTri->ten_vi_tri = $_POST['ten_vi_tri'];
-
-                if($this->viTri->checkExist($_POST['ten_vi_tri'])){
+                $this->viTri->khoa = $_POST['khoa'];
+                
+                if($this->viTri->checkExist($this->viTri->ten_vi_tri, $this->viTri->khoa)){
                     $_SESSION['message'] = 'Vị trí đã tồn tại!';
                     $_SESSION['message_type'] = 'danger';
                     $content = 'views/vitris/create.php';
                     include('views/layouts/base.php');
                     return;
                 }
-
+                echo "dachack";
                 if ($this->viTri->create()) {    
                     $this->db->commit();
-                    $_SESSION['message'] = 'Tạo vị trí mới thành công!';
+                    $_SESSION['message'] = 'Thêm vị trí thành công!';
                     $_SESSION['message_type'] = 'success';
                     header("Location: index.php?model=vitri");
+                    exit();
                 } else {
                     throw new Exception('Tạo mới vị trí thất bại!');
                 }
@@ -75,6 +99,8 @@ class ViTriController {
         $content = 'views/vitris/create.php';
         include('views/layouts/base.php');
     }
+    
+
 
     public function edit($id) {
         // Lấy thông tin vị trí
@@ -158,7 +184,6 @@ class ViTriController {
                 $_SESSION['message_type'] = 'danger';
             }
         }
-        var_dump($viTriChiTietsOld);
         $content = 'views/vitris/edit.php';
         include('views/layouts/base.php');
     }      

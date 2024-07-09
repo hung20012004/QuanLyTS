@@ -47,13 +47,23 @@
                         <label for="ten_vi_tri">Vị trí</label>
                         <input type="text" class="form-control" id="ten_vi_tri" name="ten_vi_tri" required>
                     </div>
+                    <div class="form-group col-md-4">
+                        <label for="khoa">Tên Khoa</label>
+                        <select class="form-control" id="khoa" name="khoa" required>
+                            <option value="HTTT" >Hệ thống thông tin</option>
+                            <option value="CNTT" >Công nghệ thông tin</option>
+                            <option value="KT" >Kỹ Thuật</option>
+                            <option value="Co khi" >Cơ khí</option>
+                            <option value="Cong trinh" >Công trình</option>
+                            <option value="Moi truong-ATGT">Môi trường-ATGT</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="mt-3 d-flex justify-content-between">
                     <a href="index.php?model=vitri&action=index" class="btn btn-secondary">Quay Lại</a>
-                    <button type="submit" class="btn btn-success">Lưu Thay Đổi</button>
+                    <button type="submit" class="btn btn-success">Lưu</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
