@@ -123,13 +123,13 @@ class PhieuNhap {
                   SET ngay_nhap=:ngay_nhap, trang_thai=:trang_thai 
                   WHERE phieu_nhap_tai_san_id=:phieu_nhap_tai_san_id";
                   $stmt = $this->conn->prepare($query);
-                  $stmt->bindParam(':user_duyet_id', $this->user_duyet_id);
+                 
         
         $this->ngay_nhap = htmlspecialchars(strip_tags($this->ngay_nhap));
         $this->trang_thai = htmlspecialchars(strip_tags($this->trang_thai));
         $this->phieu_nhap_tai_san_id = htmlspecialchars(strip_tags($this->phieu_nhap_tai_san_id));
         
-        $stmt->bindParam(':ngay_xac_nhan', $this->ngay_nhap);
+        $stmt->bindParam(':ngay_nhap', $this->ngay_nhap);
         $stmt->bindParam(':trang_thai', $this->trang_thai);
         
         $stmt->bindParam(':phieu_nhap_tai_san_id', $this->phieu_nhap_tai_san_id);

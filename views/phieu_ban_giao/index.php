@@ -47,56 +47,61 @@
             </div>
         </div>
         <div class="card-body">
-        <div id="searchForm" class="mb-3" style="display: none;">
-    <div class="row">
-        <div class="col-md-3 mb-2">
-            <label for="ngayTaoPhieu" class="form-label">Ngày tạo phiếu:</label>
-            <div class="input-group">
-                <input type="date" name="ngayTaoPhieuBatDau" id="ngayTaoPhieuBatDau" class="form-control" placeholder="Từ ngày">
-                <input type="date" name="ngayTaoPhieuKetThuc" id="ngayTaoPhieuKetThuc" class="form-control" placeholder="Đến ngày">
+            <div id="searchForm" class="mb-3" style="display: none;">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <label for="ngayTaoPhieuBatDau" class="form-label">Ngày tạo phiếu từ:</label>
+                        <input type="date" name="ngayTaoPhieuBatDau" id="ngayTaoPhieuBatDau" class="form-control">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="ngayTaoPhieuKetThuc" class="form-label">Ngày tạo phiếu đến:</label>
+                        <input type="date" name="ngayTaoPhieuKetThuc" id="ngayTaoPhieuKetThuc" class="form-control">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="ngayKiemTraBatDau" class="form-label">Ngày kiểm tra từ:</label>
+                        <input type="date" name="ngayKiemTraBatDau" id="ngayKiemTraBatDau" class="form-control">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="ngayKiemTraKetThuc" class="form-label">Ngày kiểm tra đến:</label>
+                        <input type="date" name="ngayKiemTraKetThuc" id="ngayKiemTraKetThuc" class="form-control">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-3 mb-2">
+                        <label for="ngayPheDuyetBatDau" class="form-label">Ngày phê duyệt từ:</label>
+                        <input type="date" name="ngayPheDuyetBatDau" id="ngayPheDuyetBatDau" class="form-control">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="ngayPheDuyetKetThuc" class="form-label">Ngày phê duyệt đến:</label>
+                        <input type="date" name="ngayPheDuyetKetThuc" id="ngayPheDuyetKetThuc" class="form-control">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="ngayBanGiaoBatDau" class="form-label">Ngày bàn giao từ:</label>
+                        <input type="date" name="ngayBanGiaoBatDau" id="ngayBanGiaoBatDau" class="form-control">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="ngayBanGiaoKetThuc" class="form-label">Ngày bàn giao đến:</label>
+                        <input type="date" name="ngayBanGiaoKetThuc" id="ngayBanGiaoKetThuc" class="form-control">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-3 mb-2">
+                        <label for="trangThai" class="form-label">Trạng thái:</label>
+                        <select name="trangThai" id="trangThai" class="form-control ">
+                            <option value="">Tất cả</option>
+                            <option value="Đã gửi">Đã gửi</option>
+                            <option value="Đã kiểm tra">Đã kiểm tra</option>
+                            <option value="Đang chờ phê duyệt">Đang chờ phê duyệt</option>
+                            <option value="Đã phê duyệt">Đã phê duyệt</option>
+                            <option value="Đã giao">Đã giao</option>
+                            <option value="Không duyệt">Không duyệt</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-center mt-4">
+                        <button type="button" id="resetButton" class="btn btn-secondary">Đặt lại</button>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3 mb-2">
-            <label for="ngayKiemTra" class="form-label">Ngày kiểm tra:</label>
-            <div class="input-group">
-                <input type="date" name="ngayKiemTraBatDau" id="ngayKiemTraBatDau" class="form-control" placeholder="Từ ngày">
-                <input type="date" name="ngayKiemTraKetThuc" id="ngayKiemTraKetThuc" class="form-control" placeholder="Đến ngày">
-            </div>
-        </div>
-        <div class="col-md-3 mb-2">
-            <label for="ngayPheDuyet" class="form-label">Ngày phê duyệt:</label>
-            <div class="input-group">
-                <input type="date" name="ngayPheDuyetBatDau" id="ngayPheDuyetBatDau" class="form-control" placeholder="Từ ngày">
-                <input type="date" name="ngayPheDuyetKetThuc" id="ngayPheDuyetKetThuc" class="form-control" placeholder="Đến ngày">
-            </div>
-        </div>
-        <div class="col-md-3 mb-2">
-            <label for="ngayBanGiao" class="form-label">Ngày bàn giao:</label>
-            <div class="input-group">
-                <input type="date" name="ngayBanGiaoBatDau" id="ngayBanGiaoBatDau" class="form-control" placeholder="Từ ngày">
-                <input type="date" name="ngayBanGiaoKetThuc" id="ngayBanGiaoKetThuc" class="form-control" placeholder="Đến ngày">
-            </div>
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="col-md-3 mb-2">
-            <label for="trangThai" class="form-label">Trạng thái:</label>
-            <select name="trangThai" id="trangThai" class="form-select">
-                <option value="">Tất cả</option>
-                <option value="Đã gửi">Đã gửi</option>
-                <option value="Đã kiểm tra">Đã kiểm tra</option>
-                <option value="Đang chờ phê duyệt">Đang chờ phê duyệt</option>
-                <option value="Đã phê duyệt">Đã phê duyệt</option>
-                <option value="Đã giao">Đã giao</option>
-                <option value="Không duyệt">Không duyệt</option>
-            </select>
-        </div>
-        <div class="col-md-9 d-flex align-items-end justify-content-end">
-            <button type="button" id="searchButton" class="btn btn-primary me-2">Tìm kiếm</button>
-            <button type="button" id="resetButton" class="btn btn-secondary">Đặt lại</button>
-        </div>
-    </div>
-</div>  
             <div class="table-responsive">
                 <table id="dataTable" class="table table-bordered" width="100%" cellspacing="0">
                     <thead class="bg-light text-black text-center">
@@ -112,7 +117,6 @@
                     </thead>
                     <tbody>
                         <?php foreach ($phieuBanGiao as $phieu): ?>
-                           
                             <?php if (($phieu['user_nhan_id'] == $_SESSION['user_id'] && $_SESSION['role']=='NhanVien')
                               || ($phieu['user_ban_giao_id'] == $_SESSION['user_id'] && $_SESSION['role']=='NhanVienQuanLy')
                               || ($phieu['user_ban_giao_id'] == '' && $_SESSION['role']=='NhanVienQuanLy')
@@ -125,6 +129,7 @@
                                     <td class="text-center"><?= !empty($phieu['ngay_ban_giao']) ? date('d/m/Y', strtotime($phieu['ngay_ban_giao'])) : ''; ?></td>
                                     <td class="text-center">
                                         <?php
+                                        $statusClass = '';
                                         switch ($phieu['trang_thai']) {
                                             case 'DaGui':
                                                 echo 'Đã gửi';
@@ -144,8 +149,7 @@
                                             case 'KhongDuyet':
                                                 echo 'Không duyệt';
                                                 break;
-                                            default:
-                                                echo $phieu['trang_thai'];
+                                           
                                         }
                                         ?>
                                     </td>
@@ -176,134 +180,77 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        var table = $('#dataTable').DataTable({
-            dom: 'rtip',
-            language: {
-                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
-            }
-        });
+$(document).ready(function () {
+    var table = $('#dataTable').DataTable({
+        dom: 'rtip',
+        language: {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
+        }
     });
 
-
-    document.addEventListener('DOMContentLoaded', function () {
-    var toggleButton = document.getElementById('toggleSearch');
-    var searchForm = document.getElementById('searchForm');
-    var searchButton = document.getElementById('searchButton');
-    var resetButton = document.getElementById('resetButton');
-    var table = document.getElementById('dataTable');
-
-    toggleButton.addEventListener('click', function () {
-        searchForm.style.display = searchForm.style.display === 'none' ? 'block' : 'none';
-        toggleButton.textContent = searchForm.style.display === 'none' ? 'Tìm kiếm' : 'Ẩn tìm kiếm';
-    });
-    function parseDate(dateString) {
-    if (!dateString) return null;
-    var parts = dateString.split('-');
-    return new Date(parts[0], parts[1] - 1, parts[2]);
-}
-
-function isDateInRange(dateString, startDateString, endDateString) {
-    if (!dateString) return false; // Thay đổi ở đây
-    var date = parseDate(dateString);
-    var startDate = startDateString ? parseDate(startDateString) : null;
-    var endDate = endDateString ? parseDate(endDateString) : null;
-
-    if (startDate && endDate) {
-        return date >= startDate && date <= endDate;
-    } else if (startDate) {
-        return date >= startDate;
-    } else if (endDate) {
-        return date <= endDate;
-    }
-    return true; // Nếu không có ngày bắt đầu và kết thúc, hiển thị tất cả ngày không null
-}
-
-function filterTable() {
-    var rows = table.getElementsByTagName('tr');
-    for (var i = 1; i < rows.length; i++) {
-        var cells = rows[i].getElementsByTagName('td');
-        var showRow = true;
-
-        // Kiểm tra ngày tạo phiếu
-        var ngayTaoPhieuBatDau = document.getElementById('ngayTaoPhieuBatDau').value;
-        var ngayTaoPhieuKetThuc = document.getElementById('ngayTaoPhieuKetThuc').value;
-        if (ngayTaoPhieuBatDau || ngayTaoPhieuKetThuc) {
-            showRow = showRow && isDateInRange(
-                cells[1].textContent.trim(),
-                ngayTaoPhieuBatDau,
-                ngayTaoPhieuKetThuc
-            );
-        }
-
-        // Kiểm tra ngày kiểm tra
-        var ngayKiemTraBatDau = document.getElementById('ngayKiemTraBatDau').value;
-        var ngayKiemTraKetThuc = document.getElementById('ngayKiemTraKetThuc').value;
-        if (ngayKiemTraBatDau || ngayKiemTraKetThuc) {
-            showRow = showRow && isDateInRange(
-                cells[2].textContent.trim(),
-                ngayKiemTraBatDau,
-                ngayKiemTraKetThuc
-            );
-        }
-
-        // Kiểm tra ngày phê duyệt
-        var ngayPheDuyetBatDau = document.getElementById('ngayPheDuyetBatDau').value;
-        var ngayPheDuyetKetThuc = document.getElementById('ngayPheDuyetKetThuc').value;
-        if (ngayPheDuyetBatDau || ngayPheDuyetKetThuc) {
-            showRow = showRow && isDateInRange(
-                cells[3].textContent.trim(),
-                ngayPheDuyetBatDau,
-                ngayPheDuyetKetThuc
-            );
-        }
-
-        // Kiểm tra ngày bàn giao
-        var ngayBanGiaoBatDau = document.getElementById('ngayBanGiaoBatDau').value;
-        var ngayBanGiaoKetThuc = document.getElementById('ngayBanGiaoKetThuc').value;
-        if (ngayBanGiaoBatDau || ngayBanGiaoKetThuc) {
-            showRow = showRow && isDateInRange(
-                cells[4].textContent.trim(),
-                ngayBanGiaoBatDau,
-                ngayBanGiaoKetThuc
-            );
-        }
-
-        // Kiểm tra trạng thái
-        var trangThai = document.getElementById('trangThai').value;
-        showRow = showRow && (!trangThai || cells[5].textContent.trim() === trangThai);
-
-        rows[i].style.display = showRow ? '' : 'none';
-    }
-}
-
-    function resetForm() {
-        var inputs = searchForm.getElementsByTagName('input');
-        for (var i = 0; i < inputs.length; i++) {
-            inputs[i].value = '';
-        }
-        document.getElementById('trangThai').value = '';
-        var rows = table.getElementsByTagName('tr');
-        for (var i = 1; i < rows.length; i++) {
-            rows[i].style.display = '';
-        }
+    // Hàm chuyển đổi định dạng ngày từ dd/mm/yyyy sang yyyy-mm-dd
+    function convertDate(dateString) {
+        if (!dateString) return null;
+        var parts = dateString.split("/");
+        return parts[2] + "-" + parts[1] + "-" + parts[0];
     }
 
-    searchButton.addEventListener('click', filterTable);
-    resetButton.addEventListener('click', resetForm);
+    // Hàm so sánh ngày
+    function compareDates(date1, date2) {
+        if (!date1 || !date2) return true;
+        return new Date(date1).setHours(0,0,0,0) <= new Date(date2).setHours(0,0,0,0);
+    }
 
-    // Logging for debugging
-    searchButton.addEventListener('click', function() {
-        console.log('Search activated');
-        var inputs = searchForm.getElementsByTagName('input');
-        for (var i = 0; i < inputs.length; i++) {
-            console.log(inputs[i].id + ': ' + inputs[i].value);
-        }
-        console.log('Status: ' + document.getElementById('trangThai').value);
+    // Custom filtering function
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        var ngayTaoPhieuBatDau = $('#ngayTaoPhieuBatDau').val();
+        var ngayTaoPhieuKetThuc = $('#ngayTaoPhieuKetThuc').val();
+        var ngayKiemTraBatDau = $('#ngayKiemTraBatDau').val();
+        var ngayKiemTraKetThuc = $('#ngayKiemTraKetThuc').val();
+        var ngayPheDuyetBatDau = $('#ngayPheDuyetBatDau').val();
+        var ngayPheDuyetKetThuc = $('#ngayPheDuyetKetThuc').val();
+        var ngayBanGiaoBatDau = $('#ngayBanGiaoBatDau').val();
+        var ngayBanGiaoKetThuc = $('#ngayBanGiaoKetThuc').val();
+        var trangThai = $('#trangThai').val();
+
+        var rowNgayTaoPhieu = convertDate(data[1]);
+        var rowNgayKiemTra = convertDate(data[2]);
+        var rowNgayPheDuyet = convertDate(data[3]);
+        var rowNgayBanGiao = convertDate(data[4]);
+        var rowTrangThai = data[5];
+
+        if (ngayTaoPhieuBatDau && !compareDates(ngayTaoPhieuBatDau, rowNgayTaoPhieu)) return false;
+        if (ngayTaoPhieuKetThuc && !compareDates(rowNgayTaoPhieu, ngayTaoPhieuKetThuc)) return false;
+        
+        if (ngayKiemTraBatDau && !compareDates(ngayKiemTraBatDau, rowNgayKiemTra)) return false;
+        if (ngayKiemTraKetThuc && !compareDates(rowNgayKiemTra, ngayKiemTraKetThuc)) return false;
+        
+        if (ngayPheDuyetBatDau && !compareDates(ngayPheDuyetBatDau, rowNgayPheDuyet)) return false;
+        if (ngayPheDuyetKetThuc && !compareDates(rowNgayPheDuyet, ngayPheDuyetKetThuc)) return false;
+        
+        if (ngayBanGiaoBatDau && !compareDates(ngayBanGiaoBatDau, rowNgayBanGiao)) return false;
+        if (ngayBanGiaoKetThuc && !compareDates(rowNgayBanGiao, ngayBanGiaoKetThuc)) return false;
+
+        if (trangThai && !rowTrangThai.includes(trangThai)) return false;
+
+        return true;
     });
 
-    resetButton.addEventListener('click', function() {
-        console.log('Reset activated');
+    // Event listeners for search inputs
+    $('#ngayTaoPhieuBatDau, #ngayTaoPhieuKetThuc, #ngayKiemTraBatDau, #ngayKiemTraKetThuc, #ngayPheDuyetBatDau, #ngayPheDuyetKetThuc, #ngayBanGiaoBatDau, #ngayBanGiaoKetThuc, #trangThai').on('change', function() {
+        table.draw();
+    });
+
+    // Toggle search form visibility
+    $('#toggleSearch').on('click', function() {
+        $('#searchForm').slideToggle();
+    });
+
+    // Reset search form
+    $('#resetButton').on('click', function() {
+        $('#ngayTaoPhieuBatDau, #ngayTaoPhieuKetThuc, #ngayKiemTraBatDau, #ngayKiemTraKetThuc, #ngayPheDuyetBatDau, #ngayPheDuyetKetThuc, #ngayBanGiaoBatDau, #ngayBanGiaoKetThuc').val('');
+        $('#trangThai').val('');
+        table.draw();
     });
 });
 </script>
