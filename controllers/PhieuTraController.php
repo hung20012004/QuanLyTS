@@ -357,7 +357,7 @@ public function kiem_tra($id)
                     }
 
                     $this->phieuTraModel->updateSoluongVitri($chiTiet['vi_tri_id'],$chiTiet['tai_san_id'], $newQuantity );
-
+                    $this->phieuTraModel->travekho($chiTiet['tai_san_id'], $chiTiet['so_luong']);
                 }
 
         $this->phieuTraModel->ngay_tra = date('Y-m-d');

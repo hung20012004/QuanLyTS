@@ -209,4 +209,43 @@ public function updateStatusTra()
         }
         return false;
     }
+
+    public function travekho($tai_san_id, $so_luong){
+        try {
+        $query = "SELECT so_luong FROM vi_tri_chi_tiet WHERE vi_tri_id = ? AND tai_san_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([1, $tai_san_id]);
+         $so_luong_kho = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if($so_luong_kho!=false)
+        {
+            $so_luong_update = $so_luong_kho['so_luong'] + $so_luong;
+            $sql = "UPDATE vi_tri_chi_tiet SET so_luong=:so_luong WHERE vi_tri_id =? AND tai_san_id = ?";
+            $stmt1 = $this->conn->prepare($sql);
+            $stmt1->bindValue(':so_luong', $so_luong_update, PDO::PARAM_INT);
+            $stmt1->bindValue(':vi_tri_id', 1, PDO::PARAM_INT);
+            $stmt1->bindValue(':tai_san_id', $tai_san_id, PDO::PARAM_INT);
+
+        }
+        else {
+            $sql = "INSERT INTO vi_tri_chi_tiet SET so_luong=:so_luong, vi_tri_id =:vi_tri_id, tai_san_id=:tai_san_id";
+            $stmt1 = $this->conn->prepare($sql);
+            $stmt1->bindValue(':so_luong', $so_luong, PDO::PARAM_INT);
+            $stmt1->bindValue(':vi_tri_id', 1, PDO::PARAM_INT);
+            $stmt1->bindValue(':tai_san_id', $tai_san_id, PDO::PARAM_INT);
+        }
+
+        if ($stmt1->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+        catch (Exception $e) {
+        // Xử lý ngoại lệ nếu có lỗi xảy ra
+        echo "Error: " . $e->getMessage();
+        return false;
+        }
+}
+
 }

@@ -5,6 +5,7 @@ include_once 'models/LoaiTaiSan.php';
 include_once 'models/ChiTietPhieuThanhLy.php';
 include_once 'models/TaiSan.php';
 include_once 'models/ViTriChiTiet.php';
+
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -35,6 +36,19 @@ class PhieuThanhLyController extends Controller
         include('views/layouts/base.php');
     }
 
+     public function show($id)
+    {
+        $phieuThanhLy = $this->phieuThanhLyModel->readById($id);
+        if (!$phieuThanhLy) {
+            die('Phiếu thanh lý không tồn tại.');
+        }
+
+        $chitietPhieuThanhLy = $this->chiTietPhieuThanhLyModel->readDetailedByPhieuThanhLyId($id);
+        $tai_san_list = $this->taiSanModel->read();
+        $content = 'views/phieu_thanh_ly/show.php';
+        include('views/layouts/base.php');
+    }
+
     public function create()
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -47,7 +61,7 @@ class PhieuThanhLyController extends Controller
 private function showCreateForm()
 {
     // $loai_tai_san_list = $this->loaiTaiSanModel->readAll();
-    $tai_san_list = $this->phieuThanhLyModel->readTai_San(); // Lấy tất cả tài sản
+    $tai_san_list = $this->phieuThanhLyModel->readTai_San(); // Lấy tất cả tài sản và create thì không cần lấy trường khác
     $content = 'views/phieu_thanh_ly/create.php';
     include('views/layouts/base.php');
 }
@@ -59,7 +73,7 @@ private function showCreateForm()
             $phieuThanhLyId = $this->createPhieuThanhLy();
             $this->createChiTietPhieuThanhLy($phieuThanhLyId);
             
-            $this->db->commit();
+            $this->db->commit();  // kết thúc giao dịch và lưu tất cả các thay đổi
             $_SESSION['message'] = 'Tạo phiếu nhập mới thành công!';
             $_SESSION['message_type'] = 'success';
             header("Location: index.php?model=phieuthanhly&action=index");
@@ -185,18 +199,9 @@ private function showCreateForm()
             $this->chiTietPhieuThanhLyModel->create();
         }
     }
-    public function show($id)
-    {
-        $phieuThanhLy = $this->phieuThanhLyModel->readById($id);
-        if (!$phieuThanhLy) {
-            die('Phiếu thanh lý không tồn tại.');
-        }
 
-        $chitietPhieuThanhLy = $this->chiTietPhieuThanhLyModel->readDetailedByPhieuThanhLyId($id);
-        $tai_san_list = $this->taiSanModel->read();
-        $content = 'views/phieu_thanh_ly/show.php';
-        include('views/layouts/base.php');
-    }
+   
+
     public function delete($id = null)
     {
         if ($id === null) {
@@ -228,7 +233,6 @@ private function showCreateForm()
 public function xet_duyet($id)
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-         var_dump($_POST);
         $action = isset($_POST['action']) ? $_POST['action'] : null;
 
         if ($action == 'check_quantity') {
@@ -548,3 +552,56 @@ private function processThanhLyTaiSan($id)
     exit;
 }
 }
+
+// private function showCreateForm()
+// {
+//     // $loai_tai_san_list = $this->loaiTaiSanModel->readAll();
+//     $tai_san_list = $this->phieuThanhLyModel->readTai_San(); // Lấy tất cả tài sản và create thì không cần lấy trường khác
+//     $content = 'views/phieu_thanh_ly/create.php';
+//     include('views/layouts/base.php');
+// }
+
+//     private function processCreateForm()
+//     {
+//         $this->db->beginTransaction();
+//         try {
+//             $phieuThanhLyId = $this->createPhieuThanhLy();
+//             $this->createChiTietPhieuThanhLy($phieuThanhLyId);
+            
+//             $this->db->commit();  // kết thúc giao dịch và lưu tất cả các thay đổi
+//             $_SESSION['message'] = 'Tạo phiếu nhập mới thành công!';
+//             $_SESSION['message_type'] = 'success';
+//             header("Location: index.php?model=phieuthanhly&action=index");
+//             exit();
+//         } catch (Exception $e) {
+//             $this->db->rollBack();
+//             $_SESSION['message'] = $e->getMessage();
+//             $_SESSION['message_type'] = 'danger';
+//             header("Location: index.php?model=phieuthanhly&action=create");
+//             exit();
+//         }
+//     }
+
+//     private function createPhieuThanhLy()
+//     {
+//         $this->phieuThanhLyModel->user_id = $_SESSION['user_id'];
+//         $this->phieuThanhLyModel->ngay_tao = $_POST['ngay_tao'];
+//         // $this->phieuThanhLyModel->ngay_xac_nhan = $_POST['ngay_xac_nhan'];
+//         $this->phieuThanhLyModel->ghi_chu = $_POST['ghi_chu'];
+//         $this->phieuThanhLyModel->trang_thai = 'DangChoPheDuyet';
+//         return $this->phieuThanhLyModel->create();
+//     }
+
+//     private function createChiTietPhieuThanhLy($phieuThanhLyId)
+//     {
+//         foreach ($_POST['tai_san_id'] as $index => $taiSanId) {
+//             if (empty($taiSanId)) continue;  // Bỏ qua nếu không có tài sản được chọn
+
+//             $this->chiTietPhieuThanhLyModel->phieu_thanh_ly_id = $phieuThanhLyId;
+//             $this->chiTietPhieuThanhLyModel->tai_san_id = $taiSanId;
+//             $this->chiTietPhieuThanhLyModel->so_luong = $_POST['so_luong'][$index];
+//             $this->chiTietPhieuThanhLyModel->tinh_trang = $_POST['tinh_trang'][$index];
+//             $chiTietId = $this->chiTietPhieuThanhLyModel->create();
+
+//         }
+//     }

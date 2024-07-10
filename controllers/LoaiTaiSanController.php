@@ -22,6 +22,7 @@ class LoaiTaiSanController extends Controller {
             $loaiTaiSans = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         else{
+
         $stmt = $this->loaiTaiSan->read();
         $loaiTaiSans = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
@@ -53,7 +54,7 @@ class LoaiTaiSanController extends Controller {
             if ($this->loaiTaiSan->update()) {
                 $_SESSION['message'] = 'Sửa loại tài sản thành công!';
                 $_SESSION['message_type'] = 'success';
-                header("Location: index.php?model=loaitaisan");
+                header("Location: index.php?model=loaitaisan&action=index");
             } else {
                 $_SESSION['message'] = 'Sửa thất bại!';
                 $_SESSION['message_type'] = 'danger';
