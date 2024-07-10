@@ -101,14 +101,14 @@
                             <?php if (($phieu['user_id'] == $_SESSION['user_id'] && $_SESSION['role'] == 'NhanVienQuanLy') || ($_SESSION['role'] == 'QuanLy')): ?>
                                 <tr>
                                     <td class="text-center"><?php echo $phieu['phieu_nhap_tai_san_id']; ?></td>
-                                    <td class="text-center"><?= date('d-m-Y', strtotime($phieu['ngay_tao'])) ?></td>
+                                    <td class="text-center"><?= date('d/m/Y', strtotime($phieu['ngay_tao'])) ?></td>
                                     <td class="text-center">
                                         <?php if (in_array($phieu['trang_thai'], ['DaPheDuyet', 'DaNhap', 'KhongDuyet'])): ?>
-                                            <?= !empty($phieu['ngay_xac_nhan']) ? date('d-m-Y', strtotime($phieu['ngay_xac_nhan'])) : ''; ?>
+                                            <?= !empty($phieu['ngay_xac_nhan']) ? date('d/m/Y', strtotime($phieu['ngay_xac_nhan'])) : ''; ?>
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-center">
-                                        <?= $phieu['trang_thai'] == 'DaNhap' ? (!empty($phieu['ngay_nhap']) ? date('d-m-Y', strtotime($phieu['ngay_nhap'])) : '') : ''; ?>
+                                        <?= $phieu['trang_thai'] == 'DaNhap' ? (!empty($phieu['ngay_nhap']) ? date('d/m/Y', strtotime($phieu['ngay_nhap'])) : '') : ''; ?>
                                     </td>
                                     <td class="text-center">
                                         <?= $phieu['trang_thai'] == 'DangChoPheDuyet' ? 'Đang chờ phê duyệt' : ($phieu['trang_thai'] == 'KhongDuyet' ? 'Không phê duyệt' : ($phieu['trang_thai'] == 'DaNhap' ? 'Đã nhập tài sản' : 'Đã phê duyệt')); ?>
@@ -141,72 +141,86 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        var table = $('#dataTable').DataTable({
-            dom: 'rtip',
-            language: {
-                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
-            }
-        });
-    });
-    document.getElementById('toggleSearch').addEventListener('click', function () {
-        var searchForm = document.getElementById('searchForm');
-        if (searchForm.style.display === 'none' || searchForm.style.display === '') {
-            searchForm.style.display = 'block';
-        } else {
-            searchForm.style.display = 'none';
+$(document).ready(function () {
+    var table = $('#dataTable').DataTable({
+        dom: 'rtip',
+        language: {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Vietnamese.json"
         }
     });
 
-    function filterTable() {
-        var inputMaPhieu = document.getElementById('maPhieu').value.toUpperCase();
-        var inputNgayTao = document.getElementById('ngayTao').value;
-        var inputNgayPheDuyet = document.getElementById('ngayPheDuyet').value;
-        var inputTrangThai = document.getElementById('trangThai').value.toUpperCase();
-        var table = document.getElementById('dataTable');
-        var tr = table.getElementsByTagName('tr');
-
-        for (var i = 1; i < tr.length; i++) {
-            var tdMaPhieu = tr[i].getElementsByTagName('td')[0];
-            var tdNgayTao = tr[i].getElementsByTagName('td')[1];
-            var tdNgayPheDuyet = tr[i].getElementsByTagName('td')[2];
-            var tdTrangThai = tr[i].getElementsByTagName('td')[4];
-
-            if (tdMaPhieu && tdNgayTao && tdNgayPheDuyet && tdTrangThai) {
-                var txtValueMaPhieu = tdMaPhieu.textContent || tdMaPhieu.innerText;
-                var txtValueNgayTao = tdNgayTao.textContent || tdNgayTao.innerText;
-                var txtValueNgayPheDuyet = tdNgayPheDuyet.textContent || tdNgayPheDuyet.innerText;
-                var txtValueTrangThai = tdTrangThai.textContent || tdTrangThai.innerText;
-
-                var showRow = true;
-
-                if (inputMaPhieu && txtValueMaPhieu.toUpperCase().indexOf(inputMaPhieu) === -1) {
-                    showRow = false;
-                }
-
-                if (inputTrangThai && txtValueTrangThai.toUpperCase().indexOf(inputTrangThai) === -1) {
-                    showRow = false;
-                }
-
-                if (inputNgayTao && new Date(txtValueNgayTao) < new Date(inputNgayTao)) {
-                    showRow = false;
-                }
-
-                if (inputNgayPheDuyet && new Date(txtValueNgayPheDuyet) > new Date(inputNgayPheDuyet)) {
-                    showRow = false;
-                }
-
-                if (showRow) {
-                    tr[i].style.display = '';
-                } else {
-                    tr[i].style.display = 'none';
-                }
-            }
-        }
+    // Hàm chuyển đổi định dạng ngày từ dd/mm/yyyy sang yyyy-mm-dd
+    function convertDate(dateString) {
+        if (!dateString) return null;
+        var parts = dateString.split("/");
+        return parts[2] + "-" + parts[1] + "-" + parts[0];
     }
 
-    document.getElementById('maPhieu').addEventListener('input', filterTable);
-    document.getElementById('ngayTao').addEventListener('change', filterTable);
-    document.getElementById('ngayPheDuyet').addEventListener('change', filterTable);
-    document.getElementById('trangThai').addEventListener('change', filterTable);
+    // Hàm so sánh ngày
+    function compareDates(date1, date2) {
+        if (!date1 || !date2) return true;
+        return new Date(date1).setHours(0,0,0,0) === new Date(date2).setHours(0,0,0,0);
+    }
+
+    // Custom filtering function
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        var maPhieu = $('#maPhieu').val().toUpperCase();
+        var ngayTao = $('#ngayTao').val();
+        var ngayPheDuyet = $('#ngayPheDuyet').val();
+        var trangThai = $('#trangThai').val();
+
+        var rowMaPhieu = data[0].toUpperCase();
+        var rowNgayTao = convertDate(data[1]);
+        var rowNgayPheDuyet = convertDate(data[2]);
+        var rowTrangThai = data[4];
+
+        if (maPhieu && !rowMaPhieu.includes(maPhieu)) return false;
+        if (trangThai) {
+            switch (trangThai) {
+                case 'DangChoPheDuyet':
+                    if (rowTrangThai !== 'Đang chờ phê duyệt') return false;
+                    break;
+                case 'DaPheDuyet':
+                    if (rowTrangThai !== 'Đã phê duyệt') return false;
+                    break;
+                case 'KhongDuyet':
+                    if (rowTrangThai !== 'Không phê duyệt') return false;
+                    break;
+                case 'DaNhap':
+                    if (rowTrangThai !== 'Đã nhập tài sản') return false;
+                    break;
+            }
+        }
+        if (ngayTao && !compareDates(ngayTao, rowNgayTao)) return false;
+        if (ngayPheDuyet && !compareDates(ngayPheDuyet, rowNgayPheDuyet)) return false;
+
+        return true;
+    });
+
+    // Event listeners for search inputs
+    $('#maPhieu, #trangThai, #ngayTao, #ngayPheDuyet').on('input change', function() {
+        table.draw();
+    });
+
+    // Toggle search form visibility
+    $('#toggleSearch').on('click', function() {
+        $('#searchForm').slideToggle();
+    });
+
+    // Confirm delete
+    $('body').on('click', 'a[onclick="return confirmDelete();"]', function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        if (confirm('Bạn có chắc chắn muốn xóa phiếu nhập này không?')) {
+            window.location.href = url;
+        }
+    });
+});
+
+// Function to reset search form
+function resetSearchForm() {
+    $('#maPhieu, #ngayTao, #ngayPheDuyet').val('');
+    $('#trangThai').val('');
+    $('#dataTable').DataTable().draw();
+}
 </script>
