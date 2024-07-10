@@ -119,7 +119,7 @@
                                     <td class="d-flex justify-content-center">
                                         <a href="index.php?model=phieuthanhly&action=show&id=<?php echo $phieu['phieu_thanh_ly_id']; ?>"
                                             class="btn btn-info btn-sm mx-2">Xem</a>
-                                        <?php if ($phieu['trang_thai'] == 'DangChoPheDuyet'): ?>
+                                        <?php if ($phieu['trang_thai'] == 'DangChoPheDuyet' && $_SESSION['role']=='NhanVienQuanLy'): ?>
                                             <a href="index.php?model=phieuthanhly&action=edit&id=<?php echo $phieu['phieu_thanh_ly_id']; ?>"
                                                 class="btn btn-warning btn-sm mx-2">Sửa</a>
                                             <?php if ($_SESSION['role'] == 'NhanVienQuanLy'): ?>

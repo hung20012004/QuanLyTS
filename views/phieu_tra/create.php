@@ -90,115 +90,146 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    function updateTaiSanOptions(selectElement) {
-        // Tìm dòng cha của phần tử select vị trí và select tài sản
-        var row = selectElement.closest('tr');
-        
-        // Tìm phần tử select tài sản trong dòng cha
-        var taiSanSelect = row.querySelector('.select-tai-san');
-        var taiSanOptions = taiSanSelect.querySelectorAll('option');
-
-        // Lấy giá trị vị trí đã chọn
-        var selectedViTri = selectElement.value;
-
-        // Duyệt qua từng tùy chọn của select tài sản
-        taiSanOptions.forEach(function(option) {
-            if (option.value === "") {
-                option.style.display = ""; // Hiển thị tùy chọn mặc định
-            } else {
-                // So sánh giá trị data-vi_tri của tùy chọn với vị trí đã chọn
-                option.style.display = option.getAttribute('data-vi_tri') === selectedViTri ? "" : "none";
-            }
-        });
-
-        // Đặt giá trị của select tài sản về rỗng
-        taiSanSelect.value = "";
-    }
-
-    // Gắn sự kiện 'change' cho tất cả các phần tử select vị trí ban đầu
-    document.querySelectorAll('.select-vi-tri').forEach(function(select) {
-        select.addEventListener('change', function() {
-            updateTaiSanOptions(select); // Gọi hàm cập nhật tùy chọn tài sản
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.select-vi-tri').forEach(function (select) {
+        select.addEventListener('change', function () {
+            updateTaiSanOptions(select);
+            mergeDuplicateRows();
         });
     });
 
-    // Hàm thêm dòng mới cho bảng chi tiết
-    function addTaiSan() {
-        var table = document.getElementById('chiTietTable').getElementsByTagName('tbody')[0];
-        var newRow = table.insertRow(table.rows.length);
-        
-        var cell1 = newRow.insertCell(0);
-        var cell2 = newRow.insertCell(1);
-        var cell3 = newRow.insertCell(2);
-        var cell4 = newRow.insertCell(3);
-        var cell5 = newRow.insertCell(4);
-
-        // Tạo select box cho vị trí
-        var selectViTri = document.createElement('select');
-        selectViTri.className = 'form-control select-vi-tri';
-        selectViTri.name = 'vi_tri_id[]';
-        selectViTri.required = true;
-        var viTriOptions = document.querySelector('.select-vi-tri').innerHTML;
-        selectViTri.innerHTML = viTriOptions;
-        cell1.appendChild(selectViTri);
-
-        // Tạo select box cho tài sản
-        var selectTaiSan = document.createElement('select');
-        selectTaiSan.className = 'form-control select-tai-san';
-        selectTaiSan.name = 'tai_san_id[]';
-        selectTaiSan.required = true;
-        var taiSanOptions = document.querySelector('.select-tai-san').innerHTML;
-        selectTaiSan.innerHTML = taiSanOptions;
-        cell2.appendChild(selectTaiSan);
-
-        // Tạo input cho số lượng
-        var inputSoLuong = document.createElement('input');
-        inputSoLuong.type = 'number';
-        inputSoLuong.className = 'form-control';
-        inputSoLuong.name = 'so_luong[]';
-        inputSoLuong.required = true;
-        inputSoLuong.min = '1';
-        cell3.appendChild(inputSoLuong);
-
-        // Tạo select box cho tình trạng
-        var selectTinhTrang = document.createElement('select');
-        selectTinhTrang.className = 'form-control select-tinh-trang';
-        selectTinhTrang.name = 'tinh_trang[]';
-        selectTinhTrang.required = true;
-        var tinhTrangOptions = document.querySelector('.select-tinh-trang').innerHTML;
-        selectTinhTrang.innerHTML = tinhTrangOptions;
-        cell4.appendChild(selectTinhTrang);
-
-        // Tạo nút xóa
-        var buttonXoa = document.createElement('button');
-        buttonXoa.type = 'button';
-        buttonXoa.className = 'btn btn-danger btn-sm';
-        buttonXoa.textContent = 'Xóa';
-        buttonXoa.onclick = function() {
-            removeTaiSan(buttonXoa);
-        };
-        cell5.appendChild(buttonXoa);
-
-        // Thêm sự kiện cập nhật tài sản khi vị trí thay đổi
-        selectViTri.addEventListener('change', function() {
-            updateTaiSanOptions(selectViTri);
+    document.querySelectorAll('.select-tai-san').forEach(function (select) {
+        select.addEventListener('change', function () {
+            mergeDuplicateRows();
         });
-    }
+    });
 
-    // Hàm xóa dòng trong bảng chi tiết
-    function removeTaiSan(button) {
-        var row = button.closest('tr');
-        if (document.querySelectorAll('#chiTietTable tbody tr').length > 1) {
-            row.parentNode.removeChild(row);
-        } else {
-            alert('Không thể xóa dòng cuối cùng.');
-        }
-    }
+    document.querySelectorAll('.select-tinh-trang').forEach(function (select) {
+        select.addEventListener('change', function () {
+            mergeDuplicateRows();
+        });
+    });
 
-    // Gắn sự kiện 'click' cho nút thêm tài sản
-    document.querySelector('.btn-primary').addEventListener('click', function() {
+    // Gắn sự kiện 'click' cho nút thêm tài sản chỉ một lần
+    document.getElementById('addTaiSanButton').addEventListener('click', function() {
         addTaiSan();
     });
 });
+
+function updateTaiSanOptions(selectElement) {
+    var row = selectElement.closest('tr');
+    var taiSanSelect = row.querySelector('.select-tai-san');
+    var taiSanOptions = taiSanSelect.querySelectorAll('option');
+    var selectedViTri = selectElement.value;
+
+    taiSanOptions.forEach(function(option) {
+        if (option.value === "") {
+            option.style.display = "";
+        } else {
+            option.style.display = option.getAttribute('data-vi_tri') === selectedViTri ? "" : "none";
+        }
+    });
+
+    taiSanSelect.value = "";
+}
+
+function addTaiSan() {
+    var table = document.getElementById('chiTietTable').getElementsByTagName('tbody')[0];
+    var newRow = table.insertRow(table.rows.length);
+    
+    var cell1 = newRow.insertCell(0);
+    var cell2 = newRow.insertCell(1);
+    var cell3 = newRow.insertCell(2);
+    var cell4 = newRow.insertCell(3);
+    var cell5 = newRow.insertCell(4);
+
+    var selectViTri = document.createElement('select');
+    selectViTri.className = 'form-control select-vi-tri';
+    selectViTri.name = 'vi_tri_id[]';
+    selectViTri.required = true;
+    var viTriOptions = document.querySelector('.select-vi-tri').innerHTML;
+    selectViTri.innerHTML = viTriOptions;
+    cell1.appendChild(selectViTri);
+
+    var selectTaiSan = document.createElement('select');
+    selectTaiSan.className = 'form-control select-tai-san';
+    selectTaiSan.name = 'tai_san_id[]';
+    selectTaiSan.required = true;
+    var taiSanOptions = document.querySelector('.select-tai-san').innerHTML;
+    selectTaiSan.innerHTML = taiSanOptions;
+    cell2.appendChild(selectTaiSan);
+
+    var inputSoLuong = document.createElement('input');
+    inputSoLuong.type = 'number';
+    inputSoLuong.className = 'form-control';
+    inputSoLuong.name = 'so_luong[]';
+    inputSoLuong.required = true;
+    inputSoLuong.min = '1';
+    cell3.appendChild(inputSoLuong);
+
+    var selectTinhTrang = document.createElement('select');
+    selectTinhTrang.className = 'form-control select-tinh-trang';
+    selectTinhTrang.name = 'tinh_trang[]';
+    selectTinhTrang.required = true;
+    var tinhTrangOptions = document.querySelector('.select-tinh-trang').innerHTML;
+    selectTinhTrang.innerHTML = tinhTrangOptions;
+    cell4.appendChild(selectTinhTrang);
+
+    var buttonXoa = document.createElement('button');
+    buttonXoa.type = 'button';
+    buttonXoa.className = 'btn btn-danger btn-sm';
+    buttonXoa.textContent = 'Xóa';
+    buttonXoa.onclick = function() {
+        removeTaiSan(buttonXoa);
+    };
+    cell5.appendChild(buttonXoa);
+
+    newRow.querySelector('.select-vi-tri').addEventListener('change', function () {
+        updateTaiSanOptions(this);
+        mergeDuplicateRows();
+    });
+    newRow.querySelector('.select-tai-san').addEventListener('change', function () {
+        mergeDuplicateRows();
+    });
+    newRow.querySelector('.select-tinh-trang').addEventListener('change', function () {
+        mergeDuplicateRows();
+    });
+}
+
+function removeTaiSan(button) {
+    var row = button.closest('tr');
+    if (document.querySelectorAll('#chiTietTable tbody tr').length > 1) {
+        row.parentNode.removeChild(row);
+    } else {
+        alert('Không thể xóa dòng cuối cùng.');
+    }
+}
+
+function mergeDuplicateRows() {
+    var table = document.getElementById('chiTietTable');
+    var rows = table.getElementsByTagName('tr');
+    var rowsToDelete = [];
+
+    for (var i = 1; i < rows.length; i++) {
+        for (var j = i + 1; j < rows.length; j++) {
+            var viTri1 = rows[i].querySelector('.select-vi-tri').value;
+            var taiSan1 = rows[i].querySelector('.select-tai-san').value;
+            var tinhTrang1 = rows[i].querySelector('.select-tinh-trang').value;
+            var viTri2 = rows[j].querySelector('.select-vi-tri').value;
+            var taiSan2 = rows[j].querySelector('.select-tai-san').value;
+            var tinhTrang2 = rows[j].querySelector('.select-tinh-trang').value;
+
+            if (viTri1 === viTri2 && taiSan1 === taiSan2 && tinhTrang1 === tinhTrang2) {
+                var soLuong1 = parseInt(rows[i].querySelector('input[name="so_luong[]"]').value);
+                var soLuong2 = parseInt(rows[j].querySelector('input[name="so_luong[]"]').value);
+                rows[i].querySelector('input[name="so_luong[]"]').value = soLuong1 + soLuong2;
+                rowsToDelete.push(rows[j]);
+            }
+        }
+    }
+
+    for (var i = rowsToDelete.length - 1; i >= 0; i--) {
+        rowsToDelete[i].parentNode.removeChild(rowsToDelete[i]);
+    }
+}
 </script>

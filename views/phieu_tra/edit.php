@@ -100,7 +100,33 @@
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+
+    document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.select-vi-tri').forEach(function (select) {
+        select.addEventListener('change', function () {
+            updateTaiSanOptions(select);
+            mergeDuplicateRows();
+        });
+    });
+
+    document.querySelectorAll('.select-tai-san').forEach(function (select) {
+        select.addEventListener('change', function () {
+            mergeDuplicateRows();
+        });
+    });
+
+    document.querySelectorAll('.select-tinh-trang').forEach(function (select) {
+        select.addEventListener('change', function () {
+            mergeDuplicateRows();
+        });
+    });
+
+    // Gắn sự kiện 'click' cho nút thêm tài sản chỉ một lần
+    document.getElementById('addTaiSanButton').addEventListener('click', function() {
+        addTaiSan();
+    });
+});
+
     function updateTaiSanOptions(selectElement) {
         var row = selectElement.closest('tr');
         var taiSanSelect = row.querySelector('.select-tai-san');
@@ -170,9 +196,17 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         cell5.appendChild(buttonXoa);
 
-        selectViTri.addEventListener('change', function() {
-            updateTaiSanOptions(selectViTri);
-        });
+       newRow.querySelector('.select-vi-tri').addEventListener('change', function () {
+        updateTaiSanOptions(this);
+        mergeDuplicateRows();
+    });
+    newRow.querySelector('.select-tai-san').addEventListener('change', function () {
+        mergeDuplicateRows();
+    });
+    newRow.querySelector('.select-tinh-trang').addEventListener('change', function () {
+        mergeDuplicateRows();
+    });
+
     }
 
     function removeTaiSan(button) {
@@ -184,14 +218,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    document.querySelector('.btn-primary').addEventListener('click', function() {
-        addTaiSan();
-    });
+    function mergeDuplicateRows() {
+    var table = document.getElementById('chiTietTable');
+    var rows = table.getElementsByTagName('tr');
+    var rowsToDelete = [];
 
-    document.querySelectorAll('.select-vi-tri').forEach(function(select) {
-        select.addEventListener('change', function() {
-            updateTaiSanOptions(select);
-        });
-    });
-});
+    for (var i = 1; i < rows.length; i++) {
+        for (var j = i + 1; j < rows.length; j++) {
+            var viTri1 = rows[i].querySelector('.select-vi-tri').value;
+            var taiSan1 = rows[i].querySelector('.select-tai-san').value;
+            var tinhTrang1 = rows[i].querySelector('.select-tinh-trang').value;
+            var viTri2 = rows[j].querySelector('.select-vi-tri').value;
+            var taiSan2 = rows[j].querySelector('.select-tai-san').value;
+            var tinhTrang2 = rows[j].querySelector('.select-tinh-trang').value;
+
+            if (viTri1 === viTri2 && taiSan1 === taiSan2 && tinhTrang1 === tinhTrang2) {
+                var soLuong1 = parseInt(rows[i].querySelector('input[name="so_luong[]"]').value);
+                var soLuong2 = parseInt(rows[j].querySelector('input[name="so_luong[]"]').value);
+                rows[i].querySelector('input[name="so_luong[]"]').value = soLuong1 + soLuong2;
+                rowsToDelete.push(rows[j]);
+            }
+        }
+    }
+
+    for (var i = rowsToDelete.length - 1; i >= 0; i--) {
+        rowsToDelete[i].parentNode.removeChild(rowsToDelete[i]);
+    }
+}
 </script>
