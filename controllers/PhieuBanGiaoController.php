@@ -247,22 +247,37 @@ class PhieuBanGiaoController extends Controller
 
     public function delete($id)
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->phieuBanGiaoChiTietModel->deleteByPhieuBanGiaoId($id);
-            $this->phieuBanGiaoModel->delete($id);
-            $_SESSION['message'] = 'Xóa phiếu bàn giao thành công!';
-            $_SESSION['message_type'] = 'success';
+        // Kiểm tra xem phiếu bàn giao có tồn tại không
+        $phieuBanGiao = $this->phieuBanGiaoModel->readById($id);
+        if (!$phieuBanGiao) {
+            $_SESSION['message'] = 'Phiếu bàn giao không tồn tại.';
+            $_SESSION['message_type'] = 'error';
             header("Location: index.php?model=phieubangiao&action=index");
             exit();
-        } else {
-            $phieuBanGiao = $this->phieuBanGiaoModel->readById($id);
-            if (!$phieuBanGiao) {
-                die('Phiếu bàn giao không tồn tại.');
-            }
-
-            $content = 'views/phieu_ban_giao/delete.php';
-            include ('views/layouts/base.php');
         }
+
+        // Kiểm tra quyền của người dùng
+        if ($_SESSION['role'] != 'NhanVien' || $phieuBanGiao['trang_thai'] != 'DaGui') {
+            $_SESSION['message'] = 'Bạn không có quyền xóa phiếu bàn giao này.';
+            $_SESSION['message_type'] = 'error';
+            header("Location: index.php?model=phieubangiao&action=index");
+            exit();
+        }
+        try {
+
+            $this->phieuBanGiaoChiTietModel->deleteByPhieuBanGiaoId($id);
+            $this->phieuBanGiaoModel->delete($id);
+
+
+            $_SESSION['message'] = 'Xóa phiếu bàn giao thành công!';
+            $_SESSION['message_type'] = 'success';
+        } catch (Exception $e) {
+            $_SESSION['message'] = 'Có lỗi xảy ra khi xóa phiếu bàn giao. Vui lòng thử lại.';
+            $_SESSION['message_type'] = 'error';
+        }
+
+        header("Location: index.php?model=phieubangiao&action=index");
+        exit();
     }
     public function show($id = null)
     {
@@ -304,25 +319,25 @@ class PhieuBanGiaoController extends Controller
         if ($id === null) {
             $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Missing ID.');
         }
-    
+
         $phieuBanGiao = $this->phieuBanGiaoModel->readById($id);
         if (!$phieuBanGiao) {
             die('Phiếu bàn giao không tồn tại.');
         }
-    
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Xử lý form submission
             $transactionStarted = false;
             try {
                 $this->db->beginTransaction();
                 $transactionStarted = true;
-    
+
                 // Cập nhật trạng thái phiếu bàn giao
                 $this->phieuBanGiaoModel->phieu_ban_giao_id = $id;
                 $this->phieuBanGiaoModel->trang_thai = 'DaGiao';
                 $this->phieuBanGiaoModel->ngay_ban_giao = date('Y-m-d');
                 $this->phieuBanGiaoModel->updateStatus2();
-    
+
                 // Cập nhật số lượng tài sản tại vị trí
                 $chiTietPhieuBanGiao = $this->phieuBanGiaoChiTietModel->readByPhieuBanGiaoId($id);
                 foreach ($chiTietPhieuBanGiao as $chiTiet) {
@@ -332,7 +347,7 @@ class PhieuBanGiaoController extends Controller
                         $chiTiet['so_luong']
                     );
                 }
-    
+
                 $this->db->commit();
                 $_SESSION['message'] = 'Bàn giao tài sản thành công!';
                 $_SESSION['message_type'] = 'success';
@@ -433,6 +448,7 @@ class PhieuBanGiaoController extends Controller
             } elseif ($_POST['action'] === 'huy') {
                 // Cập nhật trạng thái phiếu thành 'DaHuy'
                 $this->phieuBanGiaoModel->phieu_ban_giao_id = $id;
+                $this->phieuBanGiaoModel->ngay_kiem_tra = date('Y-m-d');
                 $this->phieuBanGiaoModel->trang_thai = 'DaHuy';
                 $this->phieuBanGiaoModel->updateStatus();
 
@@ -445,177 +461,178 @@ class PhieuBanGiaoController extends Controller
         exit();
     }
     public function exportWord($id)
-{
-    require 'vendor/autoload.php';
+    {
+        require 'vendor/autoload.php';
 
-    $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
 
-    // Fetch data
-    $phieuBanGiao = $this->phieuBanGiaoModel->readById($id);
-    if (!$phieuBanGiao) {
-        die('Phiếu bàn giao không tồn tại.');
-    }
+        // Fetch data
+        $phieuBanGiao = $this->phieuBanGiaoModel->readById($id);
+        if (!$phieuBanGiao) {
+            die('Phiếu bàn giao không tồn tại.');
+        }
 
-    $nguoiNhan = $this->userModel->readById($phieuBanGiao['user_nhan_id']);
-    $nguoiBanGiao = $this->userModel->readById($phieuBanGiao['user_ban_giao_id']);
-    $viTri = $this->viTriModel->readById($phieuBanGiao['vi_tri_id']);
+        $nguoiNhan = $this->userModel->readById($phieuBanGiao['user_nhan_id']);
+        $nguoiBanGiao = $this->userModel->readById($phieuBanGiao['user_ban_giao_id']);
+        $viTri = $this->viTriModel->readById($phieuBanGiao['vi_tri_id']);
 
-    $chiTietPhieuBanGiao = $this->phieuBanGiaoChiTietModel->readByPhieuBanGiaoId($id);
+        $chiTietPhieuBanGiao = $this->phieuBanGiaoChiTietModel->readByPhieuBanGiaoId($id);
 
-    // Add a section to the document
-    $section = $phpWord->addSection();
+        // Add a section to the document
+        $section = $phpWord->addSection();
 
-    // Add title
-    $section->addText('CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-    $section->addText('Độc lập - Tự do - Hạnh Phúc', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-    $section->addText('---***---', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-    $section->addTextBreak(1);
-    $section->addText('BIÊN BẢN BÀN GIAO TÀI SẢN, CÔNG CỤ', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-    $section->addTextBreak(1);
+        // Add title
+        $section->addText('CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addText('Độc lập - Tự do - Hạnh Phúc', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addText('---***---', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addTextBreak(1);
+        $section->addText('BIÊN BẢN BÀN GIAO TÀI SẢN, CÔNG CỤ', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addTextBreak(1);
 
-    // Add general information
-    $section->addText('Hôm nay, ngày ' . date('d/m/Y', strtotime($phieuBanGiao['ngay_ban_giao'])) . ' tại ' . $viTri['ten_vi_tri'] . ', chúng tôi gồm:');
-    $section->addText('Người bàn giao: ' . $nguoiBanGiao['ten'] . ', Khoa: ' . $nguoiBanGiao['khoa'] . ', MSNV: ' . $nguoiBanGiao['user_id']);
-    $section->addText('Người nhận bàn giao: ' . $nguoiNhan['ten'] . ', Khoa: ' . $nguoiNhan['khoa'] . ', MSNV: ' . $nguoiNhan['user_id']);
-    $section->addText('Lý do bàn giao: ' . $phieuBanGiao['ghi_chu']);
-    $section->addTextBreak(1);
-    $section->addText('Cùng bàn giao tài sản, công cụ với nội dung như sau:');
+        // Add general information
+        $section->addText('Hôm nay, ngày ' . date('d/m/Y', strtotime($phieuBanGiao['ngay_ban_giao'])) . ' tại ' . $viTri['ten_vi_tri'] . ', chúng tôi gồm:');
+        $section->addText('Người bàn giao: ' . $nguoiBanGiao['ten'] . ', Khoa: ' . $nguoiBanGiao['khoa'] . ', MSNV: ' . $nguoiBanGiao['user_id']);
+        $section->addText('Người nhận bàn giao: ' . $nguoiNhan['ten'] . ', Khoa: ' . $nguoiNhan['khoa'] . ', MSNV: ' . $nguoiNhan['user_id']);
+        $section->addText('Lý do bàn giao: ' . $phieuBanGiao['ghi_chu']);
+        $section->addTextBreak(1);
+        $section->addText('Cùng bàn giao tài sản, công cụ với nội dung như sau:');
 
-    // Add table of assets
-    $table = $section->addTable(['borderSize' => 6, 'borderColor' => '000000', 'cellMargin' => 80]);
-    $table->addRow();
-    $table->addCell(500)->addText('Stt', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-    $table->addCell(2000)->addText('Mã tài sản, công cụ', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-    $table->addCell(3000)->addText('Tên tài sản, công cụ', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-    $table->addCell(1000)->addText('Đơn vị', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-    $table->addCell(1000)->addText('Số lượng', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-    $table->addCell(1500)->addText('Tình trạng', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-
-    foreach ($chiTietPhieuBanGiao as $index => $chiTiet) {
-        $taiSan = $this->taiSanModel->readById($chiTiet['tai_san_id']);
+        // Add table of assets
+        $table = $section->addTable(['borderSize' => 6, 'borderColor' => '000000', 'cellMargin' => 80]);
         $table->addRow();
-        $table->addCell(500)->addText($index + 1, [], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-        $table->addCell(2000)->addText($taiSan['tai_san_id'], [], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-        $table->addCell(3000)->addText($taiSan['ten_tai_san']);
-        $table->addCell(1000)->addText('Cái', [], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-        $table->addCell(1000)->addText($chiTiet['so_luong'], [], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-        $table->addCell(1500)->addText($chiTiet['tinh_trang']);
+        $table->addCell(500)->addText('Stt', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $table->addCell(2000)->addText('Mã tài sản, công cụ', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $table->addCell(3000)->addText('Tên tài sản, công cụ', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $table->addCell(1000)->addText('Đơn vị', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $table->addCell(1000)->addText('Số lượng', ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+    
+
+        foreach ($chiTietPhieuBanGiao as $index => $chiTiet) {
+            $taiSan = $this->taiSanModel->readById($chiTiet['tai_san_id']);
+            $table->addRow();
+            $table->addCell(500)->addText($index + 1, [], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+            $table->addCell(2000)->addText($taiSan['tai_san_id'], [], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+            $table->addCell(3000)->addText($taiSan['ten_tai_san']);
+            $table->addCell(1000)->addText('Cái', [], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+            $table->addCell(1000)->addText($chiTiet['so_luong'], [], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+            
+        }
+
+        // Save file
+        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        $fileName = 'BienBanBanGiao_' . $id . '.docx';
+        header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        $objWriter->save("php://output");
+        exit;
     }
+    public function export()
+    {
+        // Fetch data to be exported
+        $phieuBanGiaoList = $this->phieuBanGiaoModel->readAll();
 
-    // Save file
-    $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-    $fileName = 'BienBanBanGiao_' . $id . '.docx';
-    header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-    header('Content-Disposition: attachment; filename="' . $fileName . '"');
-    $objWriter->save("php://output");
-    exit;
-}
-public function export()
-{
-    // Fetch data to be exported
-    $phieuBanGiaoList = $this->phieuBanGiaoModel->readAll();
+        // Create a new Spreadsheet object
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-    // Create a new Spreadsheet object
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
+        // Set title
+        $sheet->setTitle('Danh sách Phiếu Bàn Giao');
+        $sheet->mergeCells('A1:F1');
+        $sheet->setCellValue('A1', 'Phiếu bàn giao tài sản');
+        $sheet->getStyle('A1:F1')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 16],
+            'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+            'borders' => [
+                'allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN],
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => 'FFFF00'],
+            ],
+        ]);
+        // Set the header of the columns and apply styles
+        $headers = ['Mã số phiếu', 'Ngày tạo phiếu', 'Ngày kiểm tra', 'Ngày phê duyệt', 'Ngày bàn giao', 'Trạng thái'];
+        $sheet->fromArray($headers, null, 'A3');
+        $sheet->getStyle('A3:F3')->applyFromArray([
+            'font' => ['bold' => true],
+            'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+            'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => 'FFFF00']],
+            'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]],
+        ]);
 
-    // Set title
-    $sheet->setTitle('Danh sách Phiếu Bàn Giao');
-    $sheet->mergeCells('A1:F1');
-    $sheet->setCellValue('A1', 'Phiếu bàn giao tài sản');
-    $sheet->getStyle('A1:F1')->applyFromArray([
-        'font' => ['bold' => true, 'size' => 16],
-        'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
-        'borders' => [
-            'allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN],
-        ],
-        'fill' => [
-            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-            'startColor' => ['rgb' => 'FFFF00'],
-        ],
-    ]);
-    // Set the header of the columns and apply styles
-    $headers = ['Mã số phiếu', 'Ngày tạo phiếu', 'Ngày kiểm tra', 'Ngày phê duyệt', 'Ngày bàn giao', 'Trạng thái'];
-    $sheet->fromArray($headers, null, 'A3');
-    $sheet->getStyle('A3:F3')->applyFromArray([
-        'font' => ['bold' => true],
-        'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
-        'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => 'FFFF00']],
-        'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]],
-    ]);
+        // Populate the spreadsheet with data
+        $row = 4;
+        foreach ($phieuBanGiaoList as $phieu) {
+            if (
+                ($phieu['user_nhan_id'] == $_SESSION['user_id'] && $_SESSION['role'] == 'NhanVien')
+                || ($phieu['user_ban_giao_id'] == $_SESSION['user_id'] && $_SESSION['role'] == 'NhanVienQuanLy')
+                || ($phieu['user_ban_giao_id'] == '' && $_SESSION['role'] == 'NhanVienQuanLy')
+                || ($_SESSION['role'] == 'QuanLy' && ($phieu['trang_thai'] == 'DaBanGiao' || $phieu['trang_thai'] == 'DangChoPheDuyet' || $phieu['trang_thai'] == 'KhongDuyet' || $phieu['trang_thai'] == 'DaPheDuyet'))
+            ) {
+                $sheet->setCellValue('A' . $row, $phieu['phieu_ban_giao_id']);
+                $sheet->setCellValue('B' . $row, !empty($phieu['ngay_gui']) ? date('d-m-Y', strtotime($phieu['ngay_gui'])) : '');
+                $sheet->setCellValue('C' . $row, !empty($phieu['ngay_kiem_tra']) ? date('d-m-Y', strtotime($phieu['ngay_kiem_tra'])) : '');
+                $sheet->setCellValue('D' . $row, !empty($phieu['ngay_duyet']) ? date('d-m-Y', strtotime($phieu['ngay_duyet'])) : '');
+                $sheet->setCellValue('E' . $row, !empty($phieu['ngay_ban_giao']) ? date('d-m-Y', strtotime($phieu['ngay_ban_giao'])) : '');
+                $sheet->setCellValue('F' . $row, $this->getTrangThaiText($phieu['trang_thai']));
 
-    // Populate the spreadsheet with data
-    $row = 4;
-    foreach ($phieuBanGiaoList as $phieu) {
-        if (($phieu['user_nhan_id'] == $_SESSION['user_id'] && $_SESSION['role'] == 'NhanVien')
-            || ($phieu['user_ban_giao_id'] == $_SESSION['user_id'] && $_SESSION['role'] == 'NhanVienQuanLy')
-            || ($phieu['user_ban_giao_id'] == '' && $_SESSION['role'] == 'NhanVienQuanLy')
-            || ($_SESSION['role'] == 'QuanLy' && ($phieu['trang_thai'] == 'DaBanGiao' || $phieu['trang_thai'] == 'DangChoPheDuyet' || $phieu['trang_thai'] == 'KhongDuyet' || $phieu['trang_thai'] == 'DaPheDuyet'))
-        ) {
-            $sheet->setCellValue('A' . $row, $phieu['phieu_ban_giao_id']);
-            $sheet->setCellValue('B' . $row, !empty($phieu['ngay_gui']) ? date('d-m-Y', strtotime($phieu['ngay_gui'])) : '');
-            $sheet->setCellValue('C' . $row, !empty($phieu['ngay_kiem_tra']) ? date('d-m-Y', strtotime($phieu['ngay_kiem_tra'])) : '');
-            $sheet->setCellValue('D' . $row, !empty($phieu['ngay_duyet']) ? date('d-m-Y', strtotime($phieu['ngay_duyet'])) : '');
-            $sheet->setCellValue('E' . $row, !empty($phieu['ngay_ban_giao']) ? date('d-m-Y', strtotime($phieu['ngay_ban_giao'])) : '');
-            $sheet->setCellValue('F' . $row, $this->getTrangThaiText($phieu['trang_thai']));
+                // Apply border to non-header rows
+                $sheet->getStyle('A' . $row . ':F' . $row)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
-            // Apply border to non-header rows
-            $sheet->getStyle('A' . $row . ':F' . $row)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                $row++;
+            }
+        }
 
-            $row++;
+        // Set auto column width
+        foreach (range('A', 'F') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Create a writer and save the file to the server temporarily
+        $fileName = 'phieu_ban_giao.xlsx';
+        $filePath = __DIR__ . '/' . $fileName; // Save in the current directory of the project
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($filePath);
+
+        // Return the file as a download
+        if (file_exists($filePath)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment; filename="' . basename($filePath) . '"');
+            header('Content-Transfer-Encoding: binary');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($filePath));
+            ob_clean();
+            flush();
+            readfile($filePath);
+            unlink($filePath); // Delete temporary file after download
+            exit;
+        } else {
+            echo "File không tồn tại.";
         }
     }
 
-    // Set auto column width
-    foreach(range('A', 'F') as $columnID) {
-        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    private function getTrangThaiText($trang_thai)
+    {
+        switch ($trang_thai) {
+            case 'DaGui':
+                return 'Đã gửi';
+            case 'DaKiemTra':
+                return 'Đã kiểm tra';
+            case 'DangChoPheDuyet':
+                return 'Đang chờ phê duyệt';
+            case 'DaPheDuyet':
+                return 'Đã phê duyệt';
+            case 'DaGiao':
+                return 'Đã giao';
+            case 'KhongDuyet':
+                return 'Không duyệt';
+            default:
+                return $trang_thai;
+        }
     }
-
-    // Create a writer and save the file to the server temporarily
-    $fileName = 'phieu_ban_giao.xlsx';
-    $filePath = __DIR__ . '/' . $fileName; // Save in the current directory of the project
-    $writer = new Xlsx($spreadsheet);
-    $writer->save($filePath);
-
-    // Return the file as a download
-    if (file_exists($filePath)) {
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="' . basename($filePath) . '"');
-        header('Content-Transfer-Encoding: binary');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($filePath));
-        ob_clean();
-        flush();
-        readfile($filePath);
-        unlink($filePath); // Delete temporary file after download
-        exit;
-    } else {
-        echo "File không tồn tại.";
-    }
-}
-
-private function getTrangThaiText($trang_thai)
-{
-    switch ($trang_thai) {
-        case 'DaGui':
-            return 'Đã gửi';
-        case 'DaKiemTra':
-            return 'Đã kiểm tra';
-        case 'DangChoPheDuyet':
-            return 'Đang chờ phê duyệt';
-        case 'DaPheDuyet':
-            return 'Đã phê duyệt';
-        case 'DaGiao':
-            return 'Đã giao';
-        case 'KhongDuyet':
-            return 'Không duyệt';
-        default:
-            return $trang_thai;
-    }
-}
 
 
 

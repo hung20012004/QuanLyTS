@@ -48,7 +48,7 @@
             </div>
 
             <h5 class="mt-4">Danh sách tài sản yêu cầu:</h5>
-            <table class="table table-bordered">
+            <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
                         <th>Vị trí</th>

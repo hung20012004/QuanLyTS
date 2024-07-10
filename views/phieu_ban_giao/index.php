@@ -47,19 +47,56 @@
             </div>
         </div>
         <div class="card-body">
-            <form id="searchForm" class="mb-3" style="display: none;">
-                <div class="row">
-                    <div class="col-md-7 mb-2">
-                        <div class="d-flex align-items-center">
-                            <label for="tenEmail" class="form-label w-80">Ngày tạo phiếu:</label>
-                                <div class="input-group">
-                                    <input type="date" name="ngayBatDau" id="ngayBatDau" class="form-control" placeholder="Từ ngày">
-                                    <input type="date" name="ngayKetThuc" id="ngayKetThuc" class="form-control" placeholder="Đến ngày">
-                                </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
+        <div id="searchForm" class="mb-3" style="display: none;">
+    <div class="row">
+        <div class="col-md-3 mb-2">
+            <label for="ngayTaoPhieu" class="form-label">Ngày tạo phiếu:</label>
+            <div class="input-group">
+                <input type="date" name="ngayTaoPhieuBatDau" id="ngayTaoPhieuBatDau" class="form-control" placeholder="Từ ngày">
+                <input type="date" name="ngayTaoPhieuKetThuc" id="ngayTaoPhieuKetThuc" class="form-control" placeholder="Đến ngày">
+            </div>
+        </div>
+        <div class="col-md-3 mb-2">
+            <label for="ngayKiemTra" class="form-label">Ngày kiểm tra:</label>
+            <div class="input-group">
+                <input type="date" name="ngayKiemTraBatDau" id="ngayKiemTraBatDau" class="form-control" placeholder="Từ ngày">
+                <input type="date" name="ngayKiemTraKetThuc" id="ngayKiemTraKetThuc" class="form-control" placeholder="Đến ngày">
+            </div>
+        </div>
+        <div class="col-md-3 mb-2">
+            <label for="ngayPheDuyet" class="form-label">Ngày phê duyệt:</label>
+            <div class="input-group">
+                <input type="date" name="ngayPheDuyetBatDau" id="ngayPheDuyetBatDau" class="form-control" placeholder="Từ ngày">
+                <input type="date" name="ngayPheDuyetKetThuc" id="ngayPheDuyetKetThuc" class="form-control" placeholder="Đến ngày">
+            </div>
+        </div>
+        <div class="col-md-3 mb-2">
+            <label for="ngayBanGiao" class="form-label">Ngày bàn giao:</label>
+            <div class="input-group">
+                <input type="date" name="ngayBanGiaoBatDau" id="ngayBanGiaoBatDau" class="form-control" placeholder="Từ ngày">
+                <input type="date" name="ngayBanGiaoKetThuc" id="ngayBanGiaoKetThuc" class="form-control" placeholder="Đến ngày">
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-md-3 mb-2">
+            <label for="trangThai" class="form-label">Trạng thái:</label>
+            <select name="trangThai" id="trangThai" class="form-select">
+                <option value="">Tất cả</option>
+                <option value="Đã gửi">Đã gửi</option>
+                <option value="Đã kiểm tra">Đã kiểm tra</option>
+                <option value="Đang chờ phê duyệt">Đang chờ phê duyệt</option>
+                <option value="Đã phê duyệt">Đã phê duyệt</option>
+                <option value="Đã giao">Đã giao</option>
+                <option value="Không duyệt">Không duyệt</option>
+            </select>
+        </div>
+        <div class="col-md-9 d-flex align-items-end justify-content-end">
+            <button type="button" id="searchButton" class="btn btn-primary me-2">Tìm kiếm</button>
+            <button type="button" id="resetButton" class="btn btn-secondary">Đặt lại</button>
+        </div>
+    </div>
+</div>  
             <div class="table-responsive">
                 <table id="dataTable" class="table table-bordered" width="100%" cellspacing="0">
                     <thead class="bg-light text-black text-center">
@@ -82,10 +119,10 @@
                               ||($_SESSION['role']=='QuanLy'&& ($phieu['trang_thai']=='DaBanGiao'||$phieu['trang_thai']=='DangChoPheDuyet'||$phieu['trang_thai']=='KhongDuyet'||$phieu['trang_thai']=='DaPheDuyet'))): ?>
                                 <tr>
                                     <td class="text-center"><?php echo $phieu['phieu_ban_giao_id']; ?></td>
-                                    <td class="text-center"><?= date('d-m-Y', strtotime($phieu['ngay_gui'])) ?></td>
-                                    <td class="text-center"><?= !empty($phieu['ngay_kiem_tra']) ? date('d-m-Y', strtotime($phieu['ngay_kiem_tra'])) : ''; ?></td>
-                                    <td class="text-center"><?= !empty($phieu['ngay_duyet']) ? date('d-m-Y', strtotime($phieu['ngay_duyet'])) : ''; ?></td>
-                                    <td class="text-center"><?= !empty($phieu['ngay_ban_giao']) ? date('d-m-Y', strtotime($phieu['ngay_ban_giao'])) : ''; ?></td>
+                                    <td class="text-center"><?= date('d/m/Y', strtotime($phieu['ngay_gui'])) ?></td>
+                                    <td class="text-center"><?= !empty($phieu['ngay_kiem_tra']) ? date('d/m/Y', strtotime($phieu['ngay_kiem_tra'])) : ''; ?></td>
+                                    <td class="text-center"><?= !empty($phieu['ngay_duyet']) ? date('d/m/Y', strtotime($phieu['ngay_duyet'])) : ''; ?></td>
+                                    <td class="text-center"><?= !empty($phieu['ngay_ban_giao']) ? date('d/m/Y', strtotime($phieu['ngay_ban_giao'])) : ''; ?></td>
                                     <td class="text-center">
                                         <?php
                                         switch ($phieu['trang_thai']) {
@@ -148,44 +185,125 @@
         });
     });
 
+
     document.addEventListener('DOMContentLoaded', function () {
-        function filterTable() {
-            var ngayBatDau = document.getElementById('ngayBatDau').value;
-            var ngayKetThuc = document.getElementById('ngayKetThuc').value;
+    var toggleButton = document.getElementById('toggleSearch');
+    var searchForm = document.getElementById('searchForm');
+    var searchButton = document.getElementById('searchButton');
+    var resetButton = document.getElementById('resetButton');
+    var table = document.getElementById('dataTable');
 
-            var table = document.getElementById('dataTable');
-            var rows = table.getElementsByTagName('tr');
+    toggleButton.addEventListener('click', function () {
+        searchForm.style.display = searchForm.style.display === 'none' ? 'block' : 'none';
+        toggleButton.textContent = searchForm.style.display === 'none' ? 'Tìm kiếm' : 'Ẩn tìm kiếm';
+    });
+    function parseDate(dateString) {
+    if (!dateString) return null;
+    var parts = dateString.split('-');
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+}
 
-            for (var i = 1; i < rows.length; i++) {
-                var cells = rows[i].getElementsByTagName('td');
-                var ngayGui = cells[1].textContent.trim();
+function isDateInRange(dateString, startDateString, endDateString) {
+    if (!dateString) return false; // Thay đổi ở đây
+    var date = parseDate(dateString);
+    var startDate = startDateString ? parseDate(startDateString) : null;
+    var endDate = endDateString ? parseDate(endDateString) : null;
 
-                var passNgay = (!ngayBatDau || ngayGui >= ngayBatDau) && (!ngayKetThuc || ngayGui <= ngayKetThuc);
+    if (startDate && endDate) {
+        return date >= startDate && date <= endDate;
+    } else if (startDate) {
+        return date >= startDate;
+    } else if (endDate) {
+        return date <= endDate;
+    }
+    return true; // Nếu không có ngày bắt đầu và kết thúc, hiển thị tất cả ngày không null
+}
 
-                if (passNgay) {
-                    rows[i].style.display = '';
-                } else {
-                    rows[i].style.display = 'none';
-                }
-            }
+function filterTable() {
+    var rows = table.getElementsByTagName('tr');
+    for (var i = 1; i < rows.length; i++) {
+        var cells = rows[i].getElementsByTagName('td');
+        var showRow = true;
+
+        // Kiểm tra ngày tạo phiếu
+        var ngayTaoPhieuBatDau = document.getElementById('ngayTaoPhieuBatDau').value;
+        var ngayTaoPhieuKetThuc = document.getElementById('ngayTaoPhieuKetThuc').value;
+        if (ngayTaoPhieuBatDau || ngayTaoPhieuKetThuc) {
+            showRow = showRow && isDateInRange(
+                cells[1].textContent.trim(),
+                ngayTaoPhieuBatDau,
+                ngayTaoPhieuKetThuc
+            );
         }
 
-        document.getElementById('ngayBatDau').addEventListener('change', filterTable);
-        document.getElementById('ngayKetThuc').addEventListener('change', filterTable);
+        // Kiểm tra ngày kiểm tra
+        var ngayKiemTraBatDau = document.getElementById('ngayKiemTraBatDau').value;
+        var ngayKiemTraKetThuc = document.getElementById('ngayKiemTraKetThuc').value;
+        if (ngayKiemTraBatDau || ngayKiemTraKetThuc) {
+            showRow = showRow && isDateInRange(
+                cells[2].textContent.trim(),
+                ngayKiemTraBatDau,
+                ngayKiemTraKetThuc
+            );
+        }
 
-        filterTable();
+        // Kiểm tra ngày phê duyệt
+        var ngayPheDuyetBatDau = document.getElementById('ngayPheDuyetBatDau').value;
+        var ngayPheDuyetKetThuc = document.getElementById('ngayPheDuyetKetThuc').value;
+        if (ngayPheDuyetBatDau || ngayPheDuyetKetThuc) {
+            showRow = showRow && isDateInRange(
+                cells[3].textContent.trim(),
+                ngayPheDuyetBatDau,
+                ngayPheDuyetKetThuc
+            );
+        }
 
-        var toggleButton = document.getElementById('toggleSearch');
-        var searchForm = document.getElementById('searchForm');
+        // Kiểm tra ngày bàn giao
+        var ngayBanGiaoBatDau = document.getElementById('ngayBanGiaoBatDau').value;
+        var ngayBanGiaoKetThuc = document.getElementById('ngayBanGiaoKetThuc').value;
+        if (ngayBanGiaoBatDau || ngayBanGiaoKetThuc) {
+            showRow = showRow && isDateInRange(
+                cells[4].textContent.trim(),
+                ngayBanGiaoBatDau,
+                ngayBanGiaoKetThuc
+            );
+        }
 
-        toggleButton.addEventListener('click', function () {
-            if (searchForm.style.display === 'none') {
-                searchForm.style.display = 'block';
-                toggleButton.textContent = 'Ẩn tìm kiếm';
-            } else {
-                searchForm.style.display = 'none';
-                toggleButton.textContent = 'Tìm kiếm';
-            }
-        });
+        // Kiểm tra trạng thái
+        var trangThai = document.getElementById('trangThai').value;
+        showRow = showRow && (!trangThai || cells[5].textContent.trim() === trangThai);
+
+        rows[i].style.display = showRow ? '' : 'none';
+    }
+}
+
+    function resetForm() {
+        var inputs = searchForm.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].value = '';
+        }
+        document.getElementById('trangThai').value = '';
+        var rows = table.getElementsByTagName('tr');
+        for (var i = 1; i < rows.length; i++) {
+            rows[i].style.display = '';
+        }
+    }
+
+    searchButton.addEventListener('click', filterTable);
+    resetButton.addEventListener('click', resetForm);
+
+    // Logging for debugging
+    searchButton.addEventListener('click', function() {
+        console.log('Search activated');
+        var inputs = searchForm.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            console.log(inputs[i].id + ': ' + inputs[i].value);
+        }
+        console.log('Status: ' + document.getElementById('trangThai').value);
     });
+
+    resetButton.addEventListener('click', function() {
+        console.log('Reset activated');
+    });
+});
 </script>
