@@ -205,7 +205,7 @@
         }
     }
 
-    document.getElementById('maPhieu').addEventListener('keyup', filterTable);
+    document.getElementById('maPhieu').addEventListener('input', filterTable);
     document.getElementById('ngayTao').addEventListener('change', filterTable);
     document.getElementById('ngayPheDuyet').addEventListener('change', filterTable);
     document.getElementById('trangThai').addEventListener('change', filterTable);
