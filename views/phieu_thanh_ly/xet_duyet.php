@@ -98,12 +98,11 @@
 
                   <div class="form-group row">
                     <div class="col-sm-12">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a href="index.php?model=phieuthanhly&action=index" class="btn btn-secondary">Quay lại</a>
+                        <div class="d-flex justify-content-end align-items-center">
+                                <a href="index.php?model=phieuthanhly&action=index" class="btn btn-secondary mr-2">Quay lại</a>
                                 <button type="submit" name="action" value="check_quantity" class="btn btn-warning mr-2">Kiểm tra số lượng</button>
                                 <button type="submit" name="action" value="approve" class="btn btn-success mr-2"
-                                    onclick="return confirm('Bạn có chắc muốn phê duyệt phiếu thanh lý này?')">Phê
-                                    duyệt</button>
+                                    onclick="return confirm('Bạn có chắc muốn phê duyệt phiếu thanh lý này?')">Phê duyệt</button>
 
                                 <button type="submit" name="action" value="reject" class="btn btn-danger"
                                     onclick="return confirm('Bạn có chắc muốn không phê duyệt phiếu thanh lý này?')">Không

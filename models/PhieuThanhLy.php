@@ -16,7 +16,7 @@ class PhieuThanhLy {
         $this->conn = $db;
     }
 
-    public function readAll() {
+    public function readAll() {   // lấy tất cả 
         $query = "SELECT ptl.*, u.ten AS user_name, u.user_id
                   FROM " . $this->table_name . " ptl
                   LEFT JOIN users u ON ptl.user_id = u.user_id

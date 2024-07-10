@@ -20,8 +20,8 @@ class LoaiTaiSan {
         return $stmt;
     }
 
-    // Đọc tất cả loại tài sản
-    public function read() {
+    // Hàm này dùng trong index Loaitaisan Controller
+    public function read() {   
         $query = "SELECT * FROM " . $this->table_name." ORDER BY loai_tai_san_id ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -45,10 +45,10 @@ class LoaiTaiSan {
         $stmt = $this->conn->prepare($query);
 
         // sanitize
-        $this->ten_loai_tai_san = htmlspecialchars(strip_tags($this->ten_loai_tai_san));
+        $this->ten_loai_tai_san = htmlspecialchars(strip_tags($this->ten_loai_tai_san)); // bỏ kí tự đặc biệt
 
         // bind value
-        $stmt->bindParam(':ten_loai_tai_san', $this->ten_loai_tai_san);
+        $stmt->bindParam(':ten_loai_tai_san', $this->ten_loai_tai_san); // gán biến
 
         if ($stmt->execute()) {
             return true;
