@@ -13,8 +13,11 @@
 
 <div class="container-fluid">
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Phiếu nhập tài sản</h6>
+        <div class="card-header py-3 d-flex justify-content-between">
+            <h6 class="m-0 pt-3 font-weight-bold text-primary">Phiếu nhập tài sản</h6>
+            <?php if ($phieuNhap['trang_thai']=='DaNhap'): ?>
+            <a href="index.php?model=phieunhap&action=exportWord&id=<?= $phieuNhap['phieu_nhap_tai_san_id']; ?>" class="btn btn-primary">Xuất phiếu</a>
+            <?php endif;?>
         </div>
         <div class="card-body">
             <form method="POST"

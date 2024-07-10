@@ -69,7 +69,6 @@
                         <th>Loại tài sản</th>
                         <th>Tên tài sản</th>
                         <th>Số lượng</th>
-                        <th>Tình trạng</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,7 +77,6 @@
                             <td><?= htmlspecialchars($chiTiet['ten_loai_tai_san']); ?></td>
                             <td><?= htmlspecialchars($chiTiet['ten_tai_san']); ?></td>
                             <td><?= htmlspecialchars($chiTiet['so_luong']); ?></td>
-                            <td><?= htmlspecialchars($chiTiet['tinh_trang']); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

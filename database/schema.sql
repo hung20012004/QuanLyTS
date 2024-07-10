@@ -76,7 +76,7 @@ CREATE TABLE phieu_ban_giao (
     ngay_duyet DATE,
     ngay_ban_giao DATE,
 
-    trang_thai ENUM('DaLuu','DaGui','DaKiemTra','DangChoPheDuyet','DaPheDuyet','DaGiao','KhongDuyet') NOT NULL,
+    trang_thai ENUM('DaHuy','DaLuu','DaGui','DaKiemTra','DangChoPheDuyet','DaPheDuyet','DaGiao','KhongDuyet') NOT NULL,
     FOREIGN KEY (user_ban_giao_id) REFERENCES `users`(user_id) ON DELETE CASCADE,
     FOREIGN KEY (user_nhan_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
     FOREIGN KEY (vi_tri_id) REFERENCES vi_tri(vi_tri_id),

@@ -61,7 +61,7 @@
                         <th>Loại tài sản</th>
                         <th>Tên tài sản</th>
                         <th>Số lượng</th>
-                        <th>Tình trạng</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -81,7 +81,7 @@
                             ];
                             $tinhTrangLabel = $tinhTrangLabels[$chiTiet['tinh_trang']] ?? 'Không xác định';
                             ?>
-                            <td><?= htmlspecialchars($tinhTrangLabel); ?></td>
+                            
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
