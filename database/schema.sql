@@ -151,16 +151,18 @@ CREATE TABLE chi_tiet_phieu_thanh_ly (
 CREATE TABLE phieu_sua(
     phieu_sua_id INT AUTO_INCREMENT PRIMARY KEY,
     ngay_yeu_cau DATE NOT NULL,
-    ngay_sua DATE NOT NULL,
+    ngay_sua_chua DATE,
     ngay_hoan_thanh DATE,
-    ghi_chu TEXT,
-    user_sua_id INT,
+    mo_ta TEXT,
+    vi_tri_id INT NOT NULL,
+    user_sua_chua_id INT,
     user_yeu_cau_id INT,
     user_duyet_id INT,
-    trang_thai ENUM('KhongDuyet','DangChoPheDuyet','DaPheDuyet','DaSuaChua') NOT NULL,
-    CONSTRAINT fk_phieu_sua_user_sua_id FOREIGN KEY (user_sua_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
+    trang_thai ENUM('DaGui','DaNhan','DaHoanThanh','YeuCauHuy','Huy') NOT NULL,
+    CONSTRAINT fk_phieu_sua_user_sua_id FOREIGN KEY (user_sua_chua_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
     CONSTRAINT fk_phieu_sua_user_yeu_cau_id FOREIGN KEY (user_yeu_cau_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
-    CONSTRAINT fk_phieu_sua_user_duyet_id FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE
+    CONSTRAINT fk_phieu_sua_user_duyet_id FOREIGN KEY (user_duyet_id) REFERENCES `users`(user_id) ON UPDATE CASCADE,
+    CONSTRAINT fk_phieu_sua_vi_tri_id FOREIGN KEY (vi_tri_id) REFERENCES `vi_tri`(vi_tri_id) ON UPDATE CASCADE
 );
 
 CREATE TABLE chi_tiet_phieu_sua(

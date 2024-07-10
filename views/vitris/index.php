@@ -82,7 +82,7 @@
                             <tr>
                                 <td class="text-center"><?= $viTri['vi_tri_id'] ?></td>
                                 <td><?= htmlspecialchars($viTri['ten_vi_tri']) ?></td>
-                                <td><?= htmlspecialchars($viTri['khoa']) ?></td>
+                                <td><?= $viTri['vi_tri_id'] != 1 ? htmlspecialchars($viTri['khoa']) : '' ?></td>
                                 <td class="d-flex justify-content-center">
                                     <a href="index.php?model=vitri&action=show&id=<?= $viTri['vi_tri_id'] ?>"
                                         class="btn btn-info btn-sm mx-2">Xem</a>

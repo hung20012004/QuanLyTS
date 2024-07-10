@@ -179,25 +179,6 @@ class TaiSan {
             return false;
         }
     }
-    
-    public function getRecentAssets() {
-        try {
-            $query = "SELECT ts.ten_tai_san, lt.ten_loai_tai_san, ct.so_luong, hd.ngay_mua 
-                      FROM " . $this->table_name . " ts
-                      JOIN chi_tiet_hoa_don_mua ct ON ct.tai_san_id = ts.tai_san_id 
-                      JOIN hoa_don_mua hd ON hd.hoa_don_id = ct.hoa_don_id
-                      JOIN loai_tai_san lt ON ts.loai_tai_san_id = lt.loai_tai_san_id
-                      WHERE hd.ngay_mua >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-                      ORDER BY hd.ngay_mua DESC";
-            $stmt = $this->conn->prepare($query);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            // Handle PDOException (database errors)
-            echo "Error: " . $e->getMessage();
-            return false;
-        }
-    }  
 
     // Phương thức để tìm kiếm tài sản
     public function searchTaisan($tenTaiSan, $loaiTaiSan) {

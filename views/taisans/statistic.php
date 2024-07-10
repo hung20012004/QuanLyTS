@@ -90,37 +90,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Recent Assets Table -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Tài sản mới nhập (30 ngày gần nhất)</h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0" id="recentAssetsTable">
-                    <thead>
-                        <tr>
-                            <th>Tên tài sản</th>
-                            <th>Loại tài sản</th>
-                            <th>Số lượng</th>
-                            <th>Ngày nhập</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($recentAssets as $asset): ?>
-                            <tr>
-                                <td ><?= htmlspecialchars($asset['ten_tai_san']) ?></td>
-                                <td ><?= htmlspecialchars($asset['ten_loai_tai_san']) ?></td>
-                                <td ><?= htmlspecialchars($asset['so_luong']) ?></td>
-                                <td ><?= date('d/m/Y', strtotime($asset['ngay_mua'])); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
