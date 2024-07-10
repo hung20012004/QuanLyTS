@@ -116,9 +116,32 @@ class PhieuThanhLy {
             $stmtDeleteHoaDon->execute();    
     }
 
-    public function updateStatus() {
+    public function updateStatusPheDuyet() {
         $query = "UPDATE " . $this->table_name . " 
-                  SET trang_thai=:trang_thai, ghi_chu=:ghi_chu, user_duyet_id=:nguoi_duyet_id, ngay_thanh_ly =:ngay_thanh_ly 
+                  SET trang_thai=:trang_thai, ghi_chu=:ghi_chu, user_duyet_id=:nguoi_duyet_id, ngay_xac_nhan=:ngay_xac_nhan 
+                  WHERE phieu_thanh_ly_id=:phieu_thanh_ly_id";
+
+        $stmt = $this->conn->prepare($query);
+
+        $this->ghi_chu = htmlspecialchars(strip_tags($this->ghi_chu));
+        $this->trang_thai = htmlspecialchars(strip_tags($this->trang_thai));
+        $this->phieu_thanh_ly_id= htmlspecialchars(strip_tags($this->phieu_thanh_ly_id));
+        $this->nguoi_duyet_id= htmlspecialchars(strip_tags($this->nguoi_duyet_id));
+        $this->ngay_xac_nhan = htmlspecialchars($this->ngay_xac_nhan);
+
+
+        $stmt->bindParam(':ghi_chu', $this->ghi_chu);
+        $stmt->bindParam(':trang_thai', $this->trang_thai);
+        $stmt->bindParam(':phieu_thanh_ly_id', $this->phieu_thanh_ly_id);
+        $stmt->bindParam(':nguoi_duyet_id', $this->nguoi_duyet_id);
+        $stmt->bindParam(':ngay_xac_nhan', $this->ngay_xac_nhan);
+
+        return $stmt->execute();
+    }
+   
+    public function updateStatusThanhLy() {
+        $query = "UPDATE " . $this->table_name . " 
+                  SET trang_thai=:trang_thai, ghi_chu=:ghi_chu, user_duyet_id=:nguoi_duyet_id, ngay_thanh_ly=:ngay_thanh_ly 
                   WHERE phieu_thanh_ly_id=:phieu_thanh_ly_id";
 
         $stmt = $this->conn->prepare($query);
@@ -138,7 +161,6 @@ class PhieuThanhLy {
 
         return $stmt->execute();
     }
-   
 
     // public function getTotalRecords() {
     //     $query = "SELECT COUNT(*) as total FROM " . $this->table_name;

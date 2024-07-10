@@ -282,13 +282,11 @@ public function xet_duyet($id)
             if ($all_approved) {
                 // Cập nhật trạng thái của phiếu thành 'DaPheDuyet'
                 $this->phieuThanhLyModel->trang_thai = 'DaPheDuyet';
-
-                // Cập nhật thông tin vào model
                 $this->phieuThanhLyModel->ngay_xac_nhan = date('Y-m-d');
                 $this->phieuThanhLyModel->nguoi_duyet_id = $_POST['nguoi_phe_duyet_id'];
                 $this->phieuThanhLyModel->phieu_thanh_ly_id = $id;
                 $this->phieuThanhLyModel->ghi_chu = $_POST['ghi_chu'];
-                $this->phieuThanhLyModel->updateStatus();
+                $this->phieuThanhLyModel->updateStatusPheDuyet();
 
                 // Thiết lập thông báo thành công
                 $_SESSION['message'] = 'Tất cả các tài sản đã được phê duyệt thành công!';
@@ -315,7 +313,7 @@ public function xet_duyet($id)
             $this->phieuThanhLyModel->nguoi_duyet_id = $_POST['nguoi_phe_duyet_id'];
             $this->phieuThanhLyModel->phieu_thanh_ly_id = $id;
             $this->phieuThanhLyModel->ghi_chu = $_POST['ghi_chu'];
-            $this->phieuThanhLyModel->updateStatus();
+            $this->phieuThanhLyModel->updateStatusPheDuyet();
 
             // Thiết lập thông báo thành công
             $_SESSION['message'] = 'Phiếu thanh lý đã bị từ chối!';
@@ -451,7 +449,7 @@ private function processThanhLyTaiSan($id)
         $this->phieuThanhLyModel->nguoi_duyet_id = $_POST['nguoi_phe_duyet_id'];
         $this->phieuThanhLyModel->trang_thai = 'DaThanhLy';
         $this->phieuThanhLyModel->ngay_thanh_ly = date('Y-m-d');
-        $this->phieuThanhLyModel->updateStatus();
+        $this->phieuThanhLyModel->updateStatusThanhLy();
         
         $this->db->commit();
         

@@ -171,9 +171,13 @@
         `;
         cell4.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>';
 
-        newRow.querySelector('.loai-tai-san').addEventListener('change', function () {
-            updateTaiSanOptions(this);
-        });
+         newRow.querySelector('.select-tai-san').addEventListener('change', function () {
+        mergeDuplicateRows();
+    });
+
+    newRow.querySelector('.select-tinh-trang').addEventListener('change', function () {
+        mergeDuplicateRows();
+    });
     }
 
     function removeTaiSan(button) {
@@ -212,6 +216,33 @@
         // Cập nhật giá trị đã chọn
         selectTaiSan.dataset.selected = selectTaiSan.value;
     }
+
+    function mergeDuplicateRows() {
+    var table = document.getElementById('chiTietTable');
+    var rows = table.getElementsByTagName('tr');
+    var rowsToDelete = [];
+
+    for (var i = 1; i < rows.length; i++) {
+        for (var j = i + 1; j < rows.length; j++) {
+            var taiSan1 = rows[i].querySelector('.select-tai-san').value;
+            var tinhTrang1 = rows[i].querySelector('.select-tinh-trang').value;
+            var taiSan2 = rows[j].querySelector('.select-tai-san').value;
+            var tinhTrang2 = rows[j].querySelector('.select-tinh-trang').value;
+
+            if (taiSan1 === taiSan2 && tinhTrang1 === tinhTrang2) {
+                var soLuong1 = parseInt(rows[i].querySelector('input[name="so_luong[]"]').value);
+                var soLuong2 = parseInt(rows[j].querySelector('input[name="so_luong[]"]').value);
+                rows[i].querySelector('input[name="so_luong[]"]').value = soLuong1 + soLuong2;
+                rowsToDelete.push(rows[j]);
+            }
+        }
+    }
+
+    for (var i = rowsToDelete.length - 1; i >= 0; i--) {
+        rowsToDelete[i].parentNode.removeChild(rowsToDelete[i]);
+    }
+}
+
 
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.loai-tai-san').forEach(function (select) {
@@ -265,5 +296,11 @@
                 this.dataset.selected = this.value;
             });
         });
+
+        document.querySelectorAll('.select-tinh-trang').forEach(function (select) {
+        select.addEventListener('change', function () {
+            mergeDuplicateRows();
+        });
+    });
     });
 </script>

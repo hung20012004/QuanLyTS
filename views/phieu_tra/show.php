@@ -54,13 +54,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($chiTietPhieuTra as $chiTiet): ?>
+                    <?php $i=0; foreach ($chiTietPhieuTra as $chiTiet): ?>
+                        <!-- <?php if($i%2==0): ?>
+                        <tr style="background-color: white;">
+                        <?php else: ?>
+                         <tr style="background-color: lightgrey;">
+                        <?php endif?> -->
                         <tr>
                             <td><?= htmlspecialchars($chiTiet['ten_vi_tri']); ?></td>
                             <td><?= htmlspecialchars($chiTiet['ten_tai_san']); ?></td>
                             <td><?= htmlspecialchars($chiTiet['so_luong']); ?></td>
                             <td><?= htmlspecialchars($chiTiet['tinh_trang']); ?></td>
                         </tr>
+                        <?php $i++?>
                     <?php endforeach; ?>
                 </tbody>
             </table>

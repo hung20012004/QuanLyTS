@@ -65,6 +65,17 @@
                 if(!empty($phieuThanhLy['ngay_thanh_ly'])){
                 ?>
                     <div class="form-group row">
+                    <label for="ngay_thanh_ly" class="col-sm-2 col-form-label">Ngày phê duyệt:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="ngay_xac_nhan" name="ngay_xac_nhan"
+                            value="<?= date('d-m-Y', strtotime($phieuThanhLy['ngay_xac_nhan'])) ?>" readonly>
+                    </div>
+                </div>
+                <?php } ?>
+                <?php 
+                if(!empty($phieuThanhLy['ngay_thanh_ly'])){
+                ?>
+                    <div class="form-group row">
                     <label for="ngay_thanh_ly" class="col-sm-2 col-form-label">Ngày thanh lý:</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="ngay_thanh_ly" name="ngay_thanh_ly"
@@ -89,7 +100,7 @@
                                 </td>
                                 <td>
                                     <input type="number" class="form-control" name="so_luong[]"
-                                        value="<?= $chiTiet['so_luong'] ?>" readonly min="1">
+                                        value="<?= $chiTiet['so_luong'] ?>" min="1">
                                 </td>
 
                             </tr>
@@ -99,13 +110,11 @@
 
                 <div class="form-group mt-3">   
                     <label for="ghiChu">Ghi chú:</label>
-                    <textarea class="form-control" id="ghiChu" name="ghi_chu"readonly
-                        rows="3"><?= htmlspecialchars($phieuThanhLy['ghi_chu']) ?></textarea>
+                    <textarea class="form-control" id="ghiChu" name="ghi_chu" rows="3"> <?= htmlspecialchars($phieuThanhLy['ghi_chu']) ?></textarea>
                 </div>
 
                 <div class="form-group row">
                     <div class="col-sm-10">
-                        <button hidden type="submit" class="btn btn-primary">Cập nhật</button>
                         <a href="index.php?model=phieuthanhly&action=index" class="btn btn-secondary">Quay lại</a>
                     </div>
                 </div>

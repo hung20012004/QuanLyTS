@@ -37,7 +37,7 @@
                 <div class="form-group row">
                     <label for="ngayNhap" class="col-sm-2 col-form-label">Ngày tạo phiếu:</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="ngayNhap" name="ngay_tao" value="<?= date('Y-m-d'); ?>" required>
+                        <input type="date" class="form-control" id="ngayNhap" name="ngay_tao" value="<?= date('Y-m-d'); ?>" readonly>
                     </div>
                 </div>
                 <!-- <div class="form-group row">
@@ -113,16 +113,18 @@ function addTaiSan() {
     var cell2 = newRow.insertCell(1);
     var cell3 = newRow.insertCell(2);
     var cell4 = newRow.insertCell(3);
-    // var cell4 = newRow.insertCell(3);
 
-    // cell1.innerHTML = document.querySelector('.loai-tai-san').outerHTML;
     cell1.innerHTML = document.querySelector('.select-tai-san').outerHTML;
     cell2.innerHTML = '<input type="number" class="form-control" name="so_luong[]" required min="1">';
     cell3.innerHTML = document.querySelector('.select-tinh-trang').outerHTML;
     cell4.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="removeTaiSan(this)">Xóa</button>';
 
-    newRow.querySelector('.loai-tai-san').addEventListener('change', function() {
-        updateTaiSanOptions(this);
+    newRow.querySelector('.select-tai-san').addEventListener('change', function () {
+        mergeDuplicateRows();
+    });
+
+    newRow.querySelector('.select-tinh-trang').addEventListener('change', function () {
+        mergeDuplicateRows();
     });
 }
 
@@ -135,25 +137,42 @@ function removeTaiSan(button) {
     }
 }
 
-function updateTaiSanOptions(selectLoai) {
-    var loaiTaiSanId = selectLoai.value;
-    var selectTaiSan = selectLoai.closest('tr').querySelector('.select-tai-san');
-    
-    Array.from(selectTaiSan.options).forEach(option => {
-        if (option.value === "") {
-            option.style.display = "";
-        } else {
-            option.style.display = option.dataset.loai === loaiTaiSanId ? "" : "none";
-        }
-    });
+function mergeDuplicateRows() {
+    var table = document.getElementById('chiTietTable');
+    var rows = table.getElementsByTagName('tr');
+    var rowsToDelete = [];
 
-    selectTaiSan.value = ""; // Reset selection
+    for (var i = 1; i < rows.length; i++) {
+        for (var j = i + 1; j < rows.length; j++) {
+            var taiSan1 = rows[i].querySelector('.select-tai-san').value;
+            var tinhTrang1 = rows[i].querySelector('.select-tinh-trang').value;
+            var taiSan2 = rows[j].querySelector('.select-tai-san').value;
+            var tinhTrang2 = rows[j].querySelector('.select-tinh-trang').value;
+
+            if (taiSan1 === taiSan2 && tinhTrang1 === tinhTrang2) {
+                var soLuong1 = parseInt(rows[i].querySelector('input[name="so_luong[]"]').value);
+                var soLuong2 = parseInt(rows[j].querySelector('input[name="so_luong[]"]').value);
+                rows[i].querySelector('input[name="so_luong[]"]').value = soLuong1 + soLuong2;
+                rowsToDelete.push(rows[j]);
+            }
+        }
+    }
+
+    for (var i = rowsToDelete.length - 1; i >= 0; i--) {
+        rowsToDelete[i].parentNode.removeChild(rowsToDelete[i]);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.loai-tai-san').forEach(function(select) {
-        select.addEventListener('change', function() {
-            updateTaiSanOptions(this);
+    document.querySelectorAll('.select-tai-san').forEach(function (select) {
+        select.addEventListener('change', function () {
+            mergeDuplicateRows();
+        });
+    });
+
+    document.querySelectorAll('.select-tinh-trang').forEach(function (select) {
+        select.addEventListener('change', function () {
+            mergeDuplicateRows();
         });
     });
 });
