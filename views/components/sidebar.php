@@ -68,6 +68,12 @@ $current_action = isset($_GET['action']) ? $_GET['action'] : '';
             <span>Hồ sơ</span>
         </a>
     </li>
+    <li class="nav-item <?= ($current_model == 'auth' && $current_action == 'profile') ? 'active' : '' ?>">
+        <a class="nav-link" href="index.php?model=auth&action=profile">
+            <i class="fa-solid fa-user"></i>
+            <span>Hồ sơ 2</span>
+        </a>
+    </li>
     <hr class="sidebar-divider d-none d-md-block">
 
     <!-- Sidebar Toggler (Sidebar) -->
