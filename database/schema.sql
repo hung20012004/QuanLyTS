@@ -1,4 +1,6 @@
-CREATE TABLE `users` (
+USE quanlytaisan;
+
+CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(50) NOT NULL UNIQUE,
     ten VARCHAR(50) NOT NULL,
