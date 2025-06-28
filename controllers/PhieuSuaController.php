@@ -192,6 +192,14 @@ class PhieuSuaController extends Controller
                 }
             } elseif ($action == 'reject') {
                 $this->phieuSuaModel->trang_thai = 'Huy';
+                $this->phieuSuaModel->phieu_sua_id = $id;
+                if ($this->phieuSuaModel->updateStatus()) {
+                    $this->db->commit();
+                    $_SESSION['message'] = 'Cập nhật thông tin thành công!';
+                    $_SESSION['message_type'] = 'success';
+                    header("Location: index.php?model=phieusua&action=index");
+                    exit();
+                }
             }
             
             // Thực hiện cập nhật dữ liệu vào cơ sở dữ liệu
@@ -232,13 +240,13 @@ class PhieuSuaController extends Controller
         }
         $ngayHoanThanh = date('Y-m-d');
     
-        // Kiểm tra ngày hoàn thành phải lớn hơn ngày yêu cầu
-        if (strtotime($ngayHoanThanh) <= strtotime($phieuSua['ngay_yeu_cau'])) {
-            $_SESSION['message'] = 'Ngày hoàn thành phải lớn hơn ngày yêu cầu!';
-            $_SESSION['message_type'] = 'danger';
-            header("Location: index.php?model=phieusua&action=index");
-            exit();
-        }
+        // // Kiểm tra ngày hoàn thành phải lớn hơn ngày yêu cầu
+        // if (strtotime($ngayHoanThanh) <= strtotime($phieuSua['ngay_yeu_cau'])) {
+        //     $_SESSION['message'] = 'Ngày hoàn thành phải lớn hơn ngày yêu cầu!';
+        //     $_SESSION['message_type'] = 'danger';
+        //     header("Location: index.php?model=phieusua&action=index");
+        //     exit();
+        // }
         
         // Thực hiện cập nhật trạng thái và ngày hoàn thành
         $this->phieuSuaModel->ngay_hoan_thanh = $ngayHoanThanh;
