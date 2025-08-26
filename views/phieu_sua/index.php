@@ -42,7 +42,7 @@
                     <a id="toggleSearch" class="btn btn-secondary">Tìm kiếm</a>
                     <?php if ($_SESSION['role'] == 'NhanVien'): ?> 
                         <a href="index.php?model=phieusua&action=create" class="btn btn-primary">Tạo phiếu</a>
-                    <?php elseif ($_SESSION['role'] == 'QuanLy' || $_SESSION['role'] == 'KyThuat'): ?>
+                    <?php elseif ($_SESSION['role'] == 'QuanLy'): ?>
                         <a href="index.php?model=phieusua&action=export" class="btn btn-success">Xuất excel</a>
                     <?php endif; ?>
                 </div>
@@ -92,7 +92,11 @@
                             <?php endif; ?>
                             <th>Vị trí</th>
                             <th>Mô tả</th>
-                            <th>Người sửa chữa</th>
+                            <?php if ($_SESSION['role'] == 'KyThuat'): ?>
+                                <th>Ngày sửa</th>
+                            <?php else: ?>
+                                <th>Người sửa chữa</th>
+                            <?php endif; ?>
                             <th>Trạng thái</th>
                             <th>Thao tác</th>
                         </tr>
@@ -108,7 +112,11 @@
                                     <?php endif; ?>
                                     <td class="text-center"><?= $phieu['ten_vi_tri']; ?></td>
                                     <td class="text-center"><?= $phieu['mo_ta']; ?></td>
-                                    <td class="text-center"><?= $phieu['user_sua_chua_name']; ?></td>
+                                    <?php if ($_SESSION['role'] == 'KyThuat'): ?>
+                                        <td class="text-center"><?= date('d-m-Y', strtotime($phieu['ngay_sua_chua'])) ?></td>
+                                    <?php else: ?>
+                                        <td class="text-center"><?= $phieu['user_sua_chua_name']; ?></td>
+                                    <?php endif; ?> 
                                     <td class="text-center">
                                         <?= $phieu['trang_thai'] == 'DaGui' ? 'Đã gửi' : ($phieu['trang_thai'] == 'DaNhan' ? 'Đã nhận' : ($phieu['trang_thai'] == 'DaHoanThanh' ? 'Đã hoàn thành' : ($phieu['trang_thai'] == 'YeuCauHuy' ? 'Đang yêu cầu hủy' : 'Đã hủy'))); ?>
                                     </td>
@@ -131,7 +139,7 @@
                                                 class="btn btn-success btn-sm mx-2">Hoàn thành</a>
                                         <?php endif; ?>
                                         <?php if ($_SESSION['role'] == 'NhanVienQuanLy'): ?>
-                                            <?php if ($phieu['trang_thai'] != 'DaNhan' && $phieu['trang_thai'] != 'Huy' || $phieu['trang_thai'] != 'YeuCauHuy'): ?>
+                                            <?php if ($phieu['trang_thai'] != 'DaNhan' && $phieu['trang_thai'] != 'Huy' && $phieu['trang_thai'] != 'YeuCauHuy'): ?>
                                                 <a href="index.php?model=phieusua&action=xet_duyet&id=<?php echo $phieu['phieu_sua_id']; ?>"
                                                     class="btn btn-sm mx-2 btn-primary">Xét duyệt</a>
                                             <?php endif; ?>
